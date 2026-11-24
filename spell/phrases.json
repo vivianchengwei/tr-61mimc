@@ -1,0 +1,64 @@
+{
+  "pip": {
+    "trace": ["Trace the grey letters slowly. The orange ones are the tricky letters, look at them twice!", "Follow the letters with your pen. Start each letter at the top.", "Nice and slow. Tall letters touch the top line, small letters stay in the middle."],
+    "trace2": ["Once more! This time try to remember the shape of the word.", "Second trace. Say each letter in your head as you write it."],
+    "free": ["Now write it on your own, no grey letters this time! Tap Hint if you get stuck.", "Your turn! Picture the word, then write it.", "Write it from memory. You can do it!"],
+    "dict": ["Listen carefully. I will say the word, a sentence, then the word again.", "Ears open! Write what you hear.", "Dictation time. Tap Listen again as often as you like."],
+    "check": ["Compare your word with the correct spelling. Tap any letter you got wrong or missed.", "Look letter by letter. Did you miss one? Add one? Swap two?", "Check it carefully, like a spell-checker!"],
+    "hint": ["A little hint is fine. We will write this word once more afterwards.", "Peeking is allowed. Remembering is the goal!"],
+    "fixTrace": ["The yellow letters are the ones to watch. Trace it once more.", "No problem. Trace the whole word again and press hard on the yellow letters."],
+    "fixFree": ["Now write it yourself again. Think about the yellow letters!", "One more time on your own. You know where the tricky part is now."]
+  },
+  "owl": {
+    "good": [
+      ["Hermione", "Spelled perfectly! I could not have done it better myself."],
+      ["Ron", "Brilliant! That one always trips me up."],
+      ["Hagrid", "Blimey! You're a natural at this, you are!"],
+      ["Dumbledore", "Every letter in its proper place. Splendid."],
+      ["Professor McGonagall", "Precisely right. I expect nothing less."],
+      ["Luna", "Lovely. The letters look much happier now."],
+      ["Harry", "Nice one! That is exactly how it is spelled."],
+      ["Neville", "Wow, I always get that one wrong. Well done!"],
+      ["Ginny", "Spot on! Next one!"],
+      ["Hedwig", "Hoot hoot! That means perfect."]
+    ],
+    "dictGood": [
+      ["Hermione", "You heard it and spelled it. That is real magic."],
+      ["Professor Flitwick", "Splendid! A perfect dictation."],
+      ["Harry", "You did not even need to see it. Brilliant!"],
+      ["Hagrid", "Got it first time, just by listening. You're something else."]
+    ],
+    "fix": [
+      ["Hagrid", "Don't worry. Even the best wizards get a letter wrong now and then."],
+      ["Hermione", "Look carefully at the orange letters. Those are the tricky ones."],
+      ["Neville", "I used to mix that up too. Trace it once more and it sticks."],
+      ["Dumbledore", "A mistake noticed is a mistake nearly fixed."]
+    ],
+    "fixOk": [
+      ["Ron", "Ha! Got it this time. That letter will not trick you again."],
+      ["Professor McGonagall", "Corrected. Well done."],
+      ["Harry", "See? Second time lucky. Great job."]
+    ]
+  },
+  "stamps": ["Spell-tacular!", "Perfect!", "Brilliant!", "Magic!", "Wonderful!", "Superb!"],
+  "spells": ["Spellus Perfectus!", "Letterarium Maxima!", "Wordus Brillianto!", "Vocabulus Splendida!"],
+  "letters": [
+    {"who": "Professor McGonagall", "text": "Dear {name},\n\nI am pleased to inform you that you have spelled every word in {list} correctly. {pts} points have been awarded. Keep your quill sharp.\n\nYours sincerely,\nM. McGonagall", "spoken": "Dear young wizard. I am pleased to inform you that you have spelled every word in your spelling list correctly. Points have been awarded. Keep your quill sharp. Yours sincerely, Professor McGonagall."},
+    {"who": "Albus Dumbledore", "text": "Dear {name},\n\nWords are, in my humble opinion, our most inexhaustible source of magic. Today you mastered {n} of them. Well done indeed.\n\nAlbus Dumbledore", "spoken": "Dear young wizard. Words are, in my humble opinion, our most inexhaustible source of magic. Today you mastered every one of them. Well done indeed. Albus Dumbledore."},
+    {"who": "Hagrid", "text": "{name}!\n\nEvery single word right! I'm that proud I could burst. Come by the hut, there's rock cakes.\n\nHagrid", "spoken": "Every single word right! I'm that proud I could burst. Come by the hut, there's rock cakes. Hagrid."},
+    {"who": "Hermione", "text": "Dear {name},\n\n{n} out of {n} in {list}. I checked twice. See you in the library.\n\nHermione", "spoken": "Dear young wizard. Full marks in your spelling list. I checked twice. See you in the library. Hermione."},
+    {"who": "Ron", "text": "{name},\n\nAll of them? Even the long one? You are a legend. Mum says well done too.\n\nRon", "spoken": "All of them? Even the long one? You are a legend. Mum says well done too. Ron."}
+  ],
+  "misc": {
+    "start": "Let's write!",
+    "dictStart": "Every word written! Now I will read them out and you write them. Dictation time!",
+    "skip": "We will come back to that one later!",
+    "hintUsed": "You used a hint, so this word gets one more go.",
+    "finComplete": "Every word correct! My wand is full of magic. Watch this!",
+    "finIncomplete": "Come back and finish the list, and I will show you my flying trick!",
+    "flyUp": "Whoosh! Up we go!",
+    "skyWizard": "You are the Spelling Wizard!",
+    "owlArrive": "An owl! It brought you a letter!",
+    "listenAgain": "Listen again."
+  }
+}

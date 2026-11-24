@@ -1,0 +1,1 @@
+{"name": "Spelling Wand", "short_name": "Spelling", "start_url": "./", "display": "standalone", "background_color": "#141733", "theme_color": "#4b2b9a", "icons": [{"src": "icon-180.png", "sizes": "180x180", "type": "image/png"}, {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}]}

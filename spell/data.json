@@ -1,0 +1,453 @@
+{
+  "grades": [
+    {
+      "id": "P3",
+      "label": "P3",
+      "terms": [
+        {
+          "id": "P3T3",
+          "label": "Term 3",
+          "lists": [
+            {
+              "id": "P3-S6",
+              "name": "Spelling 6",
+              "date": "9 Jul",
+              "words": [
+                {
+                  "w": "nutrients",
+                  "tricky": [
+                    4,
+                    5
+                  ],
+                  "tip": "nutri + ents. The middle is 'ie' (i before e). Say it in parts: nu-tri-ents.",
+                  "sent": "Plants take in nutrients from the soil."
+                },
+                {
+                  "w": "minerals",
+                  "tricky": [
+                    3,
+                    5
+                  ],
+                  "tip": "mine + rals. Minerals come from a mine. Watch the 'e' after min and the 'a' before ls.",
+                  "sent": "Water and minerals travel up the stem."
+                },
+                {
+                  "w": "photosynthesis",
+                  "tricky": [
+                    0,
+                    1,
+                    6,
+                    8,
+                    9
+                  ],
+                  "tip": "photo (light) + synthesis (making). 'ph' says f, 'y' hides in syn, and 'th' is in thesis.",
+                  "sent": "Leaves make food by photosynthesis."
+                },
+                {
+                  "w": "special",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "spe-ci-al. The 'sh' sound is spelled 'ci' here, like in 'social'.",
+                  "sent": "The Venus Flytrap is a very special plant."
+                },
+                {
+                  "w": "pouches",
+                  "tricky": [
+                    1,
+                    2,
+                    5
+                  ],
+                  "tip": "pouch + es. 'ou' as in 'ouch!'. Words ending in ch add 'es'.",
+                  "sent": "Kangaroos carry their babies in pouches."
+                },
+                {
+                  "w": "unpleasant",
+                  "tricky": [
+                    4,
+                    5,
+                    7
+                  ],
+                  "tip": "un + pleasant. 'ea' as in 'please', and it ends in -ant, not -ent.",
+                  "sent": "The durian had an unpleasant smell."
+                },
+                {
+                  "w": "environment",
+                  "tricky": [
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "tip": "There is IRON in envIRONment: en-v-iron-ment. Don't lose the 'n' before 'ment'.",
+                  "sent": "We must protect our environment."
+                },
+                {
+                  "w": "reproduce",
+                  "tricky": [
+                    6,
+                    8
+                  ],
+                  "tip": "re + produce. Keep the 'u' in produce and the silent 'e' at the end.",
+                  "sent": "Flowers help plants to reproduce."
+                },
+                {
+                  "w": "challenges",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "There is ALL in chALLenges: two l's. ch-all-eng-es.",
+                  "sent": "She faced many challenges bravely."
+                },
+                {
+                  "w": "gigantic",
+                  "tricky": [
+                    2,
+                    7
+                  ],
+                  "tip": "giant + ic = gigantic. Two g's, and it ends in 'ic' (not 'ick').",
+                  "sent": "A gigantic wave crashed onto the beach."
+                }
+              ]
+            },
+            {
+              "id": "P3-D6",
+              "name": "Dictation 6",
+              "date": "16 Jul",
+              "passage": "Though it may sound like a horror story, some plants do eat animals. The most well-known carnivorous plant is the Venus Flytrap. This plant does not have hands or legs, but it traps flies and other small insects using its leaves."
+            },
+            {
+              "id": "P3-S7",
+              "name": "Spelling 7",
+              "date": "23 Jul",
+              "words": [
+                {
+                  "w": "wriggled",
+                  "tricky": [
+                    0,
+                    3,
+                    4
+                  ],
+                  "tip": "Silent 'w' at the start, like 'write' and 'wrong'. Then double g: wrig-gled.",
+                  "sent": "The worm wriggled in the mud."
+                },
+                {
+                  "w": "leaned",
+                  "tricky": [
+                    1,
+                    2
+                  ],
+                  "tip": "lean + ed. 'ea' as in 'lean' and 'clean'.",
+                  "sent": "He leaned against the wall to rest."
+                },
+                {
+                  "w": "exist",
+                  "tricky": [
+                    1
+                  ],
+                  "tip": "ex + ist. The 'x' makes the 'gz' sound: eg-zist, but we write 'x'.",
+                  "sent": "Dinosaurs no longer exist."
+                },
+                {
+                  "w": "quivering",
+                  "tricky": [
+                    0,
+                    1,
+                    3
+                  ],
+                  "tip": "quiver + ing. 'q' always brings its friend 'u'. No double letters anywhere.",
+                  "sent": "The puppy was quivering in the cold."
+                },
+                {
+                  "w": "biscuits",
+                  "tricky": [
+                    3,
+                    4,
+                    5
+                  ],
+                  "tip": "bis-cu-its. The 'u' is silent: remember 'I eat biscuits with my cup' (c-u-i).",
+                  "sent": "Grandma baked a tin of biscuits."
+                },
+                {
+                  "w": "screamed",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "scream + ed. 'ea' as in 'dream'. Start with 'scr' like 'scratch'.",
+                  "sent": "The children screamed on the roller coaster."
+                },
+                {
+                  "w": "squeaked",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "squeak + ed. 'ea' as in 'speak'. 'squ' as in 'square'.",
+                  "sent": "The mouse squeaked and ran away."
+                },
+                {
+                  "w": "croaked",
+                  "tricky": [
+                    2,
+                    3
+                  ],
+                  "tip": "croak + ed. 'oa' as in 'boat' and 'road'.",
+                  "sent": "The frog croaked loudly by the pond."
+                },
+                {
+                  "w": "scrawny",
+                  "tricky": [
+                    3,
+                    4,
+                    6
+                  ],
+                  "tip": "scr-aw-ny. 'aw' as in 'saw' and 'draw', then 'ny' with a 'y'.",
+                  "sent": "A scrawny cat sat by the drain."
+                },
+                {
+                  "w": "shrugged",
+                  "tricky": [
+                    4,
+                    5
+                  ],
+                  "tip": "shrug + ged. Double the 'g' before adding -ed (like hugged).",
+                  "sent": "Tom shrugged and said he did not know."
+                }
+              ]
+            },
+            {
+              "id": "P3-D7",
+              "name": "Dictation 7",
+              "date": "30 Jul",
+              "passage": "",
+              "unseen": true
+            }
+          ]
+        },
+        {
+          "id": "P3T4",
+          "label": "Term 4",
+          "lists": [
+            {
+              "id": "P3-S8",
+              "name": "Spelling 8",
+              "date": "",
+              "words": [
+                {
+                  "w": "against",
+                  "tricky": [
+                    2,
+                    3
+                  ],
+                  "tip": "again + st. The 'ai' is hidden in 'again'.",
+                  "sent": "She leaned the ladder against the tree."
+                },
+                {
+                  "w": "bottom",
+                  "tricky": [
+                    2,
+                    3,
+                    4
+                  ],
+                  "tip": "bot-tom: two t's, and it ends in -om (not -um).",
+                  "sent": "The ball sank to the bottom of the pool."
+                },
+                {
+                  "w": "palace",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "pal + ace. The 'c' sounds like 's' because an 'e' follows it.",
+                  "sent": "The king lived in a grand palace."
+                },
+                {
+                  "w": "bounced",
+                  "tricky": [
+                    1,
+                    2,
+                    4
+                  ],
+                  "tip": "bounce + d. 'ou' as in 'bounce' and 'round'. Just add 'd' because it already ends in 'e'.",
+                  "sent": "The ball bounced over the fence."
+                },
+                {
+                  "w": "straight",
+                  "tricky": [
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "tip": "str-aigh-t. The 'gh' is silent, like in 'eight' and 'night'. Eight letters, only five sounds!",
+                  "sent": "Draw a straight line with your ruler."
+                },
+                {
+                  "w": "mumbled",
+                  "tricky": [
+                    3
+                  ],
+                  "tip": "mumble + d. Don't forget the 'b' after 'mum' (like 'tumble').",
+                  "sent": "He mumbled an answer under his breath."
+                },
+                {
+                  "w": "boldly",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "bold + ly. Keep the 'd' of bold, then add 'ly'.",
+                  "sent": "The knight boldly faced the dragon."
+                },
+                {
+                  "w": "heavy",
+                  "tricky": [
+                    1,
+                    2
+                  ],
+                  "tip": "heav-y. 'ea' says the short 'e' sound, like 'head' and 'bread'.",
+                  "sent": "The box was too heavy to lift."
+                },
+                {
+                  "w": "squeeze",
+                  "tricky": [
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "tip": "squ-ee-ze. Two e's in the middle, then 'z', then a silent 'e'.",
+                  "sent": "Squeeze the lemon into the water."
+                },
+                {
+                  "w": "filthy",
+                  "tricky": [
+                    3,
+                    4
+                  ],
+                  "tip": "filth + y. The 'th' is in the middle: fil-thy.",
+                  "sent": "His shoes were filthy after the game."
+                }
+              ]
+            },
+            {
+              "id": "P3-D8",
+              "name": "Dictation 8",
+              "date": "",
+              "passage": "Prince Zak put the hose back into the hole. The frog hopped away and turned the tap on. Soon he could see the ball bobbing up towards the light as the hole filled with water. The wise frog had used water to float the ball out."
+            },
+            {
+              "id": "P3-S9",
+              "name": "Spelling 9",
+              "date": "",
+              "words": [
+                {
+                  "w": "jackets",
+                  "tricky": [
+                    2,
+                    3
+                  ],
+                  "tip": "jack + ets. 'ck' after a short vowel, like 'back' and 'pack'.",
+                  "sent": "Put on your jackets, it is cold outside."
+                },
+                {
+                  "w": "cartons",
+                  "tricky": [
+                    4
+                  ],
+                  "tip": "car + tons. It ends in -ton (like a ton of milk), not -ten.",
+                  "sent": "We recycled the empty milk cartons."
+                },
+                {
+                  "w": "friendly",
+                  "tricky": [
+                    2,
+                    3
+                  ],
+                  "tip": "friend + ly. A friEND stays to the END: 'ie', with the 'i' first.",
+                  "sent": "Our new neighbour is very friendly."
+                },
+                {
+                  "w": "tempt",
+                  "tricky": [
+                    3
+                  ],
+                  "tip": "tem-p-t. The 'p' is quiet but it is there, like in 'empty'.",
+                  "sent": "The sweets tempt me every time."
+                },
+                {
+                  "w": "protested",
+                  "tricky": [
+                    4,
+                    7
+                  ],
+                  "tip": "pro + test + ed. There is a TEST inside proTESTed.",
+                  "sent": "The students protested against the new rule."
+                },
+                {
+                  "w": "surrounded",
+                  "tricky": [
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  "tip": "sur + round + ed. Double r, and 'round' is inside surROUNDed.",
+                  "sent": "The island is surrounded by the sea."
+                },
+                {
+                  "w": "pretended",
+                  "tricky": [
+                    2,
+                    4
+                  ],
+                  "tip": "pre + tend + ed. Two e's before the 'nd', then another in 'ed'.",
+                  "sent": "He pretended to be asleep."
+                },
+                {
+                  "w": "reminded",
+                  "tricky": [
+                    3
+                  ],
+                  "tip": "re + mind + ed. Your MIND is inside reMINDed.",
+                  "sent": "Mum reminded me to bring my water bottle."
+                },
+                {
+                  "w": "disappeared",
+                  "tricky": [
+                    2,
+                    4,
+                    5,
+                    6,
+                    7
+                  ],
+                  "tip": "dis + appear + ed. One 's', two p's, and 'ea' in appear.",
+                  "sent": "The rabbit disappeared into its hole."
+                },
+                {
+                  "w": "probably",
+                  "tricky": [
+                    4,
+                    5
+                  ],
+                  "tip": "prob-ab-ly. Don't skip the middle 'ab': it is not 'probly'.",
+                  "sent": "It will probably rain this afternoon."
+                }
+              ]
+            },
+            {
+              "id": "P3-D9",
+              "name": "Dictation 9",
+              "date": "",
+              "passage": "",
+              "unseen": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
