@@ -184,6 +184,7 @@ u.key{text-decoration:none;border-bottom:3px solid var(--magma);padding-bottom:1
     </svg>
   </div>
 
+  <div class="card hidden" id="embedNote" style="border:1px solid var(--magma);font-size:15px">这个页面现在嵌在 claude.ai 里，浏览器可能会清掉进度。孩子请用独立网址：<b>vivianchengwei.github.io/tr-61mimc/lava/</b>（在家长看板里可以复制备份码，搬到新网址后恢复）。</div>
   <div class="card row" style="justify-content:space-between">
     <div class="row" id="names" role="group" aria-label="选择名字"></div>
     <button class="chip" id="addNameBtn" type="button">＋ 加名字</button>
@@ -634,6 +635,7 @@ $("newName").addEventListener("keydown",e=>{if(e.key==="Enter")$("saveName").cli
 
 const cnt=k=>BANK.filter(q=>q.k===k).length;
 $("bankInfo").textContent="题库 "+BANK.length+" 题：PSLE 真题 2012–2023 "+cnt("PSLE")+" 题 · 2020–2023 各校预考 "+cnt("预考")+" 题 · P5 练习卷 "+cnt("练习卷")+" 题 · 小五 EOY 考卷 "+cnt("EOY")+" 题。";
+try{if(window.self!==window.top)$("embedNote").classList.remove("hidden")}catch(e){$("embedNote").classList.remove("hidden")}
 load();renderHome();connectDb();checkPersist().then(()=>{if($("parentBox").open)renderParent()});
 </script>
 </body>
