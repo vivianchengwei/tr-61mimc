@@ -1,0 +1,21 @@
+{
+ "name": "唐僧华文口试练习三四年级",
+ "short_name": "唐僧口试",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#F1F6FA",
+ "theme_color": "#D2452F",
+ "icons": [
+  {
+   "src": "icon-180.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}
