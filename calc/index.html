@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="避坑闯关">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex,nofollow">
+<title>计算避坑闯关 · PSLE Calculation Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2e2216; --ink2:#5a4632; --paper:rgba(252,248,238,.84); --paper2:#f7efdc; --line:rgba(94,66,38,.28);
+  --red:#b8312a; --red2:#8f2019; --gold:#b48a3a; --jade:#3f6b55; --jade2:#2f5443; --indigo:#2d4656; --bad:#a3392f; --good:#2f6b46;
+  --serif:'Noto Serif SC','Songti SC','SimSun',serif; --cal:'Ma Shan Zheng','STKaiti','KaiTi',serif; --en:'Cormorant Garamond','Noto Serif SC',serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--serif);color:var(--ink);font-size:17px;line-height:1.6;min-height:100vh;background:#e9dbbb}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+#bg svg{width:100%;height:100%;display:block}
+.cal{font-family:var(--cal);font-weight:400}
+a{color:inherit}
+/* language */
+.lang-zh .en,.lang-en .zh{display:none!important}
+.lang-bi div.en{font-family:var(--en);font-size:.93em;color:var(--ink2);font-style:italic;margin-top:.15em}
+.lang-bi span.en::before{content:" · ";color:var(--gold);font-style:normal}
+.lang-bi span.en{font-family:var(--en);font-style:italic}
+.lang-en div.en,.lang-en span.en{font-family:var(--en);font-size:1.06em}
+.lang-bi .ask span.en,.lang-bi .tag span.en,.lang-bi .btn span.en{font-style:normal}
+/* header */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 18px;background:linear-gradient(#2d4656,#263c4a);color:#f6ecd6;border-bottom:3px solid var(--gold);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.seal{display:grid;place-items:center;width:40px;height:40px;background:var(--red);color:#fbe9d0;font-family:var(--cal);font-size:26px;border-radius:5px;box-shadow:inset 0 0 0 2px rgba(251,233,208,.7)}
+.tt b{display:block;font-family:var(--cal);font-weight:400;font-size:25px;line-height:1.1;letter-spacing:2px}
+.tt small{font-family:var(--en);font-style:italic;font-size:14px;opacity:.85}
+.tools{display:flex;align-items:center;gap:14px}
+#starsum{display:flex;align-items:center;gap:6px;font-size:18px}
+#starsum .sm{font-size:14px;opacity:.8;margin-left:4px}
+.lang{display:flex;border:1px solid rgba(246,236,214,.45);border-radius:20px;overflow:hidden}
+.lang button{background:none;border:0;color:#f6ecd6;padding:5px 12px;font:inherit;font-size:14px;cursor:pointer}
+.lang button.on{background:var(--gold);color:#2b1e0f}
+/* layout */
+.wrap{position:relative;z-index:1;display:grid;grid-template-columns:250px minmax(0,1fr);gap:22px;max-width:1240px;margin:0 auto;padding:20px 18px 60px}
+#nav{position:sticky;top:76px;align-self:start;max-height:calc(100vh - 92px);overflow:auto;background:rgba(250,244,230,.8);border:1px solid var(--line);border-radius:8px;padding:10px;backdrop-filter:blur(3px);box-shadow:0 6px 18px rgba(60,40,20,.12)}
+.navhome{display:block;padding:7px 10px;border-radius:6px;text-decoration:none;font-weight:600;margin-bottom:4px}
+.navhome.on,.np.on{background:var(--red);color:#fff6e8}
+.nmod{margin-top:8px}
+.nmt{font-size:13px;color:var(--jade2);font-weight:700;padding:4px 6px;border-bottom:1px dashed var(--line);margin-bottom:3px}
+.np{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:6px;text-decoration:none;font-size:14.5px;line-height:1.3}
+.np:hover{background:rgba(180,138,58,.15)}
+.np.on:hover{background:var(--red)}
+.nno{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--indigo);color:#f6ecd6}
+.np.on .nno{background:#fff6e8;color:var(--red)}
+.nlab{flex:1}
+.lang-bi .nlab span.en{display:block;font-size:12px;opacity:.75}
+.lang-bi .nlab span.en::before{content:none}
+.nstar{display:flex;align-items:center;font-size:11px}
+.nbest{font-size:11px;opacity:.7}
+main{min-width:0}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px 24px;margin-bottom:18px;box-shadow:0 8px 24px rgba(60,40,20,.13);position:relative}
+.panel::before{content:"";position:absolute;inset:5px;border:1px solid rgba(180,138,58,.25);border-radius:5px;pointer-events:none}
+h1,h2{margin:.1em 0 .4em;line-height:1.3}
+h1{font-size:1.5rem}
+h2{font-size:1.2rem;color:var(--jade2)}
+/* home */
+.hero{text-align:center;padding:26px 24px}
+.hero h1{font-size:3rem;color:var(--red2);letter-spacing:6px;margin:0}
+.hero-e{font-family:var(--en);font-style:italic;font-size:1.25rem;color:var(--ink2);margin-bottom:12px}
+.hero>.zh,.hero>.en{max-width:760px;margin-left:auto;margin-right:auto}
+.hero-rules{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 4px;margin:16px 0 8px;font-size:15px}
+.hero-rules>.pill{background:rgba(63,107,85,.1);border:1px solid rgba(63,107,85,.3);border-radius:20px;padding:3px 12px}
+.hero-rules i{display:none}
+.hero-s{text-align:center;margin-top:10px;line-height:2}
+.hero-s svg{vertical-align:middle}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.tile{display:block;text-decoration:none;background:var(--paper2);border:1px solid var(--line);border-radius:8px;padding:12px 14px;transition:transform .15s,box-shadow .15s;border-left:4px solid var(--jade)}
+.tile:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(60,40,20,.15);border-left-color:var(--red)}
+.tno{font-size:13px;color:var(--red2);font-weight:700}
+.ttl{font-size:15px;line-height:1.45;margin:3px 0 6px}
+.tst{display:flex;align-items:center;gap:4px;font-size:13px;color:var(--ink2)}
+.tst .new{opacity:.6}
+/* point */
+.crumb{font-size:14px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pn{margin-left:auto;display:flex;gap:12px}
+.pn a{text-decoration:none;color:var(--jade2);font-weight:600}
+.rule{background:rgba(184,49,42,.06);border-left:4px solid var(--red);padding:10px 14px;border-radius:4px;margin-top:6px}
+.freq{margin-top:10px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{background:rgba(163,57,47,.1);border:1px solid rgba(163,57,47,.3);border-radius:14px;padding:1px 10px;font-size:13px}
+.chip span.en::before{content:" "}
+.sech{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sech h2{margin:0}
+.meta{display:flex;align-items:center;gap:14px;font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:13px;height:13px;border-radius:50%;margin:0 2px;border:1.5px solid var(--ink2);vertical-align:middle}
+.dot.ok{background:var(--red);border-color:var(--red)}
+.dot.fx{background:var(--gold);border-color:var(--gold)}
+.dot.no{background:#bfb3a0;border-color:#9b8d78}
+.qbox{background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:14px 16px;margin:12px 0}
+.ask{font-size:15px;color:var(--ink2);margin-bottom:4px}
+.expr{font-size:1.4rem;line-height:2;margin:4px 0}
+.ex{display:inline-flex;flex-wrap:wrap;align-items:center;row-gap:.25em;vertical-align:middle}
+.nm{display:inline-flex;align-items:center;white-space:nowrap}
+.op{margin:0 .32em;color:var(--red2);font-weight:600}
+.pa{margin:0 .08em;font-size:1.1em}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.82em;line-height:1.15;margin:0 .12em;text-align:center}
+.fr>span{padding:0 .18em;display:block}
+.fr>span:first-child{border-bottom:1.6px solid currentColor}
+.mx{display:inline-flex;align-items:center}
+.mx .fr{margin-left:.05em}
+.rd{position:relative;display:inline-block}
+.rd::after{content:"";position:absolute;left:50%;top:.02em;width:.2em;height:.2em;border-radius:50%;background:currentColor;transform:translateX(-50%)}
+.un{font-size:.78em;margin-left:.15em;color:var(--jade2)}
+.var{font-family:'Times New Roman',serif;font-style:italic;font-size:1.08em;margin:0 .03em}
+sup{font-size:.62em}
+.qbody .zh,.qbody .en{line-height:1.9}
+.qbody .ex{font-size:1.08em}
+.wrongway,.rightway{border-radius:6px;padding:12px 16px;margin:10px 0}
+.wrongway{background:rgba(163,57,47,.07);border:1px dashed rgba(163,57,47,.45)}
+.rightway{background:rgba(47,107,70,.07);border:1px solid rgba(47,107,70,.35)}
+.tag{font-weight:700;margin-bottom:4px}
+.tag.bad{color:var(--bad)} .tag.good{color:var(--good)}
+.tv{margin-top:6px} .tv s{text-decoration-color:var(--bad);text-decoration-thickness:2px}
+.sol{font-size:1.05rem}
+.sol .row{display:flex;align-items:center;flex-wrap:wrap;gap:.2em;padding:3px 0;line-height:2}
+.eqs{color:var(--jade2);font-weight:700;margin-right:.45em;width:1em;display:inline-block}
+.note{background:rgba(180,138,58,.12);border-radius:5px;padding:6px 10px;margin:4px 0 8px;font-size:.95rem;line-height:1.9}
+.final{margin-top:8px;font-size:1.08rem}
+.final b{color:var(--red2)}
+.exfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+.tip{font-size:14px;color:var(--ink2);margin:8px 0 12px}
+.btn{display:inline-flex;align-items:center;gap:4px;background:var(--red);color:#fff6e8;border:0;border-radius:22px;padding:9px 18px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;box-shadow:0 3px 0 var(--red2);transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--red2)}
+.btn.ghost{background:transparent;color:var(--red2);border:1.5px solid var(--red);box-shadow:none}
+.btn.sm{padding:5px 14px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:default}
+.lang-bi .btn span.en{font-size:.9em;opacity:.9}
+.lnk{background:none;border:0;color:var(--jade2);text-decoration:underline;font:inherit;font-size:14px;cursor:pointer;padding:0 4px}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{position:relative;background:#fffcf4;border:1px solid var(--line);border-radius:8px;padding:14px 16px 12px;transition:border-color .2s, box-shadow .2s}
+.card.right{border-color:rgba(184,49,42,.55);box-shadow:0 0 0 2px rgba(184,49,42,.12)}
+.card.wrong{border-color:rgba(163,57,47,.4)}
+.card.fixed{border-color:rgba(180,138,58,.6)}
+.cno{font-size:13px;font-weight:700;color:var(--indigo)}
+.stamp{position:absolute;top:-14px;right:-10px;pointer-events:none}
+.stamp svg{animation:pop .55s cubic-bezier(.2,1.6,.4,1) both;filter:drop-shadow(0 3px 4px rgba(120,20,10,.35))}
+@keyframes pop{0%{transform:scale(0) rotate(-40deg);opacity:0}100%{transform:scale(1) rotate(12deg);opacity:1}}
+.qbody{margin:4px 0 10px;font-size:1.02rem}
+.qbody .expr{font-size:1.22rem}
+.ansrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ans{flex:1;min-width:120px;font:inherit;font-size:1.15rem;padding:7px 12px;border:1.5px solid var(--ink2);border-radius:6px;background:#fffef9;color:var(--ink)}
+.ans:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(184,49,42,.15)}
+.ans[readonly]{background:#f3ecdc}
+.pre,.unit{font-size:1.1rem;color:var(--ink2)}
+.keys{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.key{background:var(--paper2);border:1px solid var(--line);border-radius:5px;padding:2px 10px;font:inherit;font-size:14px;cursor:pointer;min-width:34px}
+.key:disabled{opacity:.4}
+.lang-bi .key span.en{display:none}
+.msg{margin-top:8px;padding:8px 12px;border-radius:6px;font-size:.96rem;line-height:1.7}
+.msg.good{background:rgba(184,49,42,.08);color:var(--red2);font-weight:600}
+.msg.bad{background:rgba(163,57,47,.07);border-left:4px solid var(--bad)}
+.msg.warn{background:rgba(180,138,58,.14)}
+.msg .acts{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.lang-bi .msg span.en{display:block}
+.lang-bi .msg span.en::before{content:none}
+.lang-bi .msg .lnk span.en,.lang-bi .msg .btn span.en{display:inline}
+.lang-bi .msg .lnk span.en::before,.lang-bi .msg .btn span.en::before{content:" · "}
+.lang-bi .msg .mh span.en{display:inline;font-style:normal}
+.lang-bi .msg .mh span.en::before{content:" · "}
+.msg .mh{display:block;margin-bottom:2px}
+.lang-bi .hero-rules .pill span.en{font-size:.92em}
+.sol.hide{display:none}
+.card .sol{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;font-size:.98rem}
+.soltt{font-weight:700;color:var(--jade2);font-size:14px}
+.sum{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:16px;padding:14px 18px;border-radius:8px;background:var(--paper2);border:1px solid var(--line)}
+.sum.perfect{background:linear-gradient(135deg,#fde9df,#f8e3b9);border-color:var(--red)}
+.sc{font-size:2.4rem;font-weight:700;color:var(--red2);line-height:1}
+.sc b{font-size:3rem}
+.sx{flex:1;min-width:220px}
+.tm{font-size:14px;color:var(--ink2);margin-top:4px;font-variant-numeric:tabular-nums}
+.sa{display:flex;gap:10px;flex-wrap:wrap}
+/* overlay */
+#overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;opacity:0;transition:opacity .25s}
+#overlay.show{opacity:1}
+#overlay[hidden]{display:none}
+.ov-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,240,210,.92),rgba(60,30,10,.75))}
+.ov-in{position:relative;text-align:center;padding:20px}
+.ov-in .big{position:relative;animation:bigin 1s cubic-bezier(.2,1.5,.4,1) both, wob 3s ease-in-out 1s infinite;filter:drop-shadow(0 10px 20px rgba(140,20,10,.5))}
+@keyframes bigin{0%{transform:scale(0) rotate(-200deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes wob{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.05)}}
+.rays{position:absolute;left:50%;top:150px;width:560px;height:560px;margin:-280px 0 0 -280px;background:repeating-conic-gradient(rgba(243,198,79,.5) 0 8deg,transparent 8deg 22deg);border-radius:50%;-webkit-mask:radial-gradient(circle,#000 25%,transparent 68%);mask:radial-gradient(circle,#000 25%,transparent 68%);animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ov-t{position:relative;font-size:3.2rem;color:var(--red2);margin-top:4px;text-shadow:0 2px 0 #fff3dc}
+.ov-e{position:relative;font-family:var(--en);font-style:italic;font-size:1.6rem;color:#5a3a1a}
+.ov-b{position:relative;display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.cf{position:absolute;top:-40px;left:var(--x);font-style:normal;color:#d8312a;font-size:calc(22px * var(--s));animation:fall 3.2s linear var(--d) infinite;opacity:.9}
+.cf:nth-child(3n){color:#e9a3b2}.cf:nth-child(4n){color:#e3b341}
+@keyframes fall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(110vh) rotate(var(--r))}}
+/* responsive */
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr;padding:12px 10px 50px}
+  #nav{position:static;max-height:none;display:flex;gap:8px;overflow-x:auto;padding:8px}
+  .nmod{margin:0;display:flex;gap:4px;align-items:center;flex:none}
+  .nmt{border:0;margin:0;white-space:nowrap;font-size:12px}
+  .lang-bi .nmt span.en{display:none}
+  .np{flex:none;white-space:nowrap}
+  .lang-bi .nlab span.en{display:none}
+  .navhome{flex:none;margin:0;white-space:nowrap}
+  .cards{grid-template-columns:1fr}
+  .hero h1{font-size:2.2rem}
+  .tt small{display:none}
+  .panel{padding:16px 14px}
+}
+@media (max-width:520px){ .tt b{font-size:18px;letter-spacing:0;white-space:nowrap} .seal{width:32px;height:32px;font-size:21px} .top{padding:8px 10px} .tools{gap:8px} .lang button{padding:4px 8px;white-space:nowrap} #starsum .sm{display:none} .expr{font-size:1.2rem} .ov-t{font-size:2.3rem} }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+
+/* ================= v2 game layer ================= */
+.wrap{display:block;max-width:1060px}
+.tools{gap:10px}
+#hud{display:flex;align-items:center;gap:10px}
+.rk{display:flex;align-items:center;gap:8px;background:rgba(246,236,214,.1);border:1px solid rgba(246,236,214,.3);border-radius:20px;padding:3px 12px 3px 10px;font-size:13px;white-space:nowrap}
+.rk .rt{font-family:var(--cal);font-size:21px;color:#f3c64f;line-height:1}
+.xpbar{width:64px;height:6px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#f3c64f,#e3261b);border-radius:3px}
+.gc{display:flex;align-items:center;gap:3px;font-size:16px;font-weight:700;white-space:nowrap}
+.gc svg{width:20px;height:26px}
+.ib{background:none;border:1px solid rgba(246,236,214,.45);color:#f6ecd6;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:15px;line-height:1;padding:0;flex:none}
+.btn.gold{background:var(--gold);box-shadow:0 3px 0 #7e5f22;color:#2b1e0f}
+.btn.jade{background:var(--jade);box-shadow:0 3px 0 var(--jade2)}
+.btn.big{padding:12px 24px;font-size:17px}
+.lang-bi .btn.big span.en{font-size:.82em}
+/* home */
+.hero2{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:18px;align-items:center;padding:22px 26px}
+.hero2 h1{font-size:2.9rem;color:var(--red2);letter-spacing:5px;margin:0;line-height:1.15}
+.hero2 .hero-e{margin:0 0 8px}
+.hero2 .intro{max-width:640px}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.stat{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:8px 14px;min-width:118px}
+.stat .v{font-size:1.45rem;font-weight:700;color:var(--red2);line-height:1.15;display:flex;align-items:baseline;gap:6px}
+.stat .v .cal{font-size:1.7rem;font-weight:400}
+.stat .v small{font-size:.8rem;color:var(--ink2);font-weight:400}
+.stat .l{font-size:12.5px;color:var(--ink2)}
+.stat .xpbar{width:100%;background:rgba(94,66,38,.15);margin-top:4px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.hero-g{text-align:center}
+.hero-g svg{width:120px;height:160px;filter:drop-shadow(0 8px 10px rgba(80,50,10,.3));animation:sway 4s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.hero-g .cnt{font-size:1.6rem;font-weight:700;color:var(--red2);line-height:1}
+.hero-g .cnt small{font-size:.9rem;color:var(--ink2)}
+/* map */
+.map{position:relative;margin:6px auto 0;max-width:780px}
+.map svg.path{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.node{position:absolute;transform:translate(-50%,-50%);text-align:center;text-decoration:none;width:156px;z-index:1}
+.av{width:100px;height:100px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 38%,#fffaf0,#ecdcbb);border:3px solid rgba(94,66,38,.35);display:grid;place-items:center;position:relative;transition:transform .15s;box-shadow:0 6px 14px rgba(60,40,20,.2)}
+.node:hover .av{transform:scale(1.07) rotate(-3deg)}
+.node.cap .av{border-color:var(--red);background:radial-gradient(circle at 50% 38%,#fff3e6,#f2d2bd)}
+.node.nx .av{border-color:var(--gold);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(180,138,58,.7)}50%{box-shadow:0 0 0 14px rgba(180,138,58,0)}}
+.av svg{width:88px;height:88px}
+.nl{margin-top:5px;font-size:14px;line-height:1.3;background:rgba(252,248,238,.92);border:1px solid var(--line);border-radius:8px;padding:3px 8px;display:inline-block}
+.nl b{display:block}
+.nl small{display:block;font-size:12px;color:var(--ink2)}
+.lang-bi .nl span.en::before{content:none}
+.lang-bi .nl span.en{display:block;font-size:11.5px}
+.seal-s{position:absolute;right:-6px;bottom:-2px;background:var(--red);color:#fbe9d0;font-family:var(--cal);font-size:17px;width:32px;height:32px;border-radius:5px;display:grid;place-items:center;transform:rotate(10deg);box-shadow:inset 0 0 0 1.5px rgba(251,233,208,.75),0 2px 4px rgba(0,0,0,.25)}
+.seal-s i{font-style:normal;position:absolute;top:-8px;right:-8px;background:#2d4656;color:#fff;font-family:var(--serif);font-size:11px;border-radius:9px;padding:0 5px;line-height:17px;transform:rotate(-10deg)}
+.nxtag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:#2b1e0f;font-size:12px;font-weight:700;padding:1px 9px;border-radius:10px;white-space:nowrap;z-index:2}
+.lang-bi .nxtag span.en{display:none}
+.region{position:absolute;left:50%;transform:translate(-50%,-50%);background:linear-gradient(#2d4656,#263c4a);color:#f6ecd6;padding:5px 20px;border-radius:4px;font-size:14px;white-space:nowrap;box-shadow:0 3px 0 #1c2c36;border:1px solid var(--gold);z-index:1}
+.region b{font-family:var(--cal);font-weight:400;font-size:20px;margin-right:6px;color:#f3c64f}
+/* foe header on trap page */
+.crumb a{color:var(--jade2);font-weight:600;text-decoration:none}
+.fh{display:flex;gap:20px;align-items:center;margin-top:6px}
+.fh-mon{flex:none}
+.fh-mon svg{width:160px;height:160px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.fh-txt{min-width:0;flex:1}
+.fh-name{font-size:2.4rem;color:var(--red2);line-height:1.05}
+.fh-en{font-family:var(--en);font-style:italic;color:var(--ink2);font-size:1.15rem}
+.bubble{position:relative;display:inline-block;background:#fffefa;border:2px solid var(--ink);border-radius:14px;padding:6px 14px;margin:10px 0 6px 10px;font-size:15.5px;line-height:1.55}
+.bubble::before{content:"";position:absolute;left:-11px;top:14px;border:9px solid transparent;border-right-color:var(--ink);border-left:0}
+.bubble::after{content:"";position:absolute;left:-7px;top:15px;border:8px solid transparent;border-right-color:#fffefa;border-left:0}
+.lang-bi .bubble div.en{margin-top:0}
+.fh-trap{font-size:1.05rem;margin:4px 0 0;color:var(--ink)}
+.fh-trap div.en{font-size:.95em}
+.rule b.k{color:var(--red2)}
+.rec{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:14px}
+.rec .chip.g{background:rgba(63,107,85,.12);border-color:rgba(63,107,85,.35)}
+details.scout{padding-top:14px;padding-bottom:14px}
+details.scout>summary{cursor:pointer;list-style:none;font-size:1.15rem;font-weight:700;color:var(--jade2);display:flex;align-items:center;gap:8px}
+details.scout>summary::-webkit-details-marker{display:none}
+details.scout>summary::after{content:"▾";margin-left:auto;transition:transform .2s;color:var(--ink2)}
+details.scout:not([open])>summary::after{transform:rotate(-90deg)}
+details.scout>summary small{font-weight:400;color:var(--ink2);font-size:13px}
+#exm{margin-top:8px}
+/* arena */
+.arena{background:linear-gradient(180deg,rgba(45,70,86,.10),rgba(252,248,238,.9) 160px)}
+.stage{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start;margin-top:12px}
+.foe{position:sticky;top:84px;text-align:center}
+.foe-svg svg{width:190px;height:190px;display:block;margin:0 auto}
+.foe-svg{animation:bob 2.4s ease-in-out infinite}
+.foe-nm b{font-size:1.5rem;color:var(--red2)}
+.foe-nm span.en{font-family:var(--en);font-style:italic;font-size:.95rem;color:var(--ink2)}
+.lang-bi .foe-nm span.en::before{content:" · "}
+.hp{display:flex;gap:4px;justify-content:center;margin:6px 0 2px}
+.hp i{width:26px;height:13px;border-radius:3px;background:linear-gradient(#ef4b3a,#b8312a);border:1.5px solid var(--red2);transition:background .3s,transform .3s,opacity .3s}
+.hp i.gone{background:#ddd1bb;border-color:#b5a78f;transform:scale(.8);opacity:.7}
+.hpl{font-size:12px;color:var(--ink2)}
+.foe.hit .foe-svg{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px) rotate(-6deg)}40%{transform:translateX(9px) rotate(5deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.foe.hit .foe-svg svg{filter:drop-shadow(0 0 12px rgba(227,38,27,.85)) brightness(1.12)}
+.foe.laugh .foe-svg{animation:hop .45s 3}
+@keyframes hop{50%{transform:translateY(-16px) scale(1.04)}}
+.foe.run .foe-svg{animation:run 1.1s forwards}
+@keyframes run{30%{transform:translateY(-12px)}100%{transform:translateX(220px) rotate(25deg);opacity:0}}
+.say{font-size:14.5px;background:#fffefa;border:2px solid var(--ink);border-radius:12px;padding:7px 11px;position:relative;margin-top:12px;text-align:left;line-height:1.6}
+.say::before{content:"";position:absolute;top:-10px;left:50%;margin-left:-9px;border:9px solid transparent;border-bottom-color:var(--ink);border-top:0}
+.say::after{content:"";position:absolute;top:-6px;left:50%;margin-left:-8px;border:8px solid transparent;border-bottom-color:#fffefa;border-top:0}
+.say:empty{display:none}
+.lang-bi .say span.en{display:block;font-size:.92em;color:var(--ink2)}
+.lang-bi .say span.en::before{content:none}
+.fx{position:absolute;left:50%;top:70px;pointer-events:none;z-index:3}
+.dmg{position:absolute;left:0;transform:translateX(-50%);font-weight:800;font-size:30px;color:var(--red);text-shadow:0 2px 0 #fff,0 0 6px #fff;animation:up 1.1s forwards;white-space:nowrap}
+.dmg.xp{font-size:17px;color:#9a6a12;top:34px}
+@keyframes up{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.25)}100%{opacity:0;transform:translate(-50%,-64px) scale(1)}}
+.qhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:28px}
+.qhead .cno{font-size:14px}
+.combo{margin-left:auto;font-weight:800;color:#fff;background:linear-gradient(135deg,#e3261b,#f39c1f);padding:2px 12px;border-radius:14px;font-size:14px;animation:pop .4s cubic-bezier(.2,1.6,.4,1);box-shadow:0 2px 6px rgba(227,38,27,.35)}
+.lang-bi .combo span.en{display:none}
+.src{font-size:13px;display:inline-flex;align-items:center;gap:4px;background:rgba(45,70,86,.08);border-radius:14px;padding:1px 10px 1px 2px}
+.src svg{width:26px;height:26px}
+.lang-bi .src span.en{display:none}
+.duel .card{padding:16px 18px 14px}
+.duel .qbody .expr{font-size:1.35rem}
+.card.shake{animation:shake .45s}
+.nextrow{margin-top:12px;display:flex;justify-content:flex-end}
+.nextrow:empty{display:none}
+#dots .dot.cur{box-shadow:0 0 0 3px rgba(180,138,58,.45)}
+.sum .sa .btn{white-space:nowrap}
+.sum.escape{background:linear-gradient(135deg,#efe6d2,#f7efdc)}
+/* daily */
+.dh{display:flex;gap:18px;align-items:center}
+.dh svg{width:130px;height:130px;flex:none;animation:bob 2.4s ease-in-out infinite}
+.cal7{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.cal7 span{width:38px;text-align:center;font-size:11px;color:var(--ink2)}
+.cal7 span i{display:grid;place-items:center;width:30px;height:30px;margin:0 auto 2px;border-radius:5px;border:1.5px dashed var(--line);font-style:normal;font-family:var(--cal);font-size:16px}
+.cal7 span i.on{background:var(--red);border:0;color:#fbe9d0;box-shadow:inset 0 0 0 1.5px rgba(251,233,208,.7)}
+.cal7 span i.gold{background:var(--gold);color:#2b1e0f}
+/* dex */
+.dex{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.dc{background:var(--paper2);border:1px solid var(--line);border-radius:10px;padding:12px 12px 10px;text-align:center;text-decoration:none;position:relative;transition:transform .15s,box-shadow .15s}
+.dc:hover{transform:translateY(-3px);box-shadow:0 8px 16px rgba(60,40,20,.18)}
+.dc.cap{background:linear-gradient(160deg,#fff6ea,#f6e3c8);border-color:rgba(184,49,42,.5)}
+.dc svg{width:104px;height:104px}
+.dc .no{position:absolute;left:10px;top:8px;font-size:12px;color:var(--ink2)}
+.dc .nm2{font-family:var(--cal);font-size:1.6rem;color:var(--red2);line-height:1.1}
+.dc .ne{font-family:var(--en);font-style:italic;font-size:.9rem;color:var(--ink2)}
+.dc .ds{font-size:13px;margin-top:6px;line-height:1.5;color:var(--ink)}
+.dc .dk{font-size:12px;margin-top:6px;color:var(--ink2)}
+.dc .seal-s{right:10px;top:10px;bottom:auto}
+.lang-bi .dc .ds span.en{display:block;font-size:.9em}
+.lang-bi .dc .ds span.en::before{content:none}
+.dexsum{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.dexbar{flex:1;min-width:180px;height:12px;border-radius:6px;background:rgba(94,66,38,.15);overflow:hidden}
+.dexbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--red))}
+/* capture overlay */
+.cap-stage{position:relative;width:260px;height:310px;margin:0 auto}
+.cap-mon{position:absolute;left:50%;top:0;width:150px;margin-left:-75px;animation:suck 1.3s .6s cubic-bezier(.55,0,.85,.35) forwards}
+.cap-mon svg{width:150px;height:150px}
+@keyframes suck{0%{transform:none}25%{transform:translateY(-14px) scale(1.06)}100%{transform:translateY(150px) scale(0) rotate(720deg);opacity:0}}
+.cap-gourd{position:absolute;left:50%;bottom:0;width:130px;margin-left:-65px;transform-origin:50% 90%;animation:gshake .5s 1.9s 3}
+.cap-gourd svg{width:130px;height:173px}
+@keyframes gshake{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+.cap-seal{position:absolute;right:-6px;bottom:24px;opacity:0;animation:stamp .35s 3.3s forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(2.6) rotate(-25deg)}100%{opacity:1;transform:scale(1) rotate(12deg)}}
+.cap-seal span{display:grid;place-items:center;width:82px;height:82px;background:var(--red);color:#fbe9d0;font-family:var(--cal);font-size:30px;line-height:1;border-radius:8px;box-shadow:inset 0 0 0 3px rgba(251,233,208,.75),0 4px 10px rgba(120,20,10,.4)}
+.ov-late{position:relative;opacity:0;animation:fadein .5s 3.5s forwards}
+@keyframes fadein{to{opacity:1}}
+#overlay .rays{top:155px}
+/* toast */
+#toast{position:fixed;left:50%;top:84px;transform:translate(-50%,-30px);z-index:60;background:linear-gradient(135deg,#2d4656,#1f3340);color:#f6ecd6;border:2px solid var(--gold);border-radius:12px;padding:10px 22px;font-size:17px;opacity:0;transition:all .35s;pointer-events:none;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toast b{font-family:var(--cal);font-weight:400;font-size:28px;color:#f3c64f;margin:0 4px}
+@media (max-width:820px){
+  .stage{grid-template-columns:1fr}
+  .foe{position:relative;top:0;display:grid;grid-template-columns:112px minmax(0,1fr);gap:10px;text-align:left;align-items:center}
+  .foe-svg svg{width:112px;height:112px}
+  .hp{justify-content:flex-start}
+  .say{margin-top:6px}
+  .say::before,.say::after{display:none}
+  .fx{left:56px;top:30px}
+  .hero2{grid-template-columns:1fr}
+  .hero-g{display:none}
+}
+@media (max-width:600px){
+  .hero2 h1{font-size:2.1rem;letter-spacing:2px}
+  .fh{gap:10px}
+  .fh-mon svg{width:96px;height:96px}
+  .fh-name{font-size:1.8rem}
+  .bubble{margin-left:0;font-size:14px}
+  .node{width:122px}
+  .av{width:76px;height:76px}
+  .av svg{width:66px;height:66px}
+  .nl{font-size:12.5px;padding:2px 6px}
+  .lang-bi .nl span.en{display:none}
+  .region{font-size:12.5px;padding:4px 12px}
+  .region b{font-size:17px}
+  .rk .xpbar,.rk .rx{display:none}
+  .tt small{display:none}
+  .stat{min-width:0;flex:1 1 40%}
+  .dh svg{width:90px;height:90px}
+  .dex{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dc svg{width:80px;height:80px}
+  .dc .nm2{font-size:1.3rem}
+}
+@media (max-width:420px){ .rk{display:none} .tt b{font-size:17px} }
+
+#toast span.en::before{content:none}
+#toast span.zh+span.en{display:block;font-size:14px}
+@media (max-width:600px){details.scout>summary small{display:none}}
+@media (max-width:440px){ .top{padding:8px 8px} .tools{gap:6px} #hud{gap:6px} .lang button{padding:4px 6px;font-size:13px} .seal{width:28px;height:28px;font-size:18px} .brand{gap:6px} .tt b{font-size:16px} .ib{width:28px;height:28px;font-size:13px} }
+@media (max-width:600px){ .lang-bi .btn.big span.en{display:none} .btn.big{padding:11px 18px;font-size:16px} }
+/* v3 parent page */
+.nag{margin-top:12px;font-size:14px;background:rgba(180,138,58,.14);border-left:4px solid var(--gold);padding:6px 12px;border-radius:4px}
+.nag a{color:var(--red2);font-weight:600}
+.pnote{background:var(--paper2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:14.5px;line-height:1.7}
+textarea.bk{display:block;width:100%;min-height:70px;margin-top:10px;font:13px/1.4 ui-monospace,Menlo,monospace;padding:8px;border:1.5px solid var(--ink2);border-radius:6px;background:#fffef9;color:var(--ink);word-break:break-all}
+.lday{border-top:1px dashed var(--line);padding:8px 0}
+.ldh{font-size:15px;margin-bottom:4px}
+.lr{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:14px;padding:3px 0 3px 10px}
+.lt{color:var(--ink2);font-variant-numeric:tabular-nums}
+.ln{min-width:150px}
+.ls{font-weight:700;color:var(--ink2)}
+.ls.ok{color:var(--red2)}
+.lm{font-size:13px;color:var(--ink2)}
+.lw{font-size:13.5px;line-height:1.7;margin:2px 0 6px 24px;padding:6px 10px;background:rgba(163,57,47,.06);border-radius:6px}
+.lw s{text-decoration-color:var(--bad)}
+textarea.bk[hidden]{display:none}
+</style>
+</head>
+<body class="lang-bi">
+<div id="bg"></div>
+<header class="top">
+  <a class="brand" href="#home"><span class="seal">算</span><span class="tt"><b>计算避坑闯关</b><small>PSLE Calculation Quest</small></span></a>
+  <div class="tools"><div id="hud"></div><button class="ib" id="snd" type="button" aria-label="sound">🔊</button><div class="lang"><button data-l="bi">双语</button><button data-l="zh">中文</button><button data-l="en">EN</button></div></div>
+</header>
+<div class="wrap"><main id="main"></main></div>
+<div id="overlay" hidden></div>
+<div id="toast"></div>
+<script>
+/* ================= ENGINE: exact fractions, tokens, step-by-step evaluation, generators ================= */
+const rnd = Math.random;
+const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const pick = a => a[Math.floor(rnd() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a || 1; };
+const lcm = (a, b) => a / gcd(a, b) * b;
+
+class F {
+  constructor(n, d = 1) {
+    if (d === 0 || !Number.isFinite(n) || !Number.isFinite(d)) throw new Error('F');
+    if (!Number.isInteger(n) || !Number.isInteger(d)) {
+      let k = 1; while ((!Number.isInteger(Math.round(n * k * 1e6) / 1e6) || !Number.isInteger(Math.round(d * k * 1e6) / 1e6)) && k < 1e9) k *= 10;
+      n = Math.round(n * k); d = Math.round(d * k);
+    }
+    if (d < 0) { n = -n; d = -d; }
+    const g = gcd(n, d); this.n = n / g; this.d = d / g;
+    if (Math.abs(this.n) > 4e14 || this.d > 4e14) throw new Error('big');
+  }
+  static dec(s) {
+    s = String(s).trim(); const neg = s[0] === '-'; if (neg) s = s.slice(1);
+    const [a, b = ''] = s.split('.'); const d = 10 ** b.length;
+    return new F((neg ? -1 : 1) * (parseInt(a || '0', 10) * d + parseInt(b || '0', 10)), d);
+  }
+  add(o) { const L = lcm(this.d, o.d); return new F(this.n * (L / this.d) + o.n * (L / o.d), L); }
+  sub(o) { const L = lcm(this.d, o.d); return new F(this.n * (L / this.d) - o.n * (L / o.d), L); }
+  mul(o) { const g1 = gcd(this.n, o.d), g2 = gcd(o.n, this.d); return new F((this.n / g1) * (o.n / g2), (this.d / g2) * (o.d / g1)); }
+  div(o) { if (o.n === 0) throw new Error('div0'); return this.mul(new F(o.d, o.n)); }
+  eq(o) { return o instanceof F && this.n === o.n && this.d === o.d; }
+  get int() { return this.d === 1; }
+  get neg() { return this.n < 0; }
+  term() { let d = this.d; while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d === 1; }
+  num() { return this.n / this.d; }
+  dec() {
+    if (!this.term()) return null;
+    let k = 0, p = 1; while (p % this.d !== 0) { p *= 10; k++; }
+    let s = String(Math.abs(this.n) * (p / this.d));
+    if (k > 0) { s = s.padStart(k + 1, '0'); s = s.slice(0, s.length - k) + '.' + s.slice(s.length - k); }
+    return (this.n < 0 ? '-' : '') + s;
+  }
+  dp() { const s = this.dec(); if (s === null) return 99; const i = s.indexOf('.'); return i < 0 ? 0 : s.length - i - 1; }
+  p10(k) { return k >= 0 ? this.mul(new F(10 ** k)) : this.div(new F(10 ** (-k))); }
+}
+const fi = n => new F(n);
+
+/* ---------- bilingual helpers ---------- */
+const S2 = (z, e) => `<span class="zh">${z}</span><span class="en">${e}</span>`;
+const B2 = (z, e) => `<div class="zh">${z}</div><div class="en">${e}</div>`;
+const T_ = (id, z, e, v) => ({ id, v, m: [z, e] });
+
+/* ---------- tokens ---------- */
+const N = (v, fmt, x = {}) => Object.assign({ k: 'n', v, fmt, orig: true }, x);
+const I = n => N(fi(n), 'int');
+const D = s => { const v = F.dec(String(s)); return N(v, v.int ? 'int' : 'dec'); };
+const NV = (v, x = {}) => N(v, v.int ? 'int' : (v.term() ? 'dec' : 'frac'), x);
+const Q = (n, d) => N(new F(n, d), 'frac', { sn: n, sd: d });
+const MX = (w, n, d) => N(new F(w * d + n, d), 'mixed', { w, sn: n, sd: d });
+const OP = o => ({ k: 'op', o });
+const LP = { k: '(' }, RP = { k: ')' };
+const XX = OP('×'), DV = OP('÷'), PL = OP('+'), MI = OP('−');
+function tpl(str, fill) {
+  return str.split(' ').map(s => s === '(' ? LP : s === ')' ? RP : s === '+' ? PL : s === '-' ? MI : s === '×' ? XX : s === '÷' ? DV : fill(s));
+}
+const cnt = ts => ts.filter(t => t.k === 'n').length;
+const strip = ts => ts.filter(t => t.k !== '(' && t.k !== ')');
+
+/* ---------- rendering ---------- */
+const grp = s => { const neg = s[0] === '-'; if (neg) s = s.slice(1); const [a, b] = s.split('.'); const g = a.length > 4 ? a.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : a; return (neg ? '−' : '') + (b !== undefined ? g + '.' + b : g); };
+const fracH = (n, d) => `<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+function valH(v, pref) {
+  if (v.int) return grp(String(v.n));
+  if (pref !== 'frac' && v.term()) return grp(v.dec());
+  return (v.n < 0 ? '−' : '') + fracH(Math.abs(v.n), v.d);
+}
+function tokH(t) {
+  if (t.k === 'op') return `<span class="op">${t.o}</span>`;
+  if (t.k === '(') return '<span class="pa">(</span>';
+  if (t.k === ')') return '<span class="pa">)</span>';
+  let h;
+  if (t.html) h = t.html;
+  else if (t.fmt === 'mixed') h = `<span class="mx">${t.w}${fracH(t.sn, t.sd)}</span>`;
+  else if (t.fmt === 'frac') h = t.sn != null ? fracH(t.sn, t.sd) : valH(t.v, 'frac');
+  else h = valH(t.v, 'dec');
+  if (t.unit) h += `<span class="un">${t.unit}</span>`;
+  return `<span class="nm">${h}</span>`;
+}
+const toksH = ts => `<span class="ex">${ts.map(tokH).join('')}</span>`;
+const eqs = '<span class="eqs">=</span>';
+const solRows = rows => rows.map((r, i) => `<div class="row">${i ? eqs : ''}${r}</div>`).join('');
+const money = v => '$' + v.num().toFixed(2);
+
+/* ---------- evaluation (one operation per line) ---------- */
+const FRS = new Set(['frac', 'mixed', 'rec']);
+function apply(o, a, b, h) {
+  if (h && h[o]) { const r = h[o](a, b); if (r) return r; }
+  switch (o) { case '+': return a.v.add(b.v); case '−': return a.v.sub(b.v); case '×': return a.v.mul(b.v); case '÷': return a.v.div(b.v); }
+}
+function clean(ts) {
+  let ch = true;
+  while (ch) { ch = false; for (let i = 0; i + 2 < ts.length; i++) if (ts[i].k === '(' && ts[i + 1].k === 'n' && ts[i + 2].k === ')') { ts = [...ts.slice(0, i), ts[i + 1], ...ts.slice(i + 3)]; ch = true; break; } }
+  return ts;
+}
+function step(ts, mode, h) {
+  let j = ts.findIndex(t => t.k === ')'), i = -1;
+  if (j < 0) j = ts.length; else for (let x = j - 1; x >= 0; x--) if (ts[x].k === '(') { i = x; break; }
+  const seg = ts.slice(i + 1, j);
+  let idx = mode === 'ltr' ? seg.findIndex(t => t.k === 'op') : seg.findIndex(t => t.k === 'op' && (t.o === '×' || t.o === '÷'));
+  if (idx < 0) idx = seg.findIndex(t => t.k === 'op');
+  const a = seg[idx - 1], b = seg[idx + 1], v = apply(seg[idx].o, a, b, h);
+  const fmt = v.int ? 'int' : (FRS.has(a.fmt) || FRS.has(b.fmt) || !v.term()) ? 'frac' : 'dec';
+  const nt = { k: 'n', v, fmt, orig: false };
+  return [clean([...ts.slice(0, i + 1), ...seg.slice(0, idx - 1), nt, ...seg.slice(idx + 2), ...ts.slice(j)]), v];
+}
+function evalT(ts, mode = 'c', h = null) {
+  if (mode === 'np') { ts = strip(ts); mode = 'c'; }
+  ts = clean(ts); const lines = [ts], made = []; let g = 0;
+  while (ts.length > 1 && g++ < 60) { const [n, v] = step(ts, mode, h); ts = n; made.push(v); lines.push(ts); }
+  if (ts.length !== 1 || ts[0].k !== 'n') throw new Error('eval');
+  return { v: ts[0].v, lines, made };
+}
+const safeEval = (ts, mode, h) => { try { return evalT(ts, mode, h); } catch (e) { return null; } };
+function okRes(r, { int = false, max = 1000, dp = 4 } = {}) {
+  if (!r) return false;
+  if (r.made.some(v => v.neg)) return false;
+  if (int && r.made.some(v => !v.int)) return false;
+  const v = r.v; return v.n > 0 && v.term() && v.num() <= max && v.dp() <= dp;
+}
+const chainH = ts => evalT(ts).lines.map(toksH).join(eqs);
+function linesRows(r, pref) {
+  const rows = r.lines.map(toksH);
+  const v = r.v; if (!v.int && v.term() && r.lines[r.lines.length - 1][0].fmt === 'frac') rows.push(valH(v, 'dec'));
+  return rows;
+}
+const exprPrompt = (ts, z = '计算：', e = 'Calculate:') => `<div class="ask">${S2(z, e)}</div><div class="expr">${toksH(ts)}</div>`;
+const co = d => { let n; do n = ri(1, d - 1); while (gcd(n, d) !== 1); return n; };
+const dec1 = () => { let v; do v = ri(2, 99); while (v % 10 === 0); return D(String(v / 10)); };
+const dec2 = () => { let v; do v = ri(3, 999); while (v % 10 === 0); return D(String(v / 100)); };
+const toMixedFrac = ts => ts.map(t => t.fmt === 'mixed' ? Object.assign({}, t, { fmt: 'frac', sn: t.v.n, sd: t.v.d, html: null }) : t);
+
+/* ---------- generator wrapper ---------- */
+function gen(f, tries = 60000) {
+  for (let i = 0; i < tries; i++) {
+    let q = null; try { q = f(); } catch (e) { q = null; }
+    if (q) return finalize(q);
+  }
+  throw new Error('generator failed');
+}
+function ratioEq(a, b) { return a[0] * b[1] === a[1] * b[0]; }
+function finalize(q) {
+  q.ansType = q.ansType || 'num';
+  const seen = [];
+  q.traps = (q.traps || []).filter(t => {
+    if (!t || t.v == null) return false;
+    if (q.ansType === 'ratio') {
+      if (!Array.isArray(t.v) || !(t.v[0] > 0 && t.v[1] > 0) || ratioEq(t.v, q.ans)) return false;
+      if (seen.some(s => ratioEq(s, t.v))) return false; seen.push(t.v); return true;
+    }
+    if (!(t.v instanceof F) || t.v.eq(q.ans)) return false;
+    if (seen.some(s => s.eq(t.v))) return false; seen.push(t.v); return true;
+  });
+  q.inter = (q.inter || []).filter(v => v instanceof F && !v.eq(q.ans));
+  return q;
+}
+const hasTrap = q => q.traps.length > 0;
+
+/* ================= MODULES & POINTS ================= */
+const MODS = [
+  { id: 1, zh: '运算顺序', en: 'Order of Operations' },
+  { id: 2, zh: '分数运算', en: 'Fractions' },
+  { id: 3, zh: '小数运算', en: 'Decimals' },
+  { id: 4, zh: '百分数与比率', en: 'Percentage & Ratio' },
+  { id: 5, zh: '单位与几何计算', en: 'Units & Geometry' },
+  { id: 6, zh: '代数与代入', en: 'Algebra' },
+];
+const PTS = [];
+const P = d => PTS.push(d);
+
+/* ---------- 易错点1 运算顺序 ---------- */
+const P1T = [
+  ['A - B × C + D ÷ E - F × G', { A: [100, 300], D: [12, 96] }],
+  ['A ÷ ( B - C ) × D + E × F - G', { A: [12, 96], B: [6, 15], C: [1, 5], G: [1, 40] }],
+  ['( A + B ) × C - D ÷ E × F + G', { A: [5, 30], C: [2, 9], D: [12, 96], E: [2, 9], F: [2, 9] }],
+  ['A × B - C × ( D + E ) ÷ F + G', { A: [10, 30], B: [5, 20], F: [2, 9] }],
+  ['A + B ÷ C × D - ( E - F ) × G', { A: [20, 120], B: [12, 96], C: [2, 9], E: [8, 20], F: [1, 7] }],
+  ['A × ( B + C ) - D × E ÷ F - G', { A: [3, 12] }],
+  ['A - ( B + C × D ) ÷ E + F × G', { A: [60, 200], E: [2, 9] }],
+];
+P({
+  id: 'p1', m: 1, no: 1, sz: '运算顺序', se: 'Order of operations',
+  zh: '先算加减后算乘除；忽略括号优先级', en: 'Doing + − before × ÷; ignoring brackets',
+  rule: ['规则：<b>括号 → 乘除 → 加减</b>；同一级从左往右算。', 'Rule: <b>Brackets → × ÷ → + −</b>; same level, work left to right.'],
+  hint: ['先找括号，再把所有乘、除圈出来先算，最后才算加减。', 'Find the brackets first, circle every × and ÷ and do them next, then + and − last.'],
+  kb: 'int',
+  gen: () => gen(() => {
+    const [s, rg] = pick(P1T);
+    const ts = tpl(s, L => I(ri(...(rg[L] || [2, 20]))));
+    const r = safeEval(ts); if (!okRes(r, { int: true, max: 999 })) return null;
+    const a = safeEval(ts, 'ltr'); if (!a || a.v.eq(r.v)) return null;
+    const traps = [T_('ltr', '你从左往右一路算下去，没有<b>先算乘除</b>。', 'You worked straight from left to right without doing <b>× and ÷ first</b>.', a.v)];
+    if (s.includes('(')) {
+      const b = safeEval(ts, 'np'); if (b) traps.push(T_('np', '你<b>忽略了括号</b>——括号里的要最先算。', 'You <b>ignored the brackets</b> — work inside them first.', b.v));
+      const c = safeEval(strip(ts), 'ltr'); if (c) traps.push(T_('ltr', '既忽略了括号，又没有先算乘除。', 'You ignored the brackets and did not do × ÷ first.', c.v));
+    }
+    return { prompt: exprPrompt(ts), ans: r.v, count: cnt(ts), _t: ts, sol: solRows(linesRows(r)), traps, inter: r.made };
+  })
+});
+
+/* ---------- 易错点2 异分母分数加减 ---------- */
+const FAMS = [[2, 3, 4, 6, 12], [2, 4, 8], [2, 5, 10], [4, 5, 10, 20], [2, 3, 6], [3, 4, 6, 12], [4, 8, 16], [5, 10, 20]];
+P({
+  id: 'p2', m: 2, no: 2, sz: '异分母加减', se: 'Adding unlike fractions',
+  zh: '分数加减法直接分子、分母分别相加减，不先通分', en: 'Adding tops and bottoms without a common denominator',
+  rule: ['规则：异分母分数相加减，<b>先通分</b>（找最小公倍数），再把分子相加减，分母不变。', 'Rule: for unlike fractions, <b>first make a common denominator</b> (LCM), then add/subtract the numerators; the denominator stays.'],
+  hint: ['先求所有分母的最小公倍数，把每个数都化成这个分母，再只算分子。', 'Find the LCM of all denominators, rewrite every number over it, then work only with the numerators.'],
+  kb: 'frac', pref: 'frac',
+  gen: () => gen(() => {
+    const fam = pick(FAMS); const ts = []; let nInt = 0, nMx = 0;
+    for (let i = 0; i < 7; i++) {
+      if (i) ts.push(i === 1 || rnd() < 0.6 ? PL : MI);
+      const r = rnd(); let t;
+      if (r < 0.14 && nInt < 1) { t = I(ri(1, 4)); nInt++; }
+      else { const d = pick(fam), n = co(d); if (r < 0.32 && nMx < 2) { t = MX(ri(1, 3), n, d); nMx++; } else t = Q(n, d); }
+      ts.push(t);
+    }
+    const dens = new Set(ts.filter(t => t.k === 'n' && t.sd).map(t => t.sd)); if (dens.size < 3) return null;
+    const r = safeEval(ts); if (!okRes(r, { max: 20 })) return null;
+    const naive = { '+': (a, b) => (a.v.int || b.v.int) ? null : new F(a.v.n + b.v.n, a.v.d + b.v.d), '−': (a, b) => (a.v.int || b.v.int) ? null : new F(a.v.n - b.v.n, a.v.d - b.v.d) };
+    const tr = safeEval(ts, 'c', naive);
+    // custom 通分 solution
+    const L = [...dens].reduce(lcm, 1);
+    const nums = ts.filter(t => t.k === 'n').map(t => t.v.n * (L / t.v.d));
+    const row1 = `<span class="ex">${ts.map(t => t.k === 'op' ? tokH(t) : `<span class="nm">${fracH(t.v.n * (L / t.v.d), L)}</span>`).join('')}</span>`;
+    let k = 0; const row2 = `<span class="ex"><span class="nm">${fracH(ts.map(t => t.k === 'op' ? ` ${t.o} ` : nums[k++]).join(''), L)}</span></span>`;
+    const S = r.v.mul(fi(L)).n;
+    const rows = [toksH(ts), row1, row2, fracH(S, L)];
+    if (!(r.v.n === S && r.v.d === L)) rows.push(valH(r.v, 'frac'));
+    if (!r.v.int) rows.push(valH(r.v, 'dec'));
+    const note = B2(`最小公倍数（公分母）= <b>${L}</b>；带分数、整数也先化成分母是 ${L} 的分数。`, `LCM (common denominator) = <b>${L}</b>; mixed numbers and whole numbers are rewritten over ${L} too.`);
+    return {
+      prompt: exprPrompt(ts), ans: r.v, count: cnt(ts), _t: ts, pref: 'frac',
+      sol: `<div class="note">${note}</div>` + solRows(rows),
+      traps: [tr && T_('naive', '你把<b>分子加分子、分母加分母</b>了——分母不能相加减，要先通分。', 'You <b>added numerators and denominators separately</b> — denominators are never added; make them the same first.', tr.v)],
+      inter: r.made
+    };
+  })
+});
+
+/* ---------- 易错点3 分数乘法 & 带分数 ---------- */
+const DEN = [2, 3, 4, 5, 6, 8];
+const splitHook = { '×': (a, b) => { if (a.orig && a.fmt === 'mixed') return fi(a.w).mul(b.v).add(new F(a.sn, a.sd)); if (b.orig && b.fmt === 'mixed') return a.v.mul(fi(b.w)).add(new F(b.sn, b.sd)); return null; } };
+P({
+  id: 'p3', m: 2, no: 3, sz: '分数乘法·带分数', se: 'Multiplying fractions',
+  zh: '分数乘法也去通分；带分数拆分错误', en: 'Using common denominators for ×; splitting mixed numbers wrongly',
+  rule: ['规则：分数乘法<b>不用通分</b>，分子乘分子、分母乘分母，<b>先约分</b>再乘；带分数<b>先化成假分数</b>。', 'Rule: for ×, <b>no common denominator</b> — multiply tops and bottoms, <b>cancel first</b>; change mixed numbers <b>into improper fractions</b> first.'],
+  hint: ['把带分数化成假分数（整数 × 分母 + 分子），交叉约分后再乘。', 'Turn mixed numbers into improper fractions (whole × denominator + numerator), cancel across, then multiply.'],
+  kb: 'frac', pref: 'frac',
+  gen: () => gen(() => {
+    const tA = () => { const d = pick(DEN), m = MX(ri(1, 4), co(d), d), k = rnd() < 0.65 ? d * ri(1, 3) : ri(2, 9); return rnd() < 0.5 ? [m, XX, I(k)] : [I(k), XX, m]; };
+    const tB = () => { const q = pick(DEN), s = pick([...DEN, 9, 10, 12]); return [Q(co(q), q), XX, Q(co(s), s), XX, I(ri(2, 12))]; };
+    const tC = () => { const q = pick(DEN), d = pick(DEN); const f = Q(co(q), q), m = MX(ri(1, 3), co(d), d); return rnd() < 0.5 ? [f, XX, m] : [m, XX, f]; };
+    const parts = shuffle([tA(), tB(), rnd() < 0.5 ? tA() : tC()]);
+    let ts = parts[0]; for (const p of parts.slice(1)) ts = [...ts, rnd() < 0.6 ? PL : MI, ...p];
+    const r = safeEval(ts); if (!okRes(r, { max: 120 })) return null;
+    const tr = safeEval(ts, 'c', splitHook);
+    const conv = toMixedFrac(ts); const r2 = evalT(conv);
+    const rows = [toksH(ts)]; if (ts.some(t => t.fmt === 'mixed')) rows.push(toksH(conv)); rows.push(...linesRows(r2).slice(1));
+    return {
+      prompt: exprPrompt(ts), ans: r.v, count: cnt(ts), _t: ts, pref: 'frac',
+      sol: `<div class="note">${B2('第一步：带分数化成假分数；乘的时候先约分。', 'Step 1: change mixed numbers into improper fractions; cancel before multiplying.')}</div>` + solRows(rows),
+      traps: [tr && T_('split', '带分数拆错了：你只用<b>整数部分</b>去乘，分数部分没有乘（如 2⅔ × 6 ≠ 2×6 + ⅔）。', 'Mixed number split wrongly: you multiplied only the <b>whole-number part</b> (2⅔ × 6 ≠ 2×6 + ⅔).', tr.v)],
+      inter: r.made
+    };
+  })
+});
+
+/* ---------- 易错点4 分数除法 ---------- */
+const flip1 = { '÷': (a, b) => a.v.n === 0 ? null : new F(a.v.d, a.v.n).mul(b.v) };
+const noflip = { '÷': (a, b) => a.v.mul(b.v) };
+P({
+  id: 'p4', m: 2, no: 4, sz: '分数除法', se: 'Dividing fractions',
+  zh: '分数除法把前一个数倒过来；忘记约分', en: 'Flipping the wrong fraction; forgetting to simplify',
+  rule: ['规则：除以一个数 = 乘它的<b>倒数</b>；<b>只倒除数</b>（÷ 后面的数），被除数不动。', 'Rule: dividing by a number = multiplying by its <b>reciprocal</b>; <b>flip only the divisor</b> (the number after ÷).'],
+  hint: ['把每个“÷ 分数”改写成“× 倒数”，只倒 ÷ 后面那个数。', 'Rewrite every “÷ fraction” as “× its reciprocal”; flip only the number after ÷.'],
+  kb: 'frac', pref: 'frac',
+  gen: () => gen(() => {
+    const t1 = () => { const b = pick(DEN), d = pick(DEN); return [Q(co(b), b), DV, Q(co(d), d), XX, I(ri(2, 12))]; };
+    const t2 = () => { const q = pick(DEN); return [I(ri(2, 12)), DV, Q(co(q), q)]; };
+    const t3 = () => { const d = pick(DEN), q = pick(DEN); return [rnd() < 0.6 ? MX(ri(1, 3), co(d), d) : Q(co(d), d), DV, Q(co(q), q)]; };
+    const parts = shuffle([t1(), t2(), t3()]);
+    let ts = parts[0]; for (const p of parts.slice(1)) ts = [...ts, rnd() < 0.6 ? PL : MI, ...p];
+    const r = safeEval(ts); if (!okRes(r, { max: 120 })) return null;
+    const a = safeEval(ts, 'c', flip1), b = safeEval(ts, 'c', noflip);
+    const conv = toMixedFrac(ts);
+    const recip = []; conv.forEach((t, i) => { if (t.k === 'op' && t.o === '÷') { recip.push(XX); } else if (i > 0 && conv[i - 1].k === 'op' && conv[i - 1].o === '÷') { const v = new F(t.v.d, t.v.n); recip.push(N(v, 'frac', { sn: t.v.d, sd: t.v.n, html: v.int ? fracH(t.v.d, t.v.n) : null })); } else recip.push(t); });
+    const r2 = evalT(recip);
+    const rows = [toksH(ts)]; if (ts.some(t => t.fmt === 'mixed')) rows.push(toksH(conv)); rows.push(toksH(recip), ...linesRows(r2).slice(1));
+    return {
+      prompt: exprPrompt(ts), ans: r.v, count: cnt(ts), _t: ts, pref: 'frac',
+      sol: `<div class="note">${B2('把每个“÷ 分数”变成“× 倒数”（只倒除数），再先约分后相乘。', 'Change each “÷ fraction” into “× reciprocal” (flip only the divisor), then cancel and multiply.')}</div>` + solRows(rows),
+      traps: [a && T_('flip1', '你把<b>被除数（前一个数）</b>倒过来了，应该倒的是 ÷ 后面的除数。', 'You flipped the <b>first number</b>; flip the divisor (the number after ÷) instead.', a.v),
+      b && T_('noflip', '你直接相乘了，<b>没有把除数变成倒数</b>。', 'You multiplied straight away <b>without taking the reciprocal</b> of the divisor.', b.v)],
+      inter: r.made
+    };
+  })
+});
+
+/* ---------- 易错点5 小数点对齐 ---------- */
+const misHook = o => (a, b) => { const da = a.v.dp(), db = b.v.dp(); if (da === db) return null; const A = a.v.p10(da), B = b.v.p10(db); return (o === '+' ? A.add(B) : A.sub(B)).p10(-Math.max(da, db)); };
+const mdpHook = { '×': (a, b) => { const da = a.v.dp(), db = b.v.dp(); if (da === 0 || db === 0) return null; return a.v.p10(da).mul(b.v.p10(db)).p10(-Math.max(da, db)); } };
+const P5T = ['A + B × C - D + E × F + G', 'A - B + C × D + E × F - G', 'A × B + C - D × E + F + G', '( A + B ) × C - D + E × F - G', 'A + B - C × D + E + F × G'];
+P({
+  id: 'p5', m: 3, no: 5, sz: '小数点对齐', se: 'Lining up decimal points',
+  zh: '小数点对齐规则混淆（加减对齐，乘法不对齐）', en: 'Mixing up the decimal-point rules (line up for + −, count places for ×)',
+  rule: ['规则：小数<b>加减</b>要把<b>小数点对齐</b>；小数<b>乘法</b>先按整数乘，再<b>数两个因数一共有几位小数</b>。', 'Rule: for <b>+ and −</b>, <b>line up the decimal points</b>; for <b>×</b>, multiply as whole numbers, then <b>count the total decimal places</b> of both factors.'],
+  hint: ['加减：竖式里小数点上下对齐，位数不够补 0。乘法：两个因数的小数位数相加。', 'Add/subtract: stack the decimal points, fill gaps with 0. Multiply: add up the decimal places of both factors.'],
+  kb: 'dec',
+  gen: () => gen(() => {
+    const s = pick(P5T);
+    const ts = tpl(s, () => rnd() < 0.55 ? dec1() : dec2());
+    const r = safeEval(ts); if (!okRes(r, { max: 300, dp: 4 })) return null;
+    const mis = { '+': misHook('+'), '−': misHook('−') };
+    const a = safeEval(ts, 'c', mis), b = safeEval(ts, 'c', mdpHook), c = safeEval(ts, 'c', Object.assign({}, mis, mdpHook));
+    return {
+      prompt: exprPrompt(ts), ans: r.v, count: cnt(ts), _t: ts, sol: solRows(linesRows(r)),
+      traps: [b && T_('mdp', '乘法的<b>小数位数数错了</b>：积的小数位数 = 两个因数小数位数之和（1.2 × 0.3 = 0.36，不是 3.6）。', 'Wrong <b>number of decimal places</b> in a product: add the places of both factors (1.2 × 0.3 = 0.36, not 3.6).', b.v),
+      a && T_('align', '加减时<b>小数点没对齐</b>，把末位对齐了（3.2 + 0.45 要写成 3.20 + 0.45）。', 'You lined up the last digits instead of <b>the decimal points</b> (3.2 + 0.45 → 3.20 + 0.45).', a.v),
+      c && T_('align', '加减没对齐小数点，乘法的小数位数也数错了。', 'Decimal points not lined up for + −, and decimal places miscounted for ×.', c.v)],
+      inter: r.made
+    };
+  })
+});
+
+/* ---------- 易错点6 除以小数 ---------- */
+const DIVS = ['0.02', '0.03', '0.04', '0.05', '0.06', '0.08', '0.2', '0.25', '0.3', '0.4', '0.5', '0.6', '0.8', '1.2', '1.5', '2.5', '0.12', '0.15'];
+const P6T = ['P + P × E - P', 'P × E + P - P', 'P - P + P × E', 'E × P + P - P'];
+P({
+  id: 'p6', m: 3, no: 6, sz: '除以小数', se: 'Dividing by a decimal',
+  zh: '除以小数时只移除数、不移被除数', en: 'Moving the decimal point in the divisor only',
+  rule: ['规则：除数是小数时，把<b>除数变成整数</b>，被除数的小数点<b>同时向右移动相同的位数</b>（不够补 0）。', 'Rule: make the <b>divisor a whole number</b> and move the dividend’s decimal point <b>the same number of places</b> (add 0s if needed).'],
+  hint: ['除数有几位小数，被除数和除数就同时 ×10、×100……（4.8 ÷ 0.06 = 480 ÷ 6）。', 'Multiply both numbers by the same 10, 100, … until the divisor is whole (4.8 ÷ 0.06 = 480 ÷ 6).'],
+  kb: 'dec',
+  gen: () => gen(() => {
+    const pairs = [];
+    const pair = () => { const b = F.dec(pick(DIVS)), q = fi(ri(2, 40)), a = q.mul(b); if (a.dp() > 3) throw 0; pairs.push([a, b, q]); return [NV(a), DV, N(b, 'dec')]; };
+    const s = pick(P6T); let ts = [];
+    s.split(' ').forEach(x => { if (x === 'P') ts.push(...pair()); else if (x === 'E') ts.push(I(ri(2, 9))); else ts.push(x === '+' ? PL : x === '-' ? MI : XX); });
+    const r = safeEval(ts); if (!okRes(r, { max: 500 })) return null;
+    const a = safeEval(ts, 'c', { '÷': (x, y) => { const d = y.v.dp(); return d ? x.v.div(y.v.p10(d)) : null; } });
+    const b = safeEval(ts, 'c', { '÷': (x, y) => { const da = x.v.dp(), d = y.v.dp(); return (d && da !== d) ? x.v.p10(da).div(y.v.p10(d)) : null; } });
+    const notes = pairs.map(([x, y, q]) => { const k = y.dp(); return `${valH(x)} ÷ ${valH(y)} = ${valH(x.p10(k))} ÷ ${valH(y.p10(k))} = ${valH(q)}`; }).join('<br>');
+    return {
+      prompt: exprPrompt(ts), ans: r.v, count: cnt(ts),
+      sol: `<div class="note">${S2('除数变整数，被除数同时移位：', 'Make each divisor whole, shift the dividend too:')}<br>${notes}</div>` + solRows(linesRows(r)),
+      traps: [a && T_('divonly', '你<b>只移动了除数</b>的小数点，被除数没有跟着移（4.8 ÷ 0.06 ≠ 4.8 ÷ 6）。', 'You moved the decimal point <b>in the divisor only</b> (4.8 ÷ 0.06 ≠ 4.8 ÷ 6).', a.v),
+      b && T_('shiftown', '被除数和除数<b>移动的位数不一样</b>（0.75 ÷ 0.5 = 7.5 ÷ 5，不是 75 ÷ 5）。', 'The two numbers were <b>shifted by different amounts</b> (0.75 ÷ 0.5 = 7.5 ÷ 5, not 75 ÷ 5).', b.v)],
+      inter: r.made
+    };
+  })
+});
+
+/* ---------- 易错点7 循环小数 ---------- */
+const RECS = [[1, 9, '1'], [2, 9, '2'], [4, 9, '4'], [5, 9, '5'], [7, 9, '7'], [8, 9, '8'], [1, 3, '3'], [2, 3, '6'], [1, 6, '16'], [5, 6, '83']];
+const rec = () => { const [n, d, g] = pick(RECS); const html = g.length === 1 ? `0.<span class="rd">${g}</span>` : `0.${g[0]}<span class="rd">${g[1]}</span>`; return N(new F(n, d), 'rec', { html, trunc: '0.' + g }); };
+const MULTS = ['3', '6', '9', '12', '18', '27', '36', '1.5', '4.5', '0.9', '1.8', '2.7', '0.3', '0.6'];
+const P7T = ['R × A + R + R - D × E + G', 'R + R × A - R ÷ B + D × E', '( R + R ) × A - R × B + D + E', 'R × A + R × B - R + D + E'];
+P({
+  id: 'p7', m: 3, no: 7, sz: '循环小数', se: 'Recurring decimals',
+  zh: '循环小数的识别与计算', en: 'Recognising and calculating with recurring decimals',
+  rule: ['规则：0.<span class="rd">3</span> = 0.333…，不是 0.3。计算前<b>先化成分数</b>：0.<span class="rd">a</span> = a/9，0.1<span class="rd">6</span> = 1/6，0.8<span class="rd">3</span> = 5/6。', 'Rule: 0.<span class="rd">3</span> = 0.333…, not 0.3. <b>Change to fractions first</b>: 0.<span class="rd">a</span> = a/9, 0.1<span class="rd">6</span> = 1/6, 0.8<span class="rd">3</span> = 5/6.'],
+  hint: ['点上有圆点的数字会一直重复。先把循环小数换成分数，再按分数算。', 'A dotted digit repeats forever. Swap each recurring decimal for its fraction, then calculate.'],
+  kb: 'dec',
+  gen: () => gen(() => {
+    const s = pick(P7T);
+    const ts = tpl(s, L => L === 'R' ? rec() : (L === 'A' || L === 'B') ? D(pick(MULTS)) : (rnd() < 0.5 ? dec1() : I(ri(1, 9))));
+    const r = safeEval(ts); if (!okRes(r, { max: 100, dp: 2 })) return null;
+    const tr = safeEval(ts.map(t => t.fmt === 'rec' ? D(t.trunc) : t));
+    const conv = ts.map(t => t.fmt === 'rec' ? N(t.v, 'frac', { sn: t.v.n, sd: t.v.d }) : t);
+    const r2 = evalT(conv);
+    return {
+      prompt: exprPrompt(ts), ans: r.v, count: cnt(ts),
+      sol: `<div class="note">${B2('先把循环小数化成分数，再计算。', 'First change the recurring decimals into fractions, then calculate.')}</div>` + solRows([toksH(ts), ...linesRows(r2)]),
+      traps: [tr && T_('trunc', '你把循环小数当成了<b>有限小数</b>（0.<span class="rd">3</span> ≠ 0.3，它等于 1/3）。', 'You treated a recurring decimal as a <b>terminating</b> one (0.<span class="rd">3</span> ≠ 0.3; it equals 1/3).', tr.v)],
+      inter: r.made
+    };
+  })
+});
+
+/* ---------- 易错点8 百分数基准量 ---------- */
+function e3(V) { const a = ri(2, 12), b = Math.floor(V / a) - ri(0, 3); if (b < 2) return null; const c = V - a * b; if (c < 1) return null; return [I(a), XX, I(b), PL, I(c)]; }
+function e4(V) {
+  for (let t = 0; t < 30; t++) {
+    const g = ri(2, 9), k = ri(2, 15), T = V + k;
+    const ds = []; for (let d = 2; d <= 15; d++) if (T % d === 0 && T / d >= 2) ds.push(d);
+    if (ds.length) { const d = pick(ds); return [I(d), XX, I(T / d), MI, I(k * g), DV, I(g)]; }
+  }
+  return null;
+}
+P({
+  id: 'p8', m: 4, no: 8, sz: '找基准量', se: 'Percentage base',
+  zh: '求“A 比 B 多/少百分之几”，找错基准量', en: 'Using the wrong base in “what percentage more / less”',
+  rule: ['规则：“A 比 B 多/少百分之几”＝ <b>相差的量 ÷ B × 100%</b>。<b>“比”字后面的量</b>是基准（单位“1”）。', 'Rule: “A is what % more/less than B” = <b>difference ÷ B × 100%</b>. The quantity <b>after “than”</b> is the base.'],
+  hint: ['先分别算出两个数，求差，再除以“比”后面那个数，最后 × 100%。', 'Work out both numbers, find the difference, divide by the number after “than”, then × 100%.'],
+  kb: 'dec', unit: '%',
+  gen: () => gen(() => {
+    const p = pick([10, 12.5, 15, 20, 25, 30, 40, 50, 60, 75, 80]), B = pick([16, 20, 24, 32, 40, 48, 60, 64, 72, 80, 96, 120, 150, 160, 200, 240, 250, 300]);
+    const more = rnd() < 0.5, dl = B * p / 100; if (!Number.isInteger(dl)) return null;
+    const other = more ? B + dl : B - dl; if (other < 6) return null;
+    const J = more ? other : B, Y = more ? B : other;
+    const sw = rnd() < 0.5; const eJ = sw ? e3(J) : e4(J), eY = sw ? e4(Y) : e3(Y); if (!eJ || !eY) return null;
+    if (!evalT(eJ).v.eq(fi(J)) || !evalT(eY).v.eq(fi(Y))) return null;
+    const base = more ? Y : J, wrongBase = more ? J : Y;
+    const q = more ? S2('<b>甲比乙多百分之几？</b>', '') : S2('<b>乙比甲少百分之几？</b>', '');
+    const qe = more ? '<b>A is what percentage more than B?</b>' : '<b>B is what percentage less than A?</b>';
+    const prompt = `<div class="expr">${S2('甲', 'A')} = ${toksH(eJ)}</div><div class="expr">${S2('乙', 'B')} = ${toksH(eY)}</div>` + B2(more ? '<b>甲比乙多百分之几？</b>' : '<b>乙比甲少百分之几？</b>', qe);
+    const sol = `<div class="row">${S2('甲', 'A')} = ${chainH(eJ)}</div><div class="row">${S2('乙', 'B')} = ${chainH(eY)}</div>` +
+      `<div class="row">${S2('相差', 'Difference')}：${J} − ${Y} = ${dl}</div>` +
+      `<div class="row">${S2(`基准是“比”后面的<b>${more ? '乙' : '甲'}</b>`, `Base = the number after “than”: <b>${more ? 'B' : 'A'}</b>`)}：${dl} ÷ ${base} × 100% = <b>${grp(fi(p).dec())}%</b></div>`;
+    return {
+      prompt, ans: F.dec(String(p)), count: 7, unit: '%', sol,
+      traps: [T_('base', `基准量找错了：你除以了 ${wrongBase}，应该除以“比”字后面的 ${base}。`, `Wrong base: you divided by ${wrongBase}; divide by the number after “than”, ${base}.`, new F(dl * 100, wrongBase)),
+      T_('ratio', `你求的是“${more ? '甲是乙' : '乙是甲'}的百分之几”，题目问的是<b>多/少</b>百分之几，要先求差。`, `You found “${more ? 'A as a % of B' : 'B as a % of A'}”; the question asks how much <b>more/less</b> — find the difference first.`, new F((more ? J : Y) * 100, more ? Y : J)),
+      T_('no100', '算对了小数，但<b>忘了 × 100%</b>，要写成百分数。', 'Right decimal, but you <b>forgot × 100%</b> — give it as a percentage.', F.dec(String(p)).div(fi(100)))],
+      inter: [fi(J), fi(Y), fi(dl)]
+    };
+  })
+});
+
+/* ---------- 易错点9 折扣 ---------- */
+const ITEM_PAIRS = [
+  [['外套', '件', 'jacket', 'jackets'], ['裤子', '条', 'pair of pants', 'pairs of pants']],
+  [['书包', '个', 'school bag', 'school bags'], ['文具盒', '个', 'pencil case', 'pencil cases']],
+  [['球鞋', '双', 'pair of sneakers', 'pairs of sneakers'], ['T恤', '件', 'T-shirt', 'T-shirts']],
+  [['台灯', '盏', 'desk lamp', 'desk lamps'], ['闹钟', '个', 'alarm clock', 'alarm clocks']],
+  [['足球', '个', 'football', 'footballs'], ['水壶', '个', 'water bottle', 'water bottles']],
+];
+const RT = [9.5, 9, 8.5, 8, 7.5, 7, 6];
+P({
+  id: 'p9', m: 4, no: 9, sz: '连续折扣', se: 'Discounts',
+  zh: '折扣 / 连续折扣计算错误', en: 'Getting discounts and successive discounts wrong',
+  rule: ['规则：打 8 折 = 付原价的 80%（= 优惠 20%）。<b>连续打折要连乘</b>：先 9 折再 8 折 = × 0.9 × 0.8，不能把折扣相加或取平均。', 'Rule: 20% off = pay 80% of the price. <b>Successive discounts multiply</b>: 10% off then 20% off = × 0.9 × 0.8 — never add or average them.'],
+  hint: ['每打一次折，就乘一次“要付的百分比”；最后别忘了乘数量。', 'Each discount means × (the % you still pay); remember to multiply by the quantity at the end.'],
+  kb: 'dec', pre: '$',
+  gen: () => gen(() => {
+    const [A, Bi] = pick(ITEM_PAIRS);
+    const P1 = pick([40, 60, 80, 120, 150, 160, 200, 240, 250, 300, 360, 400]), P2 = pick([20, 30, 40, 50, 60, 80, 90, 120, 150, 180]);
+    const r1 = pick(RT), r2 = pick(RT.filter(x => x !== r1)), r3 = pick(RT), n1 = ri(2, 5), n2 = ri(2, 5);
+    const pay = r => F.dec(String(r)).div(fi(10)), off = r => Math.round(100 - r * 10);
+    const u1 = fi(P1).mul(pay(r1)).mul(pay(r2)), u2 = fi(P2).mul(pay(r3));
+    if (!u1.mul(fi(100)).int || !u2.mul(fi(100)).int) return null;
+    const ans = u1.mul(fi(n1)).add(u2.mul(fi(n2)));
+    const o1 = off(r1), o2 = off(r2), o3 = off(r3);
+    const tAdd = fi(P1).mul(new F(100 - o1 - o2, 100)).mul(fi(n1)).add(u2.mul(fi(n2)));
+    const tAvg = fi(P1).mul(F.dec(String(r1 + r2)).div(fi(20))).mul(fi(n1)).add(u2.mul(fi(n2)));
+    const tRate = fi(P1).mul(new F(o1 * o2, 10000)).mul(fi(n1)).add(fi(P2).mul(new F(o3, 100)).mul(fi(n2)));
+    const tQty = u1.add(u2);
+    const prompt = B2(`${A[0]}原价 $${P1}，先打 <b>${r1} 折</b>，再打 <b>${r2} 折</b>；${Bi[0]}原价 $${P2}，打 <b>${r3} 折</b>。买 ${n1} ${A[1]}${A[0]}和 ${n2} ${Bi[1]}${Bi[0]}，一共要付多少钱？`,
+      `A ${A[2]} costs $${P1}. It is sold at <b>${o1}% off</b>, then a further <b>${o2}% off</b>. A ${Bi[2]} costs $${P2} and is sold at <b>${o3}% off</b>. How much do ${n1} ${A[3]} and ${n2} ${Bi[3]} cost altogether?`);
+    const d = r => fi(r * 10).div(fi(100)).dec();
+    const sol = `<div class="row">${S2(`${A[0]}每${A[1]}`, `Each ${A[2]}`)}：$${P1} × ${d(r1)} × ${d(r2)} = ${money(u1)}</div>` +
+      `<div class="row">${S2(`${Bi[0]}每${Bi[1]}`, `Each ${Bi[2]}`)}：$${P2} × ${d(r3)} = ${money(u2)}</div>` +
+      `<div class="row">${S2('合计', 'Total')}：${money(u1)} × ${n1} + ${money(u2)} × ${n2} = ${money(u1.mul(fi(n1)))} + ${money(u2.mul(fi(n2)))} = <b>${money(ans)}</b></div>`;
+    return {
+      prompt, ans, count: 7, pre: '$', sol, money: true,
+      traps: [T_('dadd', `连续折扣不能相加：${o1}% + ${o2}% ≠ 一共优惠 ${o1 + o2}%，要连乘 × ${d(r1)} × ${d(r2)}。`, `Successive discounts don’t add up: ${o1}% + ${o2}% ≠ ${o1 + o2}% off; multiply × ${d(r1)} × ${d(r2)}.`, tAdd),
+      T_('davg', '连续折扣不能取平均，要一次一次连乘。', 'Never average successive discounts; apply them one after another (multiply).', tAvg),
+      T_('drate', `你把<b>优惠的百分比</b>当成了要付的百分比：打 ${r1} 折要乘 ${d(r1)}，不是 ${fi(o1).div(fi(100)).dec()}。`, `You used the <b>discount %</b> as the % paid: ${o1}% off means × ${d(r1)}, not × ${fi(o1).div(fi(100)).dec()}.`, tRate),
+      T_('noqty', '单价算对了，但<b>忘了乘数量</b>。', 'Unit prices are right, but you <b>forgot to multiply by the quantities</b>.', tQty)],
+      inter: [u1, u2, u1.mul(fi(n1)), u2.mul(fi(n2))]
+    };
+  })
+});
+
+/* ---------- 易错点10 比 ---------- */
+const UP = [{ b: 'h', s: 'min', f: 60, st: 6 }, { b: 'm', s: 'cm', f: 100, st: 5 }, { b: 'kg', s: 'g', f: 1000, st: 50 }, { b: 'L', s: 'mL', f: 1000, st: 50 }];
+function uTok(val, u, big) { if (big) { const v = new F(val, u.f); if (!v.term() || v.dp() > 2) throw 0; return NV(v, { unit: u.b, small: val }); } return N(fi(val), 'int', { unit: u.s, small: val }); }
+const toSmall = (ts) => ts.map(t => t.unit ? N(fi(t.small), 'int', { unit: null }) : t);
+const rawT = ts => ts.map(t => t.unit ? NV(t.v) : t);
+function fr2r(v) { return [v.n, v.d]; }
+P({
+  id: 'p10', m: 4, no: 10, sz: '比·单位', se: 'Ratio & units',
+  zh: '比的前后项搞反；单位不统一', en: 'Writing a ratio the wrong way round; mixing units',
+  rule: ['规则：<b>先统一单位</b>，再按<b>题目要求的顺序</b>写比，最后化成<b>最简整数比</b>。', 'Rule: <b>convert to the same unit first</b>, write the ratio <b>in the order asked</b>, then simplify to <b>whole numbers</b>.'],
+  hint: ['把所有量都换成小单位（如分钟、厘米、克），看清“谁比谁”，再用最大公因数约简。', 'Change everything into the small unit (min, cm, g…), check “which : which”, then divide by the HCF.'],
+  kb: 'ratio', ansType: 'ratio',
+  gen: () => gen(() => {
+    const u = pick(UP), st = u.st;
+    const k = ri(2, 5), k2 = ri(2, 5);
+    const v = [st * ri(2, 25), st * ri(1, 12), k2 * st * ri(1, 10), st * ri(2, 25), st * ri(1, 10)];
+    const big = v.map(() => rnd() < 0.5); if (!big.some(x => x) || big.every(x => x)) return null;
+    const t = v.map((x, i) => uTok(x, u, big[i]));
+    const X = [t[0], PL, t[1], XX, I(k)], Y = [t[2], DV, I(k2), PL, t[3], MI, t[4]];
+    const xv = evalT(toSmall(X)).v, yv = evalT(toSmall(Y)).v; if (xv.n <= 0 || yv.n <= 0) return null;
+    const yx = rnd() < 0.5; const [A, B] = yx ? [yv, xv] : [xv, yv];
+    const g = gcd(A.n, B.n), ans = [A.n / g, B.n / g]; if (ans[0] > 99 || ans[1] > 99 || ans[0] === ans[1]) return null;
+    const rx = evalT(rawT(X)).v, ry = evalT(rawT(Y)).v; const raw = yx ? ry.div(rx) : rx.div(ry);
+    const ask = yx ? ['乙 : 甲', 'B : A'] : ['甲 : 乙', 'A : B'];
+    const prompt = `<div class="expr">${S2('甲', 'A')} = ${toksH(X)}</div><div class="expr">${S2('乙', 'B')} = ${toksH(Y)}</div>` + B2(`求 <b>${ask[0]}</b>（化成最简整数比）。`, `Find <b>${ask[1]}</b> in its simplest form.`);
+    const sx = toSmall(X).map(t => t.k === 'n' && t.v && t.orig && t.unit === null ? t : t), sy = toSmall(Y);
+    const sol = `<div class="note">${S2(`统一成 <b>${u.s}</b>（1 ${u.b} = ${u.f} ${u.s}）`, `Convert to <b>${u.s}</b> (1 ${u.b} = ${u.f} ${u.s})`)}</div>` +
+      `<div class="row">${S2('甲', 'A')} = ${chainH(sx)} ${u.s}</div><div class="row">${S2('乙', 'B')} = ${chainH(sy)} ${u.s}</div>` +
+      `<div class="row">${S2(ask[0], ask[1])} = ${A.n} : ${B.n} = <b>${ans[0]} : ${ans[1]}</b>　${S2(`（同除以 ${g}）`, `(÷ ${g})`)}</div>`;
+    return {
+      prompt, ans, ansType: 'ratio', count: 7, sol,
+      traps: [T_('rev', `前后项<b>写反了</b>：题目要的是 ${ask[0]}。`, `Ratio <b>reversed</b>: the question asks for ${ask[1]}.`, [ans[1], ans[0]]),
+      T_('unit', `<b>单位没有统一</b>：${u.b} 和 ${u.s} 要先换成同一个单位再比。`, `<b>Units not converted</b>: change ${u.b} and ${u.s} into the same unit before comparing.`, fr2r(raw)),
+      T_('rev', '单位没统一，前后项也颠倒了。', 'Units not converted and the ratio is reversed too.', fr2r(fi(1).div(raw)))],
+      inter: []
+    };
+  })
+});
+
+/* ---------- 易错点11 单位换算 ---------- */
+const UK = [{ b: 'm', s: 'cm', f: 100, st: 5, wf: 10 }, { b: 'm²', s: 'cm²', f: 10000, st: 100, wf: 100 }, { b: 'm³', s: 'cm³', f: 1000000, st: 10000, wf: 1000 }, { b: 'L', s: 'cm³', f: 1000, st: 50, wf: 100 }, { b: 'cm²', s: 'mm²', f: 100, st: 5, wf: 10 }];
+const P11T = ['t + t × K - t ÷ K + t - t', 't × K + t - t + t ÷ K - t', '( t - t ) × K + t ÷ K + t - t'];
+P({
+  id: 'p11', m: 5, no: 11, sz: '单位换算', se: 'Unit conversion',
+  zh: '单位不统一直接算；面积 / 体积单位进率混淆', en: 'Calculating with mixed units; wrong area / volume conversion factors',
+  rule: ['规则：先<b>统一单位</b>再算。进率：1 m = 100 cm；1 m² = <b>10 000</b> cm²；1 m³ = <b>1 000 000</b> cm³；1 L = 1000 cm³；1 cm² = 100 mm²。', 'Rule: <b>convert to one unit</b> first. 1 m = 100 cm; 1 m² = <b>10 000</b> cm²; 1 m³ = <b>1 000 000</b> cm³; 1 L = 1000 cm³; 1 cm² = 100 mm².'],
+  hint: ['面积进率是长度进率的平方，体积进率是立方（100² = 10 000，100³ = 1 000 000）。', 'Area factors are the length factor squared; volume factors are cubed (100² = 10 000, 100³ = 1 000 000).'],
+  kb: 'dec',
+  gen: () => gen(() => {
+    const u = pick(UK), s = pick(P11T);
+    const ks = []; const raw = s.split(' ');
+    let ts = []; const vals = [];
+    for (let i = 0; i < raw.length; i++) {
+      const x = raw[i];
+      if (x === 'K') { const k = ri(2, 5); ks.push(k); ts.push(I(k)); continue; }
+      if (x !== 't') { ts.push(x === '+' ? PL : x === '-' ? MI : x === '×' ? XX : x === '÷' ? DV : x === '(' ? LP : RP); continue; }
+      const divNext = raw[i + 1] === '÷'; ts.push({ ph: true, divNext }); vals.push(0);
+    }
+    // fill placeholders; divisor value known after K token
+    ts = ts.map((t, i) => {
+      if (!t.ph) return t;
+      const k = t.divNext ? ts[i + 2].v.n : 1; const val = u.st * k * ri(1, 30);
+      return uTok(val, { b: u.b, s: u.s, f: u.f }, rnd() < 0.5);
+    });
+    if (!ts.some(t => t.unit === u.b) || !ts.some(t => t.unit === u.s)) return null;
+    const tu = rnd() < 0.5 ? u.b : u.s, tf = tu === u.b ? u.f : 1;
+    const c = ts.map(t => t.unit ? NV(fi(t.small).div(fi(tf))) : t); const r = safeEval(c); if (!okRes(r, { max: 1e7, dp: 4 })) return null;
+    const traps = [];
+    const rr = safeEval(rawT(ts)); if (rr) traps.push(T_('unit', '<b>单位没统一</b>就直接把数字相加减了。', 'You calculated <b>without converting the units</b> first.', rr.v));
+    const cw = ts.map(t => { if (!t.unit) return t; const inSmallW = t.unit === u.b ? t.v.mul(fi(u.wf)) : t.v; return NV(tu === u.b ? inSmallW.div(fi(u.wf)) : inSmallW); });
+    const rw = safeEval(cw); if (rw) traps.push(T_('factor', `<b>进率用错了</b>：1 ${u.b} = ${grp(String(u.f))} ${u.s}，不是 ${u.wf}。`, `<b>Wrong conversion factor</b>: 1 ${u.b} = ${grp(String(u.f))} ${u.s}, not ${u.wf}.`, rw.v));
+    const prompt = `<div class="ask">${S2(`计算，结果用 <b>${tu}</b> 作单位：`, `Calculate. Give the answer in <b>${tu}</b>:`)}</div><div class="expr">${toksH(ts)}</div>`;
+    const sol = `<div class="note">${S2(`1 ${u.b} = ${grp(String(u.f))} ${u.s}，全部换成 <b>${tu}</b>：`, `1 ${u.b} = ${grp(String(u.f))} ${u.s}; convert everything to <b>${tu}</b>:`)}</div>` + solRows([toksH(ts), ...linesRows(r)]) + `<div class="row">${S2('单位', 'Unit')}：${tu}</div>`;
+    return { prompt, ans: r.v, count: cnt(ts), _t: c, unit: ' ' + tu, sol, traps, inter: r.made };
+  })
+});
+
+/* ---------- 易错点12 周长 / 面积 / 体积 ---------- */
+P({
+  id: 'p12', m: 5, no: 12, sz: '周长面积体积', se: 'Perimeter, area, volume',
+  zh: '周长 / 面积 / 体积公式混用；半圆漏算部分', en: 'Mixing up perimeter, area and volume formulas; missing parts of a semicircle',
+  rule: ['规则：半圆周长 = πd ÷ 2 <b>+ d</b>；半圆面积 = πr² <b>÷ 2</b>；正方形周长 = 4a，面积 = a²；长方形周长 = (l + w) × 2；正方体体积 = a × a × a，表面积 = 6a²。', 'Rule: semicircle perimeter = πd ÷ 2 <b>+ d</b>; semicircle area = πr² <b>÷ 2</b>; square perimeter = 4a, area = a²; rectangle perimeter = (l + w) × 2; cube volume = a × a × a, surface area = 6a².'],
+  hint: ['先判断要求的是“长度、面积还是体积”，再选公式；半圆别漏了直径那条边。', 'Decide first: length, area or volume? Then pick the formula; don’t forget the straight edge of a semicircle.'],
+  kb: 'dec',
+  gen: () => gen(() => {
+    const T = ri(1, 3);
+    if (T === 1) {
+      const d = 2 * ri(2, 10), s = ri(2, 12), k = ri(2, 5), m = ri(2, 4), l = ri(6, 20), w = ri(2, l - 1);
+      const semi = F.dec('3.14').mul(fi(d)).div(fi(2)), v1 = semi.add(fi(d)), v2 = fi(4 * s * k), v3 = fi((l + w) * 2 * m), ans = v1.add(v2).add(v3);
+      const prompt = B2(`用铁丝做框架：一个直径 <b>${d} cm</b> 的半圆形框（含直径那条边），${k} 个边长 <b>${s} cm</b> 的正方形框，${m} 个长 <b>${l} cm</b>、宽 <b>${w} cm</b> 的长方形框。一共要用多少 cm 铁丝？（π 取 3.14）`,
+        `Wire frames are made: one semicircle with diameter <b>${d} cm</b> (including the straight edge), ${k} squares of side <b>${s} cm</b>, and ${m} rectangles <b>${l} cm</b> by <b>${w} cm</b>. How many cm of wire are needed altogether? (Take π = 3.14)`);
+      const sol = `<div class="row">${S2('半圆框', 'Semicircle')}：3.14 × ${d} ÷ 2 + ${d} = ${valH(semi)} + ${d} = ${valH(v1)}</div>` +
+        `<div class="row">${S2('正方形框', 'Squares')}：${s} × 4 × ${k} = ${v2.n}</div><div class="row">${S2('长方形框', 'Rectangles')}：(${l} + ${w}) × 2 × ${m} = ${v3.n}</div>` +
+        `<div class="row">${S2('合计', 'Total')}：${valH(v1)} + ${v2.n} + ${v3.n} = <b>${valH(ans)} cm</b></div>`;
+      return {
+        prompt, ans, count: 7, unit: ' cm', sol,
+        traps: [T_('diam', `半圆周长<b>漏加了直径</b> ${d} cm（半圆框还有一条直边）。`, `You <b>forgot to add the diameter</b> ${d} cm (the straight edge of the semicircle).`, ans.sub(fi(d))),
+        T_('diam', '半圆用了<b>整个圆的周长</b>，要 ÷ 2 再加直径。', 'You used the <b>whole circle’s circumference</b>; halve it and add the diameter.', ans.add(semi)),
+        T_('sqA', '正方形框要的是<b>周长 4a</b>，你算成了面积 a²。', 'A square frame needs the <b>perimeter 4a</b>; you used the area a².', ans.sub(v2).add(fi(s * s * k))),
+        T_('rectP', '长方形周长 = (长 + 宽) × 2，你算成了面积或<b>忘了 × 2</b>。', 'Rectangle perimeter = (l + w) × 2; you used the area or <b>forgot × 2</b>.', ans.sub(v3).add(fi(l * w * m))),
+        T_('rectP', '长方形周长<b>忘了 × 2</b>。', 'Rectangle perimeter: you <b>forgot × 2</b>.', ans.sub(v3).add(fi((l + w) * m)))],
+        inter: [semi, v1, v2, v3]
+      };
+    }
+    if (T === 2) {
+      const r = ri(2, 10), l = ri(8, 30), w = ri(4, 20), k = ri(2, 4), s = ri(1, 4), p = pick(['2', '3', '4', '5', '6', '1.5', '2.5', '8']);
+      const semi = F.dec('3.14').mul(fi(r * r)).div(fi(2)), rect = fi(l * w), sq = fi(k * s * s), area = semi.add(rect).sub(sq);
+      if (area.n <= 0 || sq.num() >= rect.num()) return null;
+      const pv = F.dec(p), ans = area.mul(pv); if (ans.dp() > 2) return null;
+      const prompt = B2(`一块草地由一个半径 <b>${r} m</b> 的半圆和一个长 <b>${l} m</b>、宽 <b>${w} m</b> 的长方形组成，中间挖掉 ${k} 个边长 <b>${s} m</b> 的正方形水池。剩下的部分铺草皮，每平方米 <b>$${p}</b>，一共要多少钱？（π 取 3.14）`,
+        `A lawn is made of a semicircle of radius <b>${r} m</b> and a rectangle <b>${l} m</b> by <b>${w} m</b>. ${k} square ponds of side <b>${s} m</b> are dug out of it. The rest is covered with turf at <b>$${p}</b> per m². What is the total cost? (Take π = 3.14)`);
+      const sol = `<div class="row">${S2('半圆面积', 'Semicircle area')}：3.14 × ${r} × ${r} ÷ 2 = ${valH(semi)} m²</div><div class="row">${S2('长方形面积', 'Rectangle area')}：${l} × ${w} = ${rect.n} m²</div>` +
+        `<div class="row">${S2('水池面积', 'Ponds')}：${s} × ${s} × ${k} = ${sq.n} m²</div><div class="row">${S2('草皮面积', 'Turf area')}：${valH(semi)} + ${rect.n} − ${sq.n} = ${valH(area)} m²</div>` +
+        `<div class="row">${S2('费用', 'Cost')}：${valH(area)} × $${p} = <b>${money(ans)}</b></div>`;
+      return {
+        prompt, ans, count: 7, pre: '$', money: true, sol,
+        traps: [T_('half', '半圆面积<b>忘了 ÷ 2</b>（你算的是整个圆）。', 'Semicircle area: you <b>forgot ÷ 2</b> (that is the whole circle).', area.add(semi).mul(pv)),
+        T_('circ', '半圆面积用错公式：面积是 πr² ÷ 2，你用了周长公式 2πr ÷ 2。', 'Wrong formula for the semicircle: area is πr² ÷ 2, not the circumference 2πr ÷ 2.', area.sub(semi).add(F.dec('3.14').mul(fi(r))).mul(pv)),
+        T_('sqA', '水池要算<b>面积 a²</b>，你用了周长 4a。', 'The ponds need the <b>area a²</b>; you used the perimeter 4a.', area.add(sq).sub(fi(4 * s * k)).mul(pv)),
+        T_('price', `面积算对了，但<b>忘了乘单价</b> $${p}。`, `Area is right, but you <b>forgot to multiply by</b> $${p}.`, area)],
+        inter: [semi, rect, sq, area]
+      };
+    }
+    const l = ri(10, 40), w = ri(8, 30), h = ri(5, 20), k = ri(2, 6), a = ri(2, 6), m = ri(2, 5), v = pick([150, 200, 250, 300, 500]);
+    const tank = fi(l * w * h), cubes = fi(k * a * a * a), cups = fi(m * v), ans = tank.add(cubes).add(cups);
+    const prompt = B2(`一个长方体水箱长 <b>${l} cm</b>、宽 <b>${w} cm</b>，水深 <b>${h} cm</b>。放入 ${k} 个棱长 <b>${a} cm</b> 的正方体铁块（完全浸没），再倒入 ${m} 杯水，每杯 <b>${v} mL</b>。现在水和铁块一共占多少 cm³？（1 mL = 1 cm³）`,
+      `A rectangular tank is <b>${l} cm</b> long and <b>${w} cm</b> wide, with water <b>${h} cm</b> deep. ${k} metal cubes of edge <b>${a} cm</b> are put in (fully under water), then ${m} cups of water of <b>${v} mL</b> each are poured in. What is the total volume of water and cubes now, in cm³? (1 mL = 1 cm³)`);
+    const sol = `<div class="row">${S2('原有水', 'Water')}：${l} × ${w} × ${h} = ${grp(String(tank.n))} cm³</div><div class="row">${S2('铁块', 'Cubes')}：${a} × ${a} × ${a} × ${k} = ${cubes.n} cm³</div>` +
+      `<div class="row">${S2('倒入的水', 'Water added')}：${v} × ${m} = ${cups.n} mL = ${cups.n} cm³</div><div class="row">${S2('合计', 'Total')}：${grp(String(tank.n))} + ${cubes.n} + ${cups.n} = <b>${grp(String(ans.n))} cm³</b></div>`;
+    return {
+      prompt, ans, count: 7, unit: ' cm³', sol,
+      traps: [T_('cube', `正方体体积是 a × a × a，不是 a × 3（棱长扩大 2 倍，体积扩大 8 倍）。`, 'Cube volume is a × a × a, not a × 3 (double the edge → 8 times the volume).', ans.sub(cubes).add(fi(k * a * 3))),
+      T_('cube', '正方体体积是 a³，你算成了 a²（那是一个面的面积）。', 'Cube volume is a³; you used a² (the area of one face).', ans.sub(cubes).add(fi(k * a * a))),
+      T_('cube', '你算的是正方体的<b>表面积</b> 6a²，题目要的是体积。', 'You found the cube’s <b>surface area</b> 6a²; the question needs volume.', ans.sub(cubes).add(fi(k * 6 * a * a))),
+      T_('noqty', `铁块有 ${k} 个，<b>忘了乘个数</b>。`, `There are ${k} cubes — you <b>forgot to multiply by ${k}</b>.`, ans.sub(cubes).add(fi(a * a * a))),
+      T_('factor', '1 mL = 1 cm³，倒入的水不用 ÷ 1000。', '1 mL = 1 cm³ — the poured water needs no ÷ 1000.', tank.add(cubes).add(cups.div(fi(1000))))],
+      inter: [tank, cubes, cups]
+    };
+  })
+});
+
+/* ---------- 易错点13 代入求值 ---------- */
+const vH = x => `<i class="var">${x}</i>`;
+const catNum = (q, b) => F.dec(String(q) + F.dec(String(b)).dec().replace(/^0(?=\.)/, '0'));
+P({
+  id: 'p13', m: 6, no: 13, sz: '代入求值', se: 'Substitution',
+  zh: '代入时漏写乘号、乘方算错；分不清 2a² 和 (2a)²', en: 'Losing the × sign when substituting; 2a² vs (2a)²',
+  rule: ['规则：代入时<b>补回乘号</b>：4<i class="var">x</i> = 4 × <i class="var">x</i>；2<i class="var">a</i>² = 2 × <i class="var">a</i> × <i class="var">a</i>（只有 <i class="var">a</i> 平方），不等于 (2<i class="var">a</i>)²。', 'Rule: <b>put the × back</b> when substituting: 4<i class="var">x</i> = 4 × <i class="var">x</i>; 2<i class="var">a</i>² = 2 × <i class="var">a</i> × <i class="var">a</i> (only <i class="var">a</i> is squared), not (2<i class="var">a</i>)².'],
+  hint: ['先把式子里每个字母换成数并写出乘号，平方只作用在紧挨着的那个字母上。', 'Replace each letter with its value and write in the × signs; the square applies only to the letter it touches.'],
+  kb: 'dec',
+  gen: () => gen(() => {
+    if (rnd() < 0.5) {
+      const a = ri(2, 6), b = pick(['0.5', '0.25', '1.5', '2', '3', '4', '0.2', '2.5']), p = ri(2, 5), q = ri(2, 9), r = a * ri(1, 6), s = ri(2, 5), t = ri(1, 20);
+      const bv = F.dec(b), A = fi(a);
+      const ts = [I(p), XX, I(a * a), PL, I(q), XX, D(b), MI, I(r), DV, I(a), XX, I(s), PL, I(t)];
+      const res = safeEval(ts); if (!okRes(res, { max: 999, dp: 2 })) return null;
+      const ans = res.v, pa2 = fi(p * a * p * a).sub(fi(p * a * a)), sq2 = fi(p * 2 * a).sub(fi(p * a * a));
+      const prompt = B2(`已知 ${vH('a')} = ${a}，${vH('b')} = ${b}，求下式的值：`, `Given ${vH('a')} = ${a} and ${vH('b')} = ${b}, find the value of:`) +
+        `<div class="expr"><span class="ex">${p}${vH('a')}<sup>2</sup><span class="op">+</span>${q}${vH('b')}<span class="op">−</span>${r}<span class="op">÷</span>${vH('a')}<span class="op">×</span>${s}<span class="op">+</span>${t}</span></div>`;
+      const sub = `<span class="ex">${p}<span class="op">×</span>${a}<sup>2</sup><span class="op">+</span>${q}<span class="op">×</span>${b}<span class="op">−</span>${r}<span class="op">÷</span>${a}<span class="op">×</span>${s}<span class="op">+</span>${t}</span>`;
+      const traps = [T_('pa2', `${p}${vH('a')}² 是 ${p} × ${a} × ${a}，你算成了 (${p} × ${a})²。`, `${p}${vH('a')}² means ${p} × ${a} × ${a}; you worked out (${p} × ${a})².`, ans.add(pa2)),
+        T_('sq2', `${vH('a')}² 是 ${a} × ${a}，不是 ${a} × 2。`, `${vH('a')}² is ${a} × ${a}, not ${a} × 2.`, ans.add(sq2))];
+      if (bv.num() < 1) traps.push(T_('juxt', `代入时漏了乘号：${q}${vH('b')} = ${q} × ${b}，不是 ${catNum(q, b).dec()}。`, `Missing × sign: ${q}${vH('b')} = ${q} × ${b}, not ${catNum(q, b).dec()}.`, ans.sub(fi(q).mul(bv)).add(catNum(q, b))));
+      return { prompt, ans, count: 7, sol: solRows([sub, ...linesRows(res)]), traps, inter: res.made };
+    }
+    const x = ri(2, 6), p = ri(2, 4), q = ri(2, 9), r = x * ri(1, 8), s = ri(2, 9), t = ri(2, 9), u = ri(1, 10);
+    const ts = [I(p), XX, I(x * x), MI, I(q), XX, I(x), PL, I(r), DV, I(x), PL, I(s), XX, I(t), MI, I(u)];
+    const res = safeEval(ts); if (!okRes(res, { int: true, max: 999 })) return null;
+    const ans = res.v;
+    const prompt = B2(`已知 ${vH('x')} = ${x}，求下式的值：`, `Given ${vH('x')} = ${x}, find the value of:`) +
+      `<div class="expr"><span class="ex">${p}${vH('x')}<sup>2</sup><span class="op">−</span>${q}${vH('x')}<span class="op">+</span>${r}<span class="op">÷</span>${vH('x')}<span class="op">+</span>${s}<span class="op">×</span>${t}<span class="op">−</span>${u}</span></div>`;
+    const sub = `<span class="ex">${p}<span class="op">×</span>${x}<sup>2</sup><span class="op">−</span>${q}<span class="op">×</span>${x}<span class="op">+</span>${r}<span class="op">÷</span>${x}<span class="op">+</span>${s}<span class="op">×</span>${t}<span class="op">−</span>${u}</span>`;
+    return {
+      prompt, ans, count: 7, sol: solRows([sub, ...linesRows(res)]),
+      traps: [T_('pa2', `${p}${vH('x')}² 是 ${p} × ${x} × ${x}，你算成了 (${p} × ${x})²。`, `${p}${vH('x')}² means ${p} × ${x} × ${x}; you worked out (${p} × ${x})².`, ans.add(fi(p * x * p * x - p * x * x))),
+      T_('sq2', `${vH('x')}² 是 ${x} × ${x}，不是 ${x} × 2。`, `${vH('x')}² is ${x} × ${x}, not ${x} × 2.`, ans.add(fi(p * 2 * x - p * x * x))),
+      T_('juxt', `代入时漏了乘号：${q}${vH('x')} = ${q} × ${x}，不是 ${q}${x}。`, `Missing × sign: ${q}${vH('x')} = ${q} × ${x}, not ${q}${x}.`, ans.add(fi(q * x)).sub(fi(+(String(q) + x))))],
+      inter: res.made
+    };
+  })
+});
+
+/* ---------- 易错点14 解方程 ---------- */
+P({
+  id: 'p14', m: 6, no: 14, sz: '移项变号', se: 'Solving equations',
+  zh: '解方程时移项符号错误', en: 'Changing signs wrongly when moving terms',
+  rule: ['规则：一项从等号一边移到另一边，<b>要变号</b>（+ 变 −，− 变 +）；最后两边同时 <b>÷ 系数</b>，不是减系数。', 'Rule: a term that moves across “=” <b>changes its sign</b> (+ ↔ −); finally <b>divide</b> both sides by the coefficient — don’t subtract it.'],
+  hint: ['先把两边能算的先算好，再移项变号，最后除以 x 前面的数。', 'Simplify each side first, then move terms (changing signs), then divide by the number in front of x.'],
+  kb: 'dec', pre: '<i class="var">x</i> =',
+  gen: () => gen(() => {
+    const a = ri(2, 9), half = a % 2 === 0 && rnd() < 0.35, x = half ? F.dec(ri(1, 12) + '.5') : fi(ri(2, 15));
+    const ax = x.mul(fi(a)); if (!ax.int) return null;
+    const c = ri(2, 9), d = ri(2, 9), C = c * d, b = ri(1, 20), g = ri(2, 9);
+    const E1 = rnd() < 0.5;
+    const L = E1 ? ax.n - b + C : ax.n + b - C;
+    if (L < 4) return null;
+    let right, R;
+    if (E1) { const k = ri(1, Math.min(L - 1, 15)); R = L; right = [I(L - k), PL, I(k * g), DV, I(g)]; }
+    else { let ok = false; for (let t = 0; t < 30 && !ok; t++) { const k = ri(2, 15), T = L + k; const ds = []; for (let q = 2; q <= 12; q++) if (T % q === 0 && T / q >= 2) ds.push(q); if (ds.length) { const q = pick(ds); right = [I(q), XX, I(T / q), MI, I(k * g), DV, I(g)]; ok = true; } } if (!ok) return null; R = L; }
+    const lhs = E1 ? `${a}${vH('x')}<span class="op">−</span>${b}<span class="op">+</span>${c}<span class="op">×</span>${d}` : `${a}${vH('x')}<span class="op">+</span>${b}<span class="op">−</span>${c}<span class="op">×</span>${d}`;
+    const prompt = `<div class="ask">${S2(`解方程，求 ${vH('x')}：`, `Solve for ${vH('x')}:`)}</div><div class="expr"><span class="ex">${lhs}<span class="op">=</span>${toksH(right).replace(/<\/?span class="ex">/g, '')}</span></div>`;
+    const s1 = E1 ? `${a}${vH('x')} − ${b} + ${C} = ${R}` : `${a}${vH('x')} + ${b} − ${C} = ${R}`;
+    const s2 = E1 ? `${a}${vH('x')} = ${R} + ${b} − ${C}` : `${a}${vH('x')} = ${R} − ${b} + ${C}`;
+    const sol = `<div class="row">${S2('两边先计算', 'Simplify both sides')}：${s1}</div><div class="row">${S2('移项变号', 'Move terms, change signs')}：${s2}</div>` +
+      `<div class="row">${a}${vH('x')} = ${ax.n}</div><div class="row">${vH('x')} = ${ax.n} ÷ ${a} = <b>${valH(x)}</b></div>`;
+    const sg = E1 ? [1, -1] : [-1, 1]; // correct: ax = R + sg0*b + sg1*C
+    const mk = (sb, sc) => new F(R + sb * b + sc * C, a);
+    return {
+      prompt, ans: x, count: 7, pre: '<i class="var">x</i> =', sol,
+      traps: [T_('sign', '移项<b>没有变号</b>：移到等号另一边的数要变号。', 'You <b>didn’t change the signs</b> when moving terms across “=”.', mk(-sg[0], -sg[1])),
+      T_('sign', `${c} × ${d} 这一项移项时<b>忘了变号</b>。`, `You forgot to change the sign of ${c} × ${d} when moving it.`, mk(sg[0], -sg[1])),
+      T_('sign', `${b} 这一项移项时<b>忘了变号</b>。`, `You forgot to change the sign of ${b} when moving it.`, mk(-sg[0], sg[1])),
+      T_('divsub', `最后一步应该 <b>÷ ${a}</b>，你用了 − ${a}。`, `The last step is <b>÷ ${a}</b>; you subtracted ${a}.`, fi(ax.n - a))],
+      inter: [fi(R), fi(ax.n)]
+    };
+  })
+});
+
+/* ---------- answer parsing & diagnosis ---------- */
+function parseIn(s) {
+  s = String(s || '').trim().replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 65248)).replace(/．|。/g, '.').replace(/／|÷/g, '/').replace(/：/g, ':').replace(/[−–—]/g, '-');
+  s = s.replace(/^[a-zA-Z]\s*=\s*/, '');
+  s = s.replace(/[^\d.\/:\s又\-]/g, ' ').trim().replace(/\s+/g, ' ');
+  let m;
+  if ((m = s.match(/^(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)$/))) return { ratio: [F.dec(m[1]), F.dec(m[2])] };
+  if ((m = s.match(/^(\d+)\s*(?:又|\s)\s*(\d+)\s*\/\s*(\d+)$/))) { if (+m[3] === 0) return null; return { v: new F(+m[1] * +m[3] + +m[2], +m[3]), mixed: true }; }
+  s = s.replace(/[\s,]/g, '');
+  if ((m = s.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/))) { const d = F.dec(m[2]); if (d.n === 0) return null; return { v: F.dec(m[1]).div(d), frac: [m[1], m[2]] }; }
+  if (/^-?(\d+\.?\d*|\.\d+)$/.test(s)) return { v: F.dec(s.replace(/\.$/, '')) };
+  return null;
+}
+const close = (x, t) => t.term() ? x.eq(t) : Math.abs(x.num() - t.num()) <= Math.max(0.006, Math.abs(t.num()) * 0.0005);
+function ansH(q, v) {
+  if (q.ansType === 'ratio') return `${v[0]} : ${v[1]}`;
+  if (q.money) return money(v);
+  let h;
+  if (!v.term()) h = (v.n < 0 ? '−' : '') + fracH(Math.abs(v.n), v.d) + ` ≈ ${v.num().toFixed(2)}`;
+  else if (v.int) h = grp(String(v.n));
+  else h = q.pref === 'frac' ? fracH(v.n, v.d) + ' = ' + grp(v.dec()) : grp(v.dec());
+  return (q.pre ? q.pre + ' ' : '') + h + (q.unit || '');
+}
+function diagnose(q, raw) {
+  const p = parseIn(raw);
+  if (!String(raw || '').trim()) return { empty: true };
+  if (!p) return { bad: true };
+  if (q.ansType === 'ratio') {
+    if (!p.ratio) return { bad: true, needRatio: true };
+    const [x, y] = p.ratio; const A = fi(q.ans[0]), B = fi(q.ans[1]);
+    const prop = x.mul(B).eq(y.mul(A));
+    if (prop && x.int && y.int && gcd(x.n, y.n) === 1) return { ok: true };
+    if (prop) return { ok: false, id: 'simp', m: ['比值是对的，但还要<b>化成最简整数比</b>（前后项同除以最大公因数）。', 'The value is right, but simplify to <b>whole numbers with no common factor</b>.'] };
+    for (const t of q.traps) { if (x.mul(fi(t.v[1])).eq(y.mul(fi(t.v[0])))) return { ok: false, id: t.id, m: t.m }; }
+    return { ok: false, id: 'other', m: null };
+  }
+  if (p.ratio) return { bad: true, needNum: true };
+  const x = p.v;
+  if (x.eq(q.ans)) { const fr = p.frac, unsimp = fr && /^\d+$/.test(fr[0]) && /^\d+$/.test(fr[1]) && gcd(+fr[0], +fr[1]) > 1; return { ok: true, note: unsimp ? ['答案正确！记得约成最简：' + ansH(q, q.ans), 'Correct! Remember to simplify: ' + ansH(q, q.ans)] : null }; }
+  for (const t of q.traps) if (close(x, t.v)) return { ok: false, id: t.id, m: t.m };
+  for (const k of [10, 100, 1000, 10000]) {
+    if (x.eq(q.ans.mul(fi(k))) || x.eq(q.ans.div(fi(k)))) return { ok: false, id: 'shift', m: [`数字都对，但<b>小数点位置错了</b>（差了 ${k} 倍）。检查小数点移动或进率。`, `The digits are right but the <b>decimal point is in the wrong place</b> (off by × ${k}). Check how you moved the point or the conversion factor.`] };
+  }
+  if (q.inter.some(v => v.eq(x))) return { ok: false, id: 'partial', m: ['这是<b>中间某一步</b>的结果——你还没有算完。', 'That is the result of a <b>middle step</b> — you haven’t finished yet.'] };
+  if (x.neg) return { ok: false, id: 'other', m: ['这题答案不会是负数，检查一下是不是减反了或运算顺序错了。', 'The answer here is never negative — check for a reversed subtraction or the wrong order.'] };
+  return { ok: false, id: 'other', m: null };
+}
+
+const TRAPL = {
+  ltr: ['没先算乘除', 'Skipped × ÷ first'], np: ['忽略括号', 'Ignored brackets'], naive: ['分子分母直接加减', 'Added tops & bottoms'],
+  split: ['带分数拆错', 'Mixed number split'], flip1: ['倒错了数', 'Flipped wrong number'], noflip: ['没取倒数', 'No reciprocal'],
+  mdp: ['积的小数位数', 'Decimal places in ×'], align: ['小数点没对齐', 'Points not lined up'], divonly: ['只移了除数', 'Moved divisor only'],
+  shiftown: ['移位不一致', 'Unequal shifts'], trunc: ['循环当有限', 'Recurring as ending'], base: ['基准量找错', 'Wrong base'],
+  ratio: ['求成“是几%”', '“is what %”'], no100: ['忘了×100%', 'Forgot ×100%'], dadd: ['折扣相加', 'Added discounts'],
+  davg: ['折扣取平均', 'Averaged discounts'], drate: ['优惠率当付款率', 'Paid the discount %'], noqty: ['漏乘数量', 'Forgot quantity'],
+  rev: ['前后项颠倒', 'Ratio reversed'], unit: ['单位没统一', 'Units not converted'], factor: ['进率用错', 'Wrong factor'],
+  simp: ['没化最简', 'Not simplified'], diam: ['半圆漏直径', 'Semicircle edge'], sqA: ['周长面积混淆', 'Perimeter ↔ area'],
+  rectP: ['长方形周长', 'Rectangle perimeter'], half: ['半圆忘÷2', 'Forgot ÷2'], circ: ['公式用错', 'Wrong formula'],
+  cube: ['体积公式', 'Volume formula'], price: ['漏乘单价', 'Forgot price'], pa2: ['2a² 与 (2a)²', '2a² vs (2a)²'],
+  sq2: ['a² 当 2a', 'a² as 2a'], juxt: ['漏写乘号', 'Missing × sign'], sign: ['移项没变号', 'Sign not changed'],
+  divsub: ['除法当减法', '− instead of ÷'], shift: ['小数点位置', 'Decimal point'], partial: ['没算完', 'Unfinished'], other: ['计算失误', 'Slip']
+};
+
+if (typeof module !== 'undefined') module.exports = { PTS, MODS, F, parseIn, diagnose, ansH };
+/* ================= END ENGINE ================= */
+
+/* ================= 工笔花鸟 background (procedural SVG, seeded) ================= */
+function paintGongbi() {
+  let seed = 20261110;
+  const R = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const rr = (a, b) => a + R() * (b - a);
+  const f1 = x => x.toFixed(1);
+  const bez = (p, t) => { const u = 1 - t; return [u * u * u * p[0][0] + 3 * u * u * t * p[1][0] + 3 * u * t * t * p[2][0] + t * t * t * p[3][0], u * u * u * p[0][1] + 3 * u * u * t * p[1][1] + 3 * u * t * t * p[2][1] + t * t * t * p[3][1]]; };
+  // tapered branch as a filled polygon
+  function branch(p, w0, w1, col = '#4d3727') {
+    const L = [], Rt = [], n = 36;
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, a = bez(p, t), b = bez(p, Math.min(1, t + 0.01)), c = bez(p, Math.max(0, t - 0.01));
+      let dx = b[0] - c[0], dy = b[1] - c[1]; const m = Math.hypot(dx, dy) || 1; dx /= m; dy /= m;
+      const w = (w0 + (w1 - w0) * t) / 2 * (1 + 0.12 * Math.sin(t * 17));
+      L.push([a[0] - dy * w, a[1] + dx * w]); Rt.push([a[0] + dy * w, a[1] - dx * w]);
+    }
+    const pts = [...L, ...Rt.reverse()].map(q => f1(q[0]) + ',' + f1(q[1])).join(' L');
+    let s = `<path d="M${pts}Z" fill="${col}" stroke="#2a1d14" stroke-width="1.1" stroke-linejoin="round"/>`;
+    // bark strokes + moss dots (苔点)
+    for (let i = 0; i < 9; i++) { const t = rr(0.05, 0.9), a = bez(p, t), b = bez(p, t + 0.05); s += `<path d="M${f1(a[0])},${f1(a[1])} Q${f1((a[0] + b[0]) / 2 + rr(-3, 3))},${f1((a[1] + b[1]) / 2 + rr(-3, 3))} ${f1(b[0])},${f1(b[1])}" stroke="#2a1d14" stroke-width=".8" fill="none" opacity=".55"/>`; }
+    for (let i = 0; i < 7; i++) { const t = rr(0.05, 0.95), a = bez(p, t); s += `<ellipse cx="${f1(a[0] + rr(-4, 4))}" cy="${f1(a[1] + rr(-5, 2))}" rx="${f1(rr(1.6, 3.2))}" ry="${f1(rr(1.2, 2.2))}" fill="#26331f" opacity=".75"/>`; }
+    return s;
+  }
+  const petalPath = (l, w) => `M0,0 C${f1(-w * .95)},${f1(-l * .3)} ${f1(-w * 1.08)},${f1(-l * .82)} ${f1(-w * .55)},${f1(-l)} Q${f1(-w * .3)},${f1(-l * 1.08)} ${f1(-w * .1)},${f1(-l * .93)} Q0,${f1(-l * 1.04)} ${f1(w * .12)},${f1(-l * .94)} Q${f1(w * .3)},${f1(-l * 1.08)} ${f1(w * .55)},${f1(-l)} C${f1(w * 1.08)},${f1(-l * .82)} ${f1(w * .95)},${f1(-l * .3)} 0,0Z`;
+  function peony(cx, cy, Rr, tilt, grad, edge) {
+    let s = `<g transform="translate(${cx},${cy}) rotate(${tilt}) scale(1,.74)">`;
+    const rings = [[Rr, 10, 0, .62], [Rr * .8, 9, 17, .6], [Rr * .6, 8, 8, .62], [Rr * .4, 7, 26, .66], [Rr * .24, 5, 5, .7]];
+    for (const [rad, n, off, wf] of rings) for (let i = 0; i < n; i++) {
+      const a = off + i * 360 / n + rr(-8, 8), l = rad * rr(.88, 1.08), w = l * wf * rr(.85, 1.1);
+      s += `<g transform="rotate(${f1(a)})"><path d="${petalPath(l, w)}" fill="url(#${grad})" stroke="${edge}" stroke-width=".9" stroke-opacity=".75"/>`;
+      for (const k of [-.3, -.12, .1, .3]) s += `<path d="M0,${f1(-l * .08)} Q${f1(w * k * .6)},${f1(-l * .5)} ${f1(w * k)},${f1(-l * .86)}" stroke="${edge}" stroke-width=".45" fill="none" opacity=".4"/>`;
+      s += '</g>';
+    }
+    for (let i = 0; i < 26; i++) { const a = rr(0, 6.283), d = rr(0, Rr * .17); s += `<circle cx="${f1(Math.cos(a) * d)}" cy="${f1(Math.sin(a) * d)}" r="${f1(rr(1.5, 3))}" fill="#e3b341" stroke="#8a5a12" stroke-width=".4"/>`; }
+    return s + '</g>';
+  }
+  function bud(cx, cy, r, rot) {
+    return `<g transform="translate(${cx},${cy}) rotate(${rot})"><path d="M0,${r} C${-r},${r * .4} ${-r * .8},${-r * .9} 0,${-r * 1.15} C${r * .8},${-r * .9} ${r},${r * .4} 0,${r}Z" fill="url(#gPet)" stroke="#7a1f2b" stroke-width=".9"/>` +
+      `<path d="M0,${r} C${-r * .9},${r * .6} ${-r * .9},${-r * .2} ${-r * .3},${-r * .5} C${-r * .2},0 ${-r * .1},${r * .5} 0,${r}Z M0,${r} C${r * .9},${r * .6} ${r * .9},${-r * .2} ${r * .3},${-r * .5} C${r * .2},0 ${r * .1},${r * .5} 0,${r}Z" fill="url(#gLeaf)" stroke="#24331f" stroke-width=".8"/></g>`;
+  }
+  function leaf(x, y, ang, l, w, g = 'gLeaf') {
+    let s = `<g transform="translate(${f1(x)},${f1(y)}) rotate(${f1(ang)})"><path d="M0,0 C${f1(w)},${f1(-l * .25)} ${f1(w * .9)},${f1(-l * .75)} 0,${f1(-l)} C${f1(-w * .9)},${f1(-l * .75)} ${f1(-w)},${f1(-l * .25)} 0,0Z" fill="url(#${g})" stroke="#24331f" stroke-width=".9"/>`;
+    s += `<path d="M0,0 Q${f1(w * .08)},${f1(-l * .5)} 0,${f1(-l * .97)}" stroke="#d8dcc0" stroke-width=".9" fill="none" opacity=".75"/>`;
+    for (let i = 1; i <= 5; i++) { const t = i / 6.4, yy = -l * t; s += `<path d="M0,${f1(yy)} Q${f1(w * .4)},${f1(yy - l * .06)} ${f1(w * .7 * (1 - t * .6))},${f1(yy - l * .13)} M0,${f1(yy)} Q${f1(-w * .4)},${f1(yy - l * .06)} ${f1(-w * .7 * (1 - t * .6))},${f1(yy - l * .13)}" stroke="#d8dcc0" stroke-width=".55" fill="none" opacity=".55"/>`; }
+    return s + '</g>';
+  }
+  function plum(x, y, r, rot) {
+    let s = `<g transform="translate(${f1(x)},${f1(y)}) rotate(${f1(rot)})">`;
+    for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180; s += `<circle cx="${f1(Math.sin(a) * r * .62)}" cy="${f1(-Math.cos(a) * r * .62)}" r="${f1(r * .55)}" fill="url(#gPlum)" stroke="#b5606e" stroke-width=".7"/>`; }
+    s += `<circle r="${f1(r * .28)}" fill="#c9a24a" opacity=".9"/>`;
+    for (let i = 0; i < 12; i++) { const a = i * 30 * Math.PI / 180, d = r * rr(.45, .7); s += `<path d="M0,0 L${f1(Math.sin(a) * d)},${f1(-Math.cos(a) * d)}" stroke="#7a4a1a" stroke-width=".5"/><circle cx="${f1(Math.sin(a) * d)}" cy="${f1(-Math.cos(a) * d)}" r="1.1" fill="#d9a427"/>`; }
+    return s + '</g>';
+  }
+  const pbud = (x, y, r) => `<circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="#c4415a" stroke="#6e1f2c" stroke-width=".7"/><circle cx="${f1(x - r * .3)}" cy="${f1(y - r * .3)}" r="${f1(r * .35)}" fill="#f2c4cc" opacity=".7"/>`;
+  function bird(x, y, sc, flip) {
+    return `<g transform="translate(${x},${y}) scale(${flip ? -sc : sc},${sc})">
+      <path d="M38,6 L150,52 L141,63 L33,20Z" fill="#26323d" stroke="#141a20" stroke-width="1"/>
+      <path d="M40,10 L138,66 L128,74 L34,24Z" fill="#33424f" stroke="#141a20" stroke-width="1"/>
+      <path d="M-62,-48 C-40,-70 10,-55 40,-20 C55,-5 60,8 48,18 C25,38 -20,40 -45,22 C-65,8 -75,-25 -62,-48Z" fill="#f5efe0" stroke="#2a2420" stroke-width="1.1"/>
+      <ellipse cx="-22" cy="16" rx="24" ry="11" fill="#d39a5c" opacity=".85"/>
+      <path d="M-62,-48 C-40,-70 10,-55 40,-20 C55,-5 60,8 48,18 C22,6 -8,-6 -38,-16 C-54,-21 -66,-32 -62,-48Z" fill="#2b3a46"/>
+      <circle cx="-58" cy="-50" r="22" fill="#24313c" stroke="#141a20" stroke-width="1"/>
+      <ellipse cx="-58" cy="-38" rx="12" ry="7" fill="#f5efe0"/>
+      <path d="M-30,-30 C0,-40 36,-22 64,2 C40,8 8,5 -22,-6 C-33,-12 -37,-22 -30,-30Z" fill="#4f677a" stroke="#141a20" stroke-width="1"/>
+      ${[0, 1, 2, 3, 4].map(i => `<path d="M${-18 + i * 12},${-16 + i * 2} Q${8 + i * 10},${-6 + i * 2} ${30 + i * 8},${2 + i * 1.5}" stroke="#e9e4d4" stroke-width=".9" fill="none" opacity=".75"/>`).join('')}
+      <path d="M-78,-56 L-99,-50 L-78,-45Z" fill="#2a2420"/>
+      <circle cx="-66" cy="-54" r="3.8" fill="#0d0d0d"/><circle cx="-67.2" cy="-55.4" r="1.2" fill="#fff"/>
+      <path d="M-16,34 L-19,58 M-19,58 L-27,62 M-19,58 L-12,63 M0,35 L2,58 M2,58 L-6,62 M2,58 L9,62" stroke="#9a6a3a" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+    </g>`;
+  }
+  const W = 1600, H = 1000;
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+   <linearGradient id="gSilk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2e8cf"/><stop offset=".55" stop-color="#eadcbc"/><stop offset="1" stop-color="#dcc8a0"/></linearGradient>
+   <filter id="fFib" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85 .015" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .42  0 0 0 0 .32  0 0 0 0 .18  0 0 0 .11 0"/></filter>
+   <radialGradient id="gPet" cx=".5" cy="1" r="1.05"><stop offset="0" stop-color="#9c1f36"/><stop offset=".42" stop-color="#d75a74"/><stop offset=".8" stop-color="#f3c3cd"/><stop offset="1" stop-color="#fbe9ec"/></radialGradient>
+   <radialGradient id="gPetW" cx=".5" cy="1" r="1.05"><stop offset="0" stop-color="#c9b25a"/><stop offset=".35" stop-color="#efe6c8"/><stop offset="1" stop-color="#fffdf6"/></radialGradient>
+   <radialGradient id="gPlum" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="#f7d6dc"/><stop offset="1" stop-color="#fffaf6"/></radialGradient>
+   <linearGradient id="gLeaf" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2f4a35"/><stop offset=".6" stop-color="#5f805a"/><stop offset="1" stop-color="#8fa77a"/></linearGradient>
+   <linearGradient id="gLeaf2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#2c4a52"/><stop offset=".6" stop-color="#4f7b7c"/><stop offset="1" stop-color="#86a9a0"/></linearGradient>
+   <radialGradient id="gVig" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#4a3418" stop-opacity=".28"/></radialGradient>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#gSilk)"/><rect width="${W}" height="${H}" filter="url(#fFib)"/>`;
+  // faint distant mountains (淡墨远山)
+  s += `<path d="M0,760 C120,700 200,720 290,680 C380,640 460,700 560,690 C640,682 700,650 800,700 L800,1000 L0,1000Z" fill="#7d8c86" opacity=".10"/>`;
+  s += `<path d="M900,820 C1000,770 1090,790 1170,760 C1260,725 1350,780 1460,760 C1530,748 1570,770 1600,760 L1600,1000 L900,1000Z" fill="#7d8c86" opacity=".08"/>`;
+  // ---- peony group, lower left ----
+  s += branch([[-30, 1010], [90, 930], [190, 880], [300, 790]], 18, 8);
+  s += branch([[190, 885], [300, 820], [420, 730], [520, 660]], 9, 4);
+  s += branch([[420, 735], [480, 690], [560, 620], [640, 575]], 5, 2.5);
+  const lv = [[150, 930, -60, 120, 34], [240, 905, 35, 110, 30, 'gLeaf2'], [120, 870, -95, 95, 28], [360, 840, 70, 115, 32], [430, 760, -20, 95, 28, 'gLeaf2'], [470, 740, 80, 90, 26], [300, 860, -10, 85, 24, 'gLeaf2'], [560, 640, 50, 70, 20], [600, 610, -40, 60, 18, 'gLeaf2'], [210, 830, -120, 90, 26], [520, 700, 140, 80, 22]];
+  for (const l of lv) s += leaf(l[0], l[1], l[2], l[3], l[4], l[5]);
+  s += peony(318, 772, 118, -12, 'gPet', '#7a1f2b');
+  s += peony(520, 655, 82, 10, 'gPetW', '#8a7a4a');
+  s += bud(640, 568, 20, 18);
+  s += bud(150, 845, 14, -30);
+  // ---- plum branch with bird, upper right ----
+  s += branch([[1660, 70], [1520, 140], [1410, 290], [1280, 325]], 20, 9);
+  s += branch([[1280, 325], [1180, 345], [1100, 380], [1010, 455]], 9, 3);
+  s += branch([[1470, 205], [1450, 160], [1430, 120], [1395, 85]], 6, 2);
+  s += branch([[1180, 345], [1165, 320], [1150, 295], [1125, 268]], 4, 1.6);
+  s += branch([[1360, 300], [1370, 360], [1390, 410], [1430, 450]], 5, 1.8);
+  for (const [x, y, r, a] of [[1405, 92, 15, 10], [1442, 140, 13, 40], [1520, 160, 16, -20], [1128, 270, 12, 0], [1060, 420, 13, 30], [1110, 372, 11, 15], [1430, 448, 14, 0], [1395, 400, 11, 60], [1580, 100, 14, 25], [1230, 352, 10, -10]]) s += plum(x, y, r, a);
+  for (const [x, y, r] of [[1015, 452, 5], [1150, 290, 4.5], [1460, 128, 5], [1390, 370, 4.5], [1600, 86, 5], [1490, 190, 4]]) s += pbud(x, y, r);
+  s += bird(1300, 262, 1.05, false);
+  // inscription (题款) & seal
+  const poem = '花开富贵算无遗';
+  s += `<g font-family="'Ma Shan Zheng','STKaiti','KaiTi',serif" font-size="34" fill="#2e2216" opacity=".55">${[...poem].map((c, i) => `<text x="1528" y="${560 + i * 40}" text-anchor="middle">${c}</text>`).join('')}</g>`;
+  s += `<g transform="translate(1503,860)"><rect width="50" height="50" rx="4" fill="#b2302a" opacity=".88"/><rect x="4" y="4" width="42" height="42" rx="2" fill="none" stroke="#f6e7d2" stroke-width="1.6" opacity=".9"/><text x="25" y="23" text-anchor="middle" font-family="'Ma Shan Zheng',serif" font-size="18" fill="#f6e7d2">慧</text><text x="25" y="42" text-anchor="middle" font-family="'Ma Shan Zheng',serif" font-size="18" fill="#f6e7d2">眼</text></g>`;
+  s += `<rect width="${W}" height="${H}" fill="url(#gVig)"/></svg>`;
+  return s;
+}
+function starSVG(cls, size = 100) {
+  const pts = []; for (let i = 0; i < 10; i++) { const r = i % 2 ? 19 : 48, a = -Math.PI / 2 + i * Math.PI / 5; pts.push((50 + r * Math.cos(a)).toFixed(1) + ',' + (52 + r * Math.sin(a)).toFixed(1)); }
+  return `<svg class="${cls}" viewBox="0 0 100 100" width="${size}" height="${size}"><defs><radialGradient id="gs${cls}" cx=".42" cy=".35" r=".7"><stop offset="0" stop-color="#ff6a4d"/><stop offset=".55" stop-color="#e3261b"/><stop offset="1" stop-color="#a30f12"/></radialGradient></defs><polygon points="${pts.join(' ')}" fill="url(#gs${cls})" stroke="#f3c64f" stroke-width="3" stroke-linejoin="round"/><polygon points="${pts.join(' ')}" fill="none" stroke="#7a0a0d" stroke-width=".8" stroke-linejoin="round" transform="translate(50 52) scale(.82) translate(-50 -52)" opacity=".5"/></svg>`;
+}
+
+
+/* ================= v2 · 坑怪 TRAP MONSTERS ================= */
+const MON = {
+  p1: { zh: '插队怪', en: 'Queue-Jumper', c: '#c8553d', c2: '#f6dcc0', ear: 'horn', sh: 0, g: '+−', say: ['加减先上！乘除？排队去～', 'Plus and minus go first! Times and divide — wait in line~'] },
+  p2: { zh: '乱加妖', en: 'Mash-Up Imp', c: '#5b84a8', c2: '#e3edf3', ear: 'cat', sh: 1, g: '½+⅓', say: ['分子加分子，分母加分母，多省事！', 'Add the tops, add the bottoms — so easy!'] },
+  p3: { zh: '拆拆精', en: 'Splitter Sprite', c: '#8a6bb0', c2: '#ece3f4', ear: 'antenna', sh: 0, g: '2⅔', say: ['带分数？只乘整数部分就够啦！', 'Mixed numbers? Just multiply the whole part!'] },
+  p4: { zh: '倒立猴', en: 'Flip-Flop Monkey', c: '#c98a3a', c2: '#f7e4c4', ear: 'round', sh: 2, g: '÷', say: ['倒哪个都一样，倒前面那个吧！', 'Flip any fraction you like — the first one will do!'] },
+  p5: { zh: '歪点虫', en: 'Wonky-Dot Bug', c: '#a39a3c', c2: '#f2efcf', ear: 'antenna', sh: 2, g: '0.•', say: ['末位对齐就行，小数点随便放～', 'Line up the last digits — the point can go anywhere~'] },
+  p6: { zh: '独行侠', en: 'Lone Shifter', c: '#3f7f86', c2: '#dcecea', ear: 'horn', sh: 1, g: '÷0.', say: ['只移除数的小数点，被除数别管它！', 'Move the point in the divisor only — ignore the dividend!'] },
+  p7: { zh: '截尾狐', en: 'Tail-Snip Fox', c: '#d27a4a', c2: '#fbe6d4', ear: 'cat', sh: 0, g: '0.3', say: ['0.333… 不就是 0.3 嘛，尾巴剪掉！', '0.333… is just 0.3 — snip the tail!'] },
+  p8: { zh: '错基鬼', en: 'Wrong-Base Ghost', c: '#8a8fb0', c2: '#eceef7', ear: 'none', sh: 1, g: '%', say: ['随便除一个数，就是百分比啦～', 'Divide by any number — that’s your percentage~'] },
+  p9: { zh: '叠折狸', en: 'Stack-Sale Tanuki', c: '#8f6a4c', c2: '#efe0cf', ear: 'round', sh: 2, g: '折', say: ['九折再八折？那就是打七折！', '10% off then 20% off? That’s 30% off!'] },
+  p10: { zh: '颠倒鬼', en: 'Topsy-Turvy', c: '#b5506f', c2: '#f6dde5', ear: 'horn', sh: 0, g: 'a:b', say: ['甲比乙、乙比甲，反正都一样！', 'A to B or B to A — same thing!'] },
+  p11: { zh: '进率蛙', en: 'Factor Frog', c: '#4f9a74', c2: '#dff0e6', ear: 'frog', sh: 2, g: 'm²', say: ['1 m² = 100 cm²，呱呱！', '1 m² = 100 cm², ribbit!'] },
+  p12: { zh: '漏边蟹', en: 'Edge-Nabbing Crab', c: '#d0634d', c2: '#fbe1d8', ear: 'claw', sh: 2, g: '◗', say: ['半圆那条直边？被我夹走啦！', 'The straight edge of the semicircle? I nabbed it!'] },
+  p13: { zh: '隐乘蛇', en: 'Sneaky-× Snake', c: '#6f8f3a', c2: '#e9f0d6', ear: 'sprout', sh: 1, g: '4x', say: ['4x 就是 4 挨着 x，乘号被我吃了！', '4x is just 4 next to x — I ate the × sign!'] },
+  p14: { zh: '懒变龟', en: 'Lazy-Sign Turtle', c: '#4d7d6a', c2: '#e2ece6', ear: 'none', sh: 2, g: '±', say: ['移到对面还是加号，懒得变～', 'Moved across? Still plus. Too lazy to change~'] },
+  king: { zh: '坑王', en: 'Pit King', c: '#3d3a52', c2: '#e8e2f0', ear: 'crown', sh: 0, g: '坑', say: ['我从你最常掉的坑里挑了 6 道题，敢来吗？', 'I picked 6 traps you fall into most. Dare to fight?'] }
+};
+const INK = '#2a1d14';
+function mon(id, mood = 'idle') {
+  const c = MON[id], sh = c.sh || 0, top = [20, 14, 32][sh], sil = mood === 'sil';
+  const body = sil ? '#6d6058' : c.c, belly = sil ? '#7a6d64' : c.c2;
+  const BODY = [
+    'M60,20 C94,20 106,50 104,76 C102,102 84,110 60,110 C36,110 18,102 16,76 C14,50 26,20 60,20Z',
+    'M60,14 C88,14 98,46 98,74 C98,102 82,110 60,110 C38,110 22,102 22,74 C22,46 32,14 60,14Z',
+    'M60,32 C98,32 112,56 110,80 C108,104 86,110 60,110 C34,110 12,104 10,80 C8,56 22,32 60,32Z'][sh];
+  const ex = sh === 2 ? [43, 77] : [46, 74], ey = Math.round(top + (110 - top) * 0.36), my = ey + 17;
+  const sw = 'stroke="' + INK + '" stroke-width="2.2" stroke-linejoin="round"';
+  let s = `<svg viewBox="0 0 120 124" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="60" cy="117" rx="34" ry="5" fill="#000" opacity=".13"/>`;
+  s += `<ellipse cx="45" cy="111" rx="11" ry="6" fill="${body}" ${sw}/><ellipse cx="75" cy="111" rx="11" ry="6" fill="${body}" ${sw}/>`;
+  const ears = sh === 2 ? [36, 84] : [40, 80], y = top + 6;
+  ears.forEach((x, k) => {
+    const d = k ? 1 : -1;
+    if (c.ear === 'horn') s += `<path d="M${x - 7},${y + 8} Q${x - 4},${y - 6} ${x + d * 9},${y - 18} Q${x + 3},${y - 4} ${x + 7},${y + 8}Z" fill="${sil ? body : '#ecd08a'}" ${sw}/>`;
+    if (c.ear === 'cat') s += `<path d="M${x - 13},${y + 12} L${x + d * 5},${y - 17} L${x + 13},${y + 10}Z" fill="${body}" ${sw}/>` + (sil ? '' : `<path d="M${x - 6},${y + 7} L${x + d * 4},${y - 8} L${x + 6},${y + 6}Z" fill="#f2b7b7"/>`);
+    if (c.ear === 'round') s += `<circle cx="${x + d * 4}" cy="${y}" r="12" fill="${body}" ${sw}/>` + (sil ? '' : `<circle cx="${x + d * 4}" cy="${y + 1}" r="6" fill="${belly}"/>`);
+    if (c.ear === 'antenna') s += `<path d="M${x},${y + 8} Q${x + d * 2},${y - 6} ${x + d * 11},${y - 16}" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="${x + d * 11}" cy="${y - 17}" r="5" fill="${sil ? body : '#f3c64f'}" ${sw}/>`;
+    if (c.ear === 'frog') s += `<circle cx="${x}" cy="${y + 2}" r="13" fill="${body}" ${sw}/>`;
+    if (c.ear === 'claw') s += `<g transform="translate(${k ? 112 : 8},${top + 22}) rotate(${d * 20})"><path d="M0,10 C${-d * 4},-4 ${d * 6},-14 ${d * 12},-6 L${d * 4},0 L${d * 13},2 C${d * 10},12 ${d * 2},14 0,10Z" fill="${body}" ${sw}/></g>`;
+  });
+  s += `<ellipse cx="${sh === 2 ? 13 : 18}" cy="82" rx="7" ry="10" fill="${body}" ${sw} transform="rotate(25 ${sh === 2 ? 13 : 18} 82)"/><ellipse cx="${sh === 2 ? 107 : 102}" cy="82" rx="7" ry="10" fill="${body}" ${sw} transform="rotate(-25 ${sh === 2 ? 107 : 102} 82)"/>`;
+  s += `<path d="${BODY}" fill="${body}" ${sw}/>`;
+  if (c.ear === 'none' && id === 'p14' && !sil) s += `<path d="M28,${top + 26} Q60,${top - 4} 92,${top + 26}" stroke="${INK}" stroke-width="1.6" fill="none" opacity=".35"/><path d="M40,${top + 6} l8,10 l12,-12 l12,12 l8,-10" stroke="${INK}" stroke-width="1.4" fill="none" opacity=".3"/>`;
+  if (id === 'p8' && !sil) s += `<path d="M24,100 q6,10 12,0 q6,10 12,0 q6,10 12,0 q6,10 12,0 q6,10 12,0 q6,10 12,0" fill="${body}" stroke="${INK}" stroke-width="2"/>`;
+  if (sil) {
+    s += `<text x="60" y="${ey + 16}" text-anchor="middle" font-size="38" font-weight="700" fill="#f3ead8" font-family="serif">?</text></svg>`;
+    return s;
+  }
+  s += `<ellipse cx="${sh === 2 ? 40 : 44}" cy="${top + 16}" rx="11" ry="6" fill="#fff" opacity=".28" transform="rotate(-25 44 ${top + 16})"/>`;
+  s += `<ellipse cx="60" cy="91" rx="${sh === 2 ? 30 : 23}" ry="14" fill="${belly}"/>`;
+  s += `<text x="60" y="${c.g.length > 2 ? 96 : 97}" text-anchor="middle" font-size="${c.g.length > 3 ? 12 : 15}" font-weight="700" fill="${body}" font-family="'Noto Serif SC',serif">${c.g}</text>`;
+  s += `<ellipse cx="${ex[0] - 9}" cy="${my + 1}" rx="6" ry="3.5" fill="#ef7f7f" opacity=".45"/><ellipse cx="${ex[1] + 9}" cy="${my + 1}" rx="6" ry="3.5" fill="#ef7f7f" opacity=".45"/>`;
+  ex.forEach((x, k) => {
+    if (mood === 'idle') {
+      s += `<circle cx="${x}" cy="${ey}" r="10" fill="#fff" stroke="${INK}" stroke-width="2"/><circle cx="${x + 2}" cy="${ey + 1}" r="5" fill="${INK}"/><circle cx="${x + 3.5}" cy="${ey - 1}" r="1.7" fill="#fff"/>`;
+      s += k ? `<path d="M${x - 7},${ey - 12} L${x + 9},${ey - 16}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>` : `<path d="M${x - 9},${ey - 16} L${x + 7},${ey - 12}" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;
+    } else if (mood === 'laugh') s += `<path d="M${x - 9},${ey + 2} Q${x},${ey - 9} ${x + 9},${ey + 2}" stroke="${INK}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+    else if (mood === 'hurt') s += `<path d="M${x - 7},${ey - 7} L${x + 7},${ey + 7} M${x + 7},${ey - 7} L${x - 7},${ey + 7}" stroke="${INK}" stroke-width="3.2" stroke-linecap="round"/>`;
+    else s += `<path d="M${x - 9},${ey} Q${x},${ey + 7} ${x + 9},${ey}" stroke="${INK}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+  });
+  if (mood === 'idle') s += `<path d="M48,${my} Q60,${my + 9} 72,${my}" stroke="${INK}" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M63,${my + 3.4} l3,6.5 l3,-7.4Z" fill="#fff" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/>`;
+  else if (mood === 'laugh') s += `<path d="M45,${my - 3} Q60,${my + 24} 75,${my - 3} Q60,${my + 2} 45,${my - 3}Z" fill="#7a1f2b" stroke="${INK}" stroke-width="2"/><ellipse cx="60" cy="${my + 7}" rx="6.5" ry="3" fill="#e9798a"/>`;
+  else if (mood === 'hurt') s += `<path d="M47,${my + 4} l4,-4 l4,4 l4,-4 l4,4 l4,-4 l4,4" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="M${ex[1] + 12},${ey - 10} q3,5 0,8 q-3,-3 0,-8Z" fill="#7cc4e8" stroke="${INK}" stroke-width="1"/>`;
+  else s += `<ellipse cx="60" cy="${my + 3}" rx="3.5" ry="3" fill="#7a1f2b"/><text x="92" y="${top + 4}" font-size="15" font-weight="700" fill="${INK}" opacity=".6" font-family="serif">z</text><text x="101" y="${top - 6}" font-size="11" font-weight="700" fill="${INK}" opacity=".45" font-family="serif">z</text>`;
+  if (c.ear === 'sprout') s += `<path d="M60,${top + 2} Q58,${top - 8} 60,${top - 14}" stroke="${INK}" stroke-width="2.2" fill="none"/><path d="M60,${top - 12} C50,${top - 22} 42,${top - 14} 44,${top - 8} C50,${top - 6} 56,${top - 8} 60,${top - 12}Z M60,${top - 12} C70,${top - 24} 80,${top - 16} 77,${top - 10} C71,${top - 7} 64,${top - 9} 60,${top - 12}Z" fill="#7fb069" stroke="${INK}" stroke-width="1.6"/>`;
+  if (c.ear === 'crown') s += `<path d="M38,${top + 6} L36,${top - 16} L48,${top - 4} L60,${top - 22} L72,${top - 4} L84,${top - 16} L82,${top + 6}Z" fill="#f3c64f" ${sw}/><circle cx="60" cy="${top - 4}" r="4" fill="#d8312a"/>`;
+  return s + '</svg>';
+}
+function gourdSVG() {
+  return `<svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><radialGradient id="gGd" cx=".36" cy=".32" r=".85"><stop offset="0" stop-color="#f8d98a"/><stop offset=".55" stop-color="#d9a441"/><stop offset="1" stop-color="#9a6118"/></radialGradient></defs>
+  <path d="M57,22 C56,14 58,8 64,4 C66,8 65,14 63,22Z" fill="#6b4a2a" stroke="${INK}" stroke-width="1.8"/><path d="M63,10 C72,4 82,8 84,14 C76,16 68,14 63,10Z" fill="#6f9a52" stroke="${INK}" stroke-width="1.4"/>
+  <path d="M60,20 C76,20 84,32 84,46 C84,58 76,64 72,70 C96,78 104,96 102,114 C100,138 82,152 60,152 C38,152 20,138 18,114 C16,96 24,78 48,70 C44,64 36,58 36,46 C36,32 44,20 60,20Z" fill="url(#gGd)" stroke="${INK}" stroke-width="2.4"/>
+  <ellipse cx="46" cy="40" rx="6" ry="9" fill="#fff" opacity=".3"/><ellipse cx="40" cy="104" rx="9" ry="16" fill="#fff" opacity=".22"/>
+  <path d="M47,70 Q60,77 73,70" stroke="#b8312a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M66,74 L70,98 M66,74 L64,99 M66,74 L67,100" stroke="#b8312a" stroke-width="2" stroke-linecap="round"/>
+  <rect x="47" y="104" width="26" height="26" rx="3" fill="#b8312a" opacity=".92"/><rect x="49.5" y="106.5" width="21" height="21" rx="2" fill="none" stroke="#fbe9d0" stroke-width="1.2"/><text x="60" y="123" text-anchor="middle" font-family="'Ma Shan Zheng',serif" font-size="17" fill="#fbe9d0">收</text></svg>`;
+}
+
+/* ================= state ================= */
+const LSK = 'psle-calc-quest-v1';
+const ST = { lang: 'bi', prog: {}, xp: null, snd: true, daily: {}, runs: [], lastBackup: 0 };
+try { const s = JSON.parse(localStorage.getItem(LSK) || '{}'); for (const k of ['lang', 'prog', 'xp', 'snd', 'daily', 'runs', 'lastBackup']) if (s[k] !== undefined && s[k] !== null) ST[k] = s[k]; } catch (e) { }
+if (ST.xp == null) { let x = 0; for (const k in ST.prog) x += (ST.prog[k].small || 0) * 10 + (ST.prog[k].big || 0) * 40; ST.xp = x; }
+const save = () => { try { localStorage.setItem(LSK, JSON.stringify(ST)); } catch (e) { } };
+const $ = s => document.querySelector(s);
+const pr = id => ST.prog[id] || (ST.prog[id] = { rounds: 0, best: 0, big: 0, small: 0, traps: {}, bestTime: null });
+const PT = id => PTS.find(p => p.id === id);
+const MD = m => MODS.find(x => x.id === m);
+const CN = ['', '一', '二', '三', '四', '五', '六'];
+const seen = id => { const g = ST.prog[id]; return !!(g && (g.seen || g.rounds)); };
+const trapSum = id => Object.values((ST.prog[id] || {}).traps || {}).reduce((a, b) => a + b, 0);
+let CUR = null, TIMER = null;
+
+const RANKS = [[0, '童生', 'Pupil'], [150, '秀才', 'Scholar'], [450, '举人', 'Graduate'], [900, '贡士', 'Candidate'], [1600, '进士', 'Laureate'], [2600, '探花', 'Third Place'], [4000, '榜眼', 'Runner-up'], [6000, '状元', 'Top Scholar']];
+function rankOf(x) { let i = 0; while (i + 1 < RANKS.length && x >= RANKS[i + 1][0]) i++; const nx = RANKS[i + 1]; return { i, z: RANKS[i][1], e: RANKS[i][2], nx, pct: nx ? (x - RANKS[i][0]) / (nx[0] - RANKS[i][0]) : 1 }; }
+function addXP(n) {
+  const before = rankOf(ST.xp).i; ST.xp += n; if (CUR) CUR.xpGain = (CUR.xpGain || 0) + n; save();
+  const r = rankOf(ST.xp); if (r.i > before) setTimeout(() => toast(`${S2('升级啦！你现在是', 'Rank up! You are now')}<b>${r.z}</b><span class="en">${r.e}</span>`), 700);
+  renderHud();
+}
+function toast(h) { const t = $('#toast'); t.innerHTML = h; t.classList.add('show'); SFX.cap(); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 3200); }
+const pad = n => String(n).padStart(2, '0');
+const dkey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+function streakN() { const d = new Date(); if (!ST.daily[dkey(d)]) d.setDate(d.getDate() - 1); let n = 0; while (ST.daily[dkey(d)]) { n++; d.setDate(d.getDate() - 1); } return n; }
+
+/* ================= sound (synth, no files) ================= */
+let AC = null;
+function tone(f, t0, d, type = 'sine', v = .15, f2) {
+  if (!ST.snd) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume();
+    const o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime + t0;
+    o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + 0.05);
+  } catch (e) { }
+}
+const SFX = {
+  hit: c => { const b = [523, 587, 659, 784, 880, 1047][Math.min(Math.max(c, 1) - 1, 5)]; tone(b, 0, .12, 'triangle', .2); tone(b * 1.5, .07, .2, 'triangle', .15); },
+  miss: () => { tone(330, 0, .16, 'square', .05, 220); tone(220, .15, .32, 'square', .05, 150); },
+  fix: () => { tone(587, 0, .12, 'triangle', .14); tone(740, .09, .16, 'triangle', .12); },
+  cap: () => [523, 659, 784, 1047, 784, 1047].forEach((f, i) => tone(f, i * .12, .26, 'triangle', .16)),
+  esc: () => { tone(500, 0, .12, 'sine', .1, 760); tone(760, .12, .22, 'sine', .1, 380); }
+};
+
+/* ================= header ================= */
+function setLang(l) { ST.lang = l; document.body.className = 'lang-' + l; document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('on', b.dataset.l === l)); save(); }
+function totals() { let big = 0, small = 0; for (const k in ST.prog) { big += ST.prog[k].big || 0; small += ST.prog[k].small || 0; } return { big, small }; }
+const capN = () => PTS.filter(p => (ST.prog[p.id] || {}).big).length;
+function renderHud() {
+  const r = rankOf(ST.xp);
+  $('#hud').innerHTML = `<a class="rk" href="#home" style="text-decoration:none;color:inherit" title="${ST.xp} XP"><span class="rt">${r.z}</span><span class="xpbar"><i style="width:${(r.pct * 100).toFixed(0)}%"></i></span><span class="rx">${ST.xp}${r.nx ? '/' + r.nx[0] : ''}</span></a><a class="gc" href="#dex" style="text-decoration:none;color:inherit" title="收服 · caught">${gourdSVG()}${capN()}<span style="opacity:.6;font-weight:400">/14</span></a>`;
+  $('#snd').textContent = ST.snd ? '🔊' : '🔇';
+}
+
+/* ================= HOME · map ================= */
+const MAPX = [26, 68, 80, 44, 18, 46, 78, 58, 24, 50, 80, 56, 22, 54];
+const nextUncaught = (after) => { const i0 = after ? PTS.findIndex(p => p.id === after) + 1 : 0; for (let k = 0; k < PTS.length; k++) { const p = PTS[(i0 + k) % PTS.length]; if (!pr(p.id).big && p.id !== after) return p; } return PTS[i0 % PTS.length]; };
+function renderHome() {
+  CUR = null; stopTimer();
+  const t = totals(), r = rankOf(ST.xp), cap = capN(), nx = nextUncaught(), dd = ST.daily[dkey()], stk = streakN();
+  let y = 46; const nodes = [], regs = [];
+  PTS.forEach((p, i) => { if (i === 0 || PTS[i - 1].m !== p.m) { regs.push({ m: p.m, y }); y += 92; } nodes.push({ p, x: MAPX[i], y }); y += 150; });
+  const H = y - 30;
+  let d = `M${nodes[0].x},${nodes[0].y}`;
+  for (let i = 1; i < nodes.length; i++) { const a = nodes[i - 1], b = nodes[i], my = (a.y + b.y) / 2; d += ` C${a.x},${my} ${b.x},${my} ${b.x},${b.y}`; }
+  const nodeH = ({ p, x, y }) => {
+    const g = pr(p.id), M = MON[p.id], sn = seen(p.id), cp = g.big > 0, isN = !cp && p.id === nx.id;
+    return `<a class="node ${cp ? 'cap' : ''} ${isN ? 'nx' : ''}" href="#${p.id}" style="left:${x}%;top:${y}px">
+      <div class="av">${mon(p.id, cp ? 'sleep' : sn ? 'idle' : 'sil')}${cp ? `<span class="seal-s">收${g.big > 1 ? `<i>×${g.big}</i>` : ''}</span>` : ''}${isN ? `<span class="nxtag">${S2('下一关', 'Next')}</span>` : ''}</div>
+      <div class="nl"><b>${p.no} · ${sn ? S2(M.zh, M.en) : '？？？'}</b><small>${S2(p.sz, p.se)}${g.rounds && !cp ? ` · ${g.best}/6` : ''}</small></div></a>`;
+  };
+  $('#main').innerHTML = `<section class="panel hero2">
+    <div><h1 class="cal">计算避坑闯关</h1><div class="hero-e">PSLE Calculation Quest · Catch the Trap Monsters</div>
+    <div class="intro">${B2('14 只<b>坑怪</b>躲在计算题里，专等你掉坑。先<b>侦察</b>它的招数，再连答 6 题把它打到 0 血，<b>收进葫芦</b>！', '14 <b>trap monsters</b> hide in your sums, waiting for you to fall in. <b>Scout</b> their trick, then answer 6 in a row to knock them out and <b>catch them in your gourd</b>!')}</div>
+    <div class="stats">
+      <div class="stat"><div class="v"><span class="cal">${r.z}</span><small>${ST.xp} XP</small></div><div class="xpbar"><i style="width:${(r.pct * 100).toFixed(0)}%"></i></div><div class="l">${r.nx ? S2(`再 ${r.nx[0] - ST.xp} XP 升${r.nx[1]}`, `${r.nx[0] - ST.xp} XP to ${r.nx[2]}`) : S2('已是状元！', 'Top rank!')}</div></div>
+      <div class="stat"><div class="v">${cap}<small>/ 14</small></div><div class="l">${S2('只坑怪已收服', 'monsters caught')}</div></div>
+      <div class="stat"><div class="v">${stk}<small>${S2('天', 'days')}</small></div><div class="l">${S2('混战连续打卡', 'daily streak')}</div></div>
+      <div class="stat"><div class="v">★ ${t.small}</div><div class="l">${S2('题一次做对', 'right first time')}</div></div>
+    </div>
+    <div class="cta"><a class="btn big" href="#${nx.id}">⚔ ${S2('继续闯关：' + (seen(nx.id) ? MON[nx.id].zh : '易错点 ' + nx.no), 'Next: ' + (seen(nx.id) ? MON[nx.id].en : 'Trap ' + nx.no))}</a>
+      <a class="btn gold" href="#daily">${dd ? '✓ ' : '🔥 '}${S2('今日混战', 'Daily Brawl')}${dd ? ` ${dd.s}/6` : ''}</a><a class="btn jade" href="#dex">📖 ${S2('坑怪图鉴', 'Monster Book')}</a><a class="btn ghost" href="#parent">👪 ${S2('家长页', 'Parents')}</a></div>${bkNag()}</div>
+    <div class="hero-g">${gourdSVG()}<div class="cnt">${cap}<small> / 14</small></div></div>
+  </section>
+  <section class="panel"><h2>${S2('闯关地图', 'Quest Map')}</h2><div class="tip" style="margin:0">${B2('可以跳着打任何一关。灰色问号 = 还没遇见的坑怪；红印 = 已收服。', 'Jump to any stage. Grey “?” = not met yet; red seal = caught.')}</div>
+    <div class="map" style="height:${H}px"><svg class="path" viewBox="0 0 100 ${H}" preserveAspectRatio="none"><path d="${d}" fill="none" stroke="rgba(180,138,58,.28)" stroke-width="22" vector-effect="non-scaling-stroke" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#6b5136" stroke-width="3" stroke-dasharray="2 11" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+    ${regs.map(g => `<div class="region" style="top:${g.y}px"><b>${S2('第' + CN[g.m] + '关', 'Stage ' + g.m)}</b>${S2(MD(g.m).zh, MD(g.m).en)}</div>`).join('')}
+    ${nodes.map(nodeH).join('')}</div></section>`;
+  window.scrollTo(0, 0);
+}
+
+/* ================= DEX ================= */
+function renderDex() {
+  CUR = null; stopTimer();
+  const cap = capN();
+  $('#main').innerHTML = `<section class="panel"><div class="crumb"><a href="#home">‹ ${S2('地图', 'Map')}</a></div><h1>📖 ${S2('坑怪图鉴', 'Monster Book')}</h1>
+    <div class="dexsum"><b style="font-size:1.4rem;color:var(--red2)">${cap} / 14</b><div class="dexbar"><i style="width:${cap / 14 * 100}%"></i></div><span>${cap === 14 ? S2('全部收服！你是避坑大师！', 'All caught — trap master!') : S2('收服全部 14 只，成为避坑大师', 'Catch all 14 to become a trap master')}</span></div></section>
+    <section class="panel"><div class="dex">${PTS.map(p => {
+    const g = pr(p.id), M = MON[p.id], sn = seen(p.id), cp = g.big > 0, n = trapSum(p.id);
+    return `<a class="dc ${cp ? 'cap' : ''}" href="#${p.id}"><span class="no">No.${p.no}</span>${cp ? `<span class="seal-s">收${g.big > 1 ? `<i>×${g.big}</i>` : ''}</span>` : ''}
+      ${mon(p.id, cp ? 'idle' : sn ? 'idle' : 'sil')}
+      <div class="nm2">${sn ? M.zh : '？？？'}</div><div class="ne">${sn ? M.en : '???'}</div>
+      <div class="ds">${sn ? S2('“' + M.say[0] + '”', '“' + M.say[1] + '”') : S2(p.sz, p.se)}</div>
+      <div class="dk">${cp ? S2('已收服', 'Caught') + (g.bestTime ? ' · ⏱ ' + fmtTime(g.bestTime) : '') : g.rounds ? S2('最好 ' + g.best + '/6', 'Best ' + g.best + '/6') : S2('未遇见', 'Not met')}${n ? ' · ' + S2('掉坑 ' + n + ' 次', 'fell in ' + n + '×') : ''}</div></a>`;
+  }).join('')}</div></section>`;
+  window.scrollTo(0, 0);
+}
+
+/* ================= TRAP page ================= */
+function kbHTML(kb) {
+  const keys = kb === 'ratio' ? [':'] : kb === 'frac' ? ['/', '␣'] : ['.'];
+  return `<div class="keys">${keys.map(k => `<button type="button" class="key" data-k="${k}">${k === '␣' ? S2('空格(带分数)', 'space (mixed no.)') : k}</button>`).join('')}<button type="button" class="key" data-k="⌫">⌫</button></div>`;
+}
+function fmtTime(ms) { const s = Math.round(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+function stopTimer() { if (TIMER) clearInterval(TIMER); TIMER = null; }
+function startTimer() { if (!CUR || CUR.t0) return; CUR.t0 = Date.now(); TIMER = setInterval(() => { const el = $('#timer'); if (el && CUR && CUR.t0 && !CUR.done) el.textContent = '⏱ ' + fmtTime(Date.now() - CUR.t0); }, 500); }
+
+function renderPoint(pid) {
+  const p = PT(pid); if (!p) return renderHome();
+  stopTimer();
+  const g = pr(pid), first = !seen(pid); g.seen = 1; save();
+  CUR = { mode: 'pt', pid };
+  let ex; for (let i = 0; i < 30; i++) { ex = p.gen(); if (ex.traps.length) break; }
+  CUR.ex = ex;
+  const m = MD(p.m), M = MON[pid], idx = PTS.indexOf(p);
+  const freq = Object.entries(g.traps || {}).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  $('#main').innerHTML = `<section class="panel phead">
+    <div class="crumb"><a href="#home">‹ ${S2('地图', 'Map')}</a> · ${S2('第' + CN[m.id] + '关 ' + m.zh, 'Stage ' + m.id + ' ' + m.en)} · ${S2('易错点 ' + p.no, 'Trap ' + p.no)} <span class="pn">${idx > 0 ? `<a href="#${PTS[idx - 1].id}">‹ ${S2('上一只', 'Prev')}</a>` : ''}${idx < PTS.length - 1 ? `<a href="#${PTS[idx + 1].id}">${S2('下一只', 'Next')} ›</a>` : ''}</span></div>
+    <div class="fh"><div class="fh-mon">${mon(pid, 'idle')}</div><div class="fh-txt">
+      <div class="fh-name cal">${M.zh}</div><div class="fh-en">${M.en}</div>
+      <div class="bubble">${B2(M.say[0], M.say[1])}</div>
+      <div class="fh-trap">${B2('它的坑：' + p.zh, 'Its trap: ' + p.en)}</div></div></div>
+    <div class="rule"><b class="k">${S2('破解口诀', 'How to beat it')}</b>${B2(p.rule[0], p.rule[1])}</div>
+    <div class="rec">${g.big ? `<span class="chip g">🏺 ${S2('已收服 ×' + g.big, 'Caught ×' + g.big)}</span>` : ''}${g.rounds ? `<span class="chip g">${S2('最好 ' + g.best + '/6', 'Best ' + g.best + '/6')}</span>` : ''}${g.bestTime ? `<span class="chip g">⏱ ${fmtTime(g.bestTime)}</span>` : ''}
+    ${freq.length ? `${S2('你常掉的坑：', 'You often:')} ${freq.map(([k, n]) => `<span class="chip">${S2(TRAPL[k] ? TRAPL[k][0] : k, TRAPL[k] ? TRAPL[k][1] : k)} ×${n}</span>`).join('')}` : ''}</div>
+  </section>
+  <details class="panel scout" ${first || !g.rounds ? 'open' : ''}><summary>🔍 ${S2('侦察：看清它的招数', 'Scout: see its trick')} <small>${S2('（例题）', '(worked example)')}</small></summary><div id="exm"></div></details>
+  <section class="panel arena" id="arena"></section>`;
+  renderExample(); startRound(false);
+  window.scrollTo(0, 0);
+}
+function renderExample() {
+  const q = CUR.ex, t = q.traps[0], M = MON[CUR.pid];
+  $('#exm').innerHTML = `<div class="sech"><span></span><button class="btn ghost sm" id="newex">↻ ${S2('换一道例题', 'Another example')}</button></div>
+    <div class="qbox">${q.prompt}</div>
+    ${t ? `<div class="wrongway"><div class="tag bad">✗ ${S2(M.zh + '的坑', M.en + '’s trap')}</div>${B2(t.m[0], t.m[1])}<div class="tv">${S2('掉进去会得到', 'Falling in gives')}：<s>${ansH(q, t.v)}</s></div></div>` : ''}
+    <div class="rightway"><div class="tag good">✓ ${S2('破解方法', 'How to beat it')}</div><div class="sol">${q.sol}</div><div class="final">${S2('答案', 'Answer')}：<b>${ansH(q, q.ans)}</b></div></div>
+    <div class="exfoot">${B2('看清它的招数了吗？去打败它！', 'Seen through its trick? Go beat it!')}<button class="btn" id="go6">⚔ ${S2('开战 ↓', 'Fight ↓')}</button></div>`;
+}
+
+/* ================= DAILY ================= */
+function dailyPick() {
+  const pool = PTS.map(p => { const g = ST.prog[p.id] || {}; return { p, w: 1 + trapSum(p.id) * 1.5 + (g.big ? 0 : 1) }; });
+  const out = [];
+  while (out.length < 6) { const tot = pool.reduce((a, b) => a + b.w, 0); let r = Math.random() * tot, k = 0; while (k < pool.length - 1 && r > pool[k].w) { r -= pool[k].w; k++; } out.push(pool[k].p); pool.splice(k, 1); }
+  return shuffle(out);
+}
+function renderDaily() {
+  stopTimer(); CUR = { mode: 'daily' };
+  const dd = ST.daily[dkey()], stk = streakN(), M = MON.king;
+  const days = []; for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); const r = ST.daily[dkey(d)]; days.push(`<span><i class="${r ? (r.s === 6 ? 'on gold' : 'on') : ''}">${r ? (r.s === 6 ? '金' : '印') : ''}</i>${i === 0 ? S2('今天', 'Today') : (d.getMonth() + 1) + '/' + d.getDate()}</span>`); }
+  $('#main').innerHTML = `<section class="panel"><div class="crumb"><a href="#home">‹ ${S2('地图', 'Map')}</a></div>
+    <div class="dh">${mon('king', 'idle')}<div><h1 class="cal" style="font-size:2rem;color:var(--red2);margin:0">${S2('今日混战 · 坑王', 'Daily Brawl · Pit King')}</h1>
+    <div class="bubble">${B2(M.say[0], M.say[1])}</div>
+    ${B2('6 道题来自 6 只不同的坑怪，<b>你越常掉的坑，越容易被抽到</b>。每天打完一场就盖一个印，连续打卡不断！', '6 questions from 6 different monsters — <b>the traps you fall into most come up more</b>. Finish one brawl a day to get a stamp and keep your streak!')}
+    <div class="cal7">${days.join('')}</div><div class="tip" style="margin:6px 0 0">${S2(`连续 ${stk} 天`, `${stk}-day streak`)}${dd ? ' · ' + S2('今天最好 ' + dd.s + '/6', 'Best today ' + dd.s + '/6') : ''}</div></div></div></section>
+    <section class="panel arena" id="arena"></section>`;
+  startRound(false);
+  window.scrollTo(0, 0);
+}
+
+/* ================= BATTLE ================= */
+const OUCH = [['哎哟！', 'Ouch!'], ['可恶，被你看穿了！', 'Argh, you saw through me!'], ['我的坑居然没用？！', 'My trap didn’t work?!'], ['手下留情啊～', 'Go easy on me~'], ['疼疼疼……', 'Ow ow ow…'], ['你怎么知道的？！', 'How did you know?!']];
+const PRAISE = [['完全正确！', 'Spot on!'], ['漂亮！', 'Brilliant!'], ['一击命中！', 'Direct hit!'], ['太厉害了！', 'Excellent!']];
+const foeId = () => CUR.mode === 'daily' ? 'king' : CUR.pid;
+function startRound(scroll) {
+  stopTimer();
+  if (CUR.mode === 'daily') CUR.qs = dailyPick().map(p => ({ q: p.gen(), pid: p.id, st: 'new', first: null }));
+  else { const p = PT(CUR.pid); CUR.qs = Array.from({ length: 6 }, () => ({ q: p.gen(), pid: p.id, st: 'new', first: null })); CUR.round = (pr(CUR.pid).rounds || 0) + 1; }
+  Object.assign(CUR, { i: 0, hp: 6, combo: 0, maxCombo: 0, xpGain: 0, t0: 0, done: false });
+  renderArena();
+  if (scroll) { $('#arena').scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => { const el = $('#ain'); if (el) el.focus({ preventScroll: true }); }, 450); }
+}
+function renderArena() {
+  const fid = foeId(), M = MON[fid];
+  $('#arena').innerHTML = `<div class="sech"><h2>⚔ ${CUR.mode === 'daily' ? S2('混战开始', 'Brawl') : S2('第 ' + CUR.round + ' 轮 · 战斗', 'Round ' + CUR.round + ' · Battle')}</h2><div class="meta"><span id="dots"></span><span id="timer">⏱ 00:00</span></div></div>
+    <div class="tip" style="margin:4px 0 0">${B2('第一次就答对 = 打掉它 1 滴血。6 滴血全打掉就能收服它！答错会告诉你掉进了哪个坑，可以再改一次。', 'Right first time = 1 hit. Knock off all 6 HP to catch it! If you slip, you’ll see which trap got you and can fix it once.')}</div>
+    <div class="stage"><div class="foe" id="foe"><div class="foe-svg" id="foeSvg">${mon(fid, 'idle')}</div>
+      <div class="foe-info"><div class="foe-nm"><b class="cal">${M.zh}</b><span class="en">${M.en}</span></div><div class="hp" id="hp"></div><div class="hpl" id="hpl"></div><div class="say" id="say"></div></div><div class="fx" id="fx"></div></div>
+    <div class="duel" id="duel"></div></div><div id="summary"></div>`;
+  updHP(); say(B2(M.say[0], M.say[1]).replace(/<div/g, '<span').replace(/<\/div>/g, '</span>')); updDots(); renderQ(false);
+}
+function updHP() { const el = $('#hp'); if (!el) return; el.innerHTML = Array.from({ length: 6 }, (_, k) => `<i class="${k >= CUR.hp ? 'gone' : ''}"></i>`).join(''); $('#hpl').innerHTML = S2(`血量 ${CUR.hp}/6`, `HP ${CUR.hp}/6`); }
+function say(h) { const el = $('#say'); if (el) el.innerHTML = h; }
+function mood(m) { const el = $('#foeSvg'); if (el) el.innerHTML = mon(foeId(), m); }
+function updDots() { const el = $('#dots'); if (!el) return; el.innerHTML = CUR.qs.map((s, k) => `<i class="dot ${s.st === 'ok' ? 'ok' : s.st === 'fixed' ? 'fx' : (s.st === 'fail' || s.st === 'retry') ? 'no' : ''} ${k === CUR.i && !CUR.done ? 'cur' : ''}"></i>`).join(''); }
+function showCombo() { const el = $('#combo'); if (el) el.outerHTML = CUR.combo >= 2 ? `<span class="combo" id="combo">🔥 ${S2('连击 ×' + CUR.combo, 'Combo ×' + CUR.combo)}</span>` : '<span id="combo"></span>'; }
+function renderQ(focus) {
+  const s = CUR.qs[CUR.i], q = s.q, p = PT(s.pid), i = CUR.i;
+  $('#duel').innerHTML = `<div class="card" id="card"><div class="qhead"><span class="cno">${S2('第 ' + (i + 1) + ' / 6 题', 'Q' + (i + 1) + ' of 6')}</span>${CUR.mode === 'daily' ? `<span class="src">${mon(s.pid, 'idle')}${S2(MON[s.pid].zh + '的坑', MON[s.pid].en)}</span>` : ''}<span id="combo"></span></div>
+    <div class="qbody">${q.prompt}</div>
+    <form class="ansrow" id="af">${q.pre ? `<span class="pre">${q.pre}</span>` : ''}<input class="ans" id="ain" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" placeholder="${q.ansType === 'ratio' ? 'a : b' : p.kb === 'frac' ? '3/4 · 2 1/2 · 0.75' : ''}" aria-label="answer">${q.unit ? `<span class="unit">${q.unit.trim()}</span>` : ''}<button class="btn chk" type="submit">⚔ ${S2('出招', 'Strike')}</button></form>
+    ${kbHTML(p.kb)}<div id="fb"></div>
+    <div class="sol hide" id="sol"><div class="soltt">${S2('解题过程', 'Working')}</div>${q.sol}<div class="final">${S2('答案', 'Answer')}：<b>${ansH(q, q.ans)}</b></div></div>
+    <div class="nextrow" id="nx"></div></div>`;
+  showCombo(); updDots();
+  if (focus) setTimeout(() => { const el = $('#ain'); if (el) el.focus({ preventScroll: true }); }, 60);
+}
+function fx(txt, cls = '') { const f = $('#fx'); if (!f) return; const e = document.createElement('div'); e.className = 'dmg ' + cls; e.innerHTML = txt; f.appendChild(e); setTimeout(() => e.remove(), 1200); }
+function check() {
+  const s = CUR.qs[CUR.i]; if (!s || ['ok', 'fixed', 'fail'].includes(s.st)) return;
+  const inp = $('#ain'), fb = $('#fb'), card = $('#card'), foe = $('#foe'), p = PT(s.pid), g = pr(s.pid), M = MON[s.pid];
+  startTimer();
+  const d = diagnose(s.q, inp.value);
+  if (d.empty) { fb.innerHTML = `<div class="msg warn">${S2('先写下你的答案哦。', 'Type your answer first.')}</div>`; inp.focus(); return; }
+  if (d.bad) { fb.innerHTML = `<div class="msg warn">${d.needRatio ? S2('请写成比的形式，如 4 : 3。', 'Write it as a ratio, e.g. 4 : 3.') : d.needNum ? S2('这题要写一个数。', 'This one needs a single number.') : S2('看不懂这个答案，请写整数、小数或分数（如 3/4、2 1/2）。', 'I can’t read that — use a whole number, decimal or fraction (e.g. 3/4, 2 1/2).')}</div>`; return; }
+  if (s.st === 'new') {
+    s.first = d.ok;
+    if (d.ok) {
+      s.st = 'ok'; CUR.combo++; CUR.maxCombo = Math.max(CUR.maxCombo, CUR.combo); CUR.hp--;
+      const gain = 10 + Math.min(CUR.combo - 1, 5) * 2; addXP(gain);
+      card.classList.add('right'); SFX.hit(CUR.combo);
+      foe.classList.add('hit'); mood('hurt'); fx('−1'); fx('+' + gain + ' XP', 'xp');
+      setTimeout(() => { foe.classList.remove('hit'); if (CUR && !CUR.done && CUR.hp > 0) mood('idle'); }, 650);
+      updHP(); const o = pick(OUCH); say(CUR.hp > 0 ? S2(o[0], o[1]) : S2('不……不要葫芦……', 'No… not the gourd…'));
+      const pz = pick(PRAISE);
+      fb.innerHTML = `<div class="msg good">✓ ${S2(pz[0], pz[1])}${d.note ? '<br>' + S2(d.note[0], d.note[1]) : ''} <button class="lnk" data-sol="1">${S2('看解题过程', 'Show working')}</button></div>`;
+      resolve();
+    } else {
+      s.st = 'retry'; CUR.combo = 0; s.trap = d.id; s.wa = inp.value.trim().slice(0, 40); g.traps[d.id] = (g.traps[d.id] || 0) + 1; save();
+      card.classList.add('wrong', 'shake'); setTimeout(() => card.classList.remove('shake'), 500);
+      foe.classList.add('laugh'); mood('laugh'); SFX.miss(); setTimeout(() => { foe.classList.remove('laugh'); if (CUR && !CUR.done) mood('idle'); }, 1500);
+      const tm = d.m ? S2(d.m[0], d.m[1]) : S2('有一步算错了。' + p.hint[0], 'One step went wrong. ' + p.hint[1]);
+      say(CUR.mode === 'daily' ? S2(`嘿嘿，这是${M.zh}的坑，你掉进去啦！`, `Heh heh — that was ${M.en}’s trap!`) : S2('嘿嘿嘿，掉进我的坑啦！', 'Heh heh heh — you fell into my trap!'));
+      fb.innerHTML = `<div class="msg bad"><b class="mh">🕳 ${S2('掉坑了！问题在这里：', 'Fell in! Here’s the problem:')}</b>${tm}
+        <div class="acts"><button class="btn sm" data-retry="1">↺ ${S2('爬出来，改一次', 'Climb out & fix it')}</button><button class="lnk" data-giveup="1">${S2('看解题过程', 'Show working')}</button></div></div>`;
+      showCombo(); updDots(); inp.select(); return;
+    }
+  } else if (s.st === 'retry') {
+    if (d.ok) { s.st = 'fixed'; addXP(4); SFX.fix(); card.classList.remove('wrong'); card.classList.add('fixed'); fx('+4 XP', 'xp'); say(S2('哼，被你爬出来了……这题不算伤到我！', 'Hmph, you climbed out… but that one didn’t hurt me!')); fb.innerHTML = `<div class="msg good">✓ ${S2('爬出坑了！记住这个坑。（改对不扣它的血）', 'Out of the pit! Remember this trap. (Fixes don’t take its HP.)')} <button class="lnk" data-sol="1">${S2('看解题过程', 'Show working')}</button></div>`; resolve(); }
+    else { s.st = 'fail'; fb.innerHTML = `<div class="msg bad"><b>✗ ${S2('还是不对。', 'Still not right.')}</b> ${d.m ? S2(d.m[0], d.m[1]) : ''}<br>${S2('对照下面的解题过程，找出算错的那一步。', 'Compare with the working below and find the step that went wrong.')}</div>`; $('#sol').classList.remove('hide'); resolve(); }
+  }
+  showCombo(); updDots();
+}
+function resolve() {
+  const inp = $('#ain'); inp.readOnly = true; const b = $('#card .chk'); if (b) b.disabled = true; $('#card').querySelectorAll('.key').forEach(k => k.disabled = true);
+  const last = CUR.i === CUR.qs.length - 1;
+  $('#nx').innerHTML = `<button class="btn" id="nextq">${last ? S2('看战果 →', 'See result →') : S2('下一题 →', 'Next →')}</button>`;
+  setTimeout(() => { const n = $('#nextq'); if (n) n.focus({ preventScroll: true }); }, 30);
+}
+function giveUp() { const s = CUR.qs[CUR.i]; if (s.st !== 'retry') return; s.st = 'fail'; $('#sol').classList.remove('hide'); const a = $('#fb .acts'); if (a) a.remove(); resolve(); updDots(); }
+function nextQ() {
+  if (CUR.done) return;
+  if (CUR.i < CUR.qs.length - 1) { CUR.i++; renderQ(true); const st = $('#arena'); if (st && st.getBoundingClientRect().top < 0) st.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  else finish();
+}
+function finish() {
+  CUR.done = true; stopTimer();
+  const ms = CUR.t0 ? Date.now() - CUR.t0 : 0, score = CUR.qs.filter(s => s.first).length, perfect = score === 6, fid = foeId(), M = MON[fid];
+  let nextP = null;
+  if (CUR.mode === 'daily') {
+    const k = dkey(), prev = ST.daily[k];
+    ST.daily[k] = { s: Math.max(score, prev ? prev.s : 0) };
+    if (!prev) addXP(30); if (perfect && !(prev && prev.s === 6)) addXP(30);
+  } else {
+    const g = pr(CUR.pid); g.rounds++; g.best = Math.max(g.best, score); g.small += score;
+    if (perfect) { g.big++; if (!g.bestTime || ms < g.bestTime) g.bestTime = ms; addXP(40); }
+    nextP = nextUncaught(CUR.pid);
+  }
+  if (!Array.isArray(ST.runs)) ST.runs = [];
+  ST.runs.push({ d: Date.now(), p: CUR.mode === 'daily' ? 'daily' : CUR.pid, s: score, ms, c: CUR.maxCombo, x: CUR.xpGain,
+    w: CUR.qs.filter(q => q.first === false).map(q => ({ p: q.pid, t: q.trap || 'other', a: q.wa || '', r: ansPlain(q.q), f: q.st === 'fixed' ? 1 : 0 })) });
+  if (ST.runs.length > 2000) ST.runs = ST.runs.slice(-2000);
+  save(); renderHud(); updDots();
+  const stats = `<div class="tm">⏱ ${fmtTime(ms)} · ${S2('最高连击', 'Best combo')} ×${CUR.maxCombo} · +${CUR.xpGain} XP</div>`;
+  const again = `<button class="btn ${perfect ? 'ghost' : ''}" data-again="1">↻ ${CUR.mode === 'daily' ? S2('再来一场', 'Another brawl') : S2('再战 · 6 道新题', 'Rematch · 6 new')}</button>`;
+  const go = CUR.mode === 'daily' ? `<a class="btn jade" href="#home">${S2('回地图', 'Map')}</a>` : `<a class="btn ${perfect ? '' : 'ghost'}" href="#${nextP.id}">${S2('下一只坑怪', 'Next monster')} →</a>`;
+  const txt = perfect ? (CUR.mode === 'daily' ? B2('6 题全对，坑王被你打趴下了！今天盖金印！', 'All 6 — the Pit King is down! Gold stamp today!') : B2(`满分！${M.zh}被收进葫芦啦！`, `Full marks — ${M.en} is in your gourd!`))
+    : B2(`${M.zh}还剩 <b>${CUR.hp}</b> 滴血，溜走了！${score >= 4 ? '就差一点点，' : ''}再来一轮把它收进葫芦。`, `${M.en} escaped with <b>${CUR.hp}</b> HP left! ${score >= 4 ? 'So close — ' : ''}one more round to catch it.`);
+  $('#summary').innerHTML = `<div class="sum ${perfect ? 'perfect' : 'escape'}"><div class="sc"><b>${score}</b>/6</div><div class="sx">${txt}${stats}</div><div class="sa">${perfect ? go + again : again + go}</div></div>`;
+  if (perfect) { const me = CUR; setTimeout(() => { if (CUR === me) captureOv(fid, nextP); }, 500); }
+  else { $('#foe').classList.add('run'); SFX.esc(); say(S2('略略略～下次再来抓我！', 'Nyah nyah~ catch me next time!')); setTimeout(() => $('#summary').scrollIntoView({ behavior: 'smooth', block: 'center' }), 300); }
+}
+function captureOv(fid, nextP) {
+  const ov = $('#overlay'), M = MON[fid];
+  const confetti = Array.from({ length: 28 }, (_, i) => `<i class="cf" style="--x:${(Math.random() * 100).toFixed(0)}vw;--d:${(3 + Math.random() * 1.6).toFixed(2)}s;--r:${(Math.random() * 720 - 360).toFixed(0)}deg;--s:${(0.6 + Math.random() * 0.9).toFixed(2)}">${i % 3 ? '✿' : '★'}</i>`).join('');
+  const btns = nextP ? `<a class="btn" href="#${nextP.id}" data-close="1">${S2('去抓下一只', 'Catch the next one')} →</a><a class="btn gold" href="#dex" data-close="1">📖 ${S2('看图鉴', 'Monster Book')}</a>` : `<a class="btn" href="#home" data-close="1">${S2('回地图', 'Map')}</a>`;
+  ov.innerHTML = `<div class="ov-bg"></div>${confetti}<div class="ov-in" role="dialog" aria-label="caught"><div class="rays"></div>
+    <div class="cap-stage"><div class="cap-mon">${mon(fid, 'hurt')}</div><div class="cap-gourd">${gourdSVG()}</div><div class="cap-seal"><span>收服</span></div></div>
+    <div class="ov-late"><div class="ov-t cal">${fid === 'king' ? '打败坑王！' : '收服' + M.zh + '！'}</div><div class="ov-e">${fid === 'king' ? 'Pit King defeated — 6 / 6!' : 'You caught the ' + M.en + '! 6 / 6'}</div>
+    <div class="ov-b">${btns}<button class="btn ghost" data-close="1">${S2('留在这里', 'Stay here')}</button></div></div></div>`;
+  ov.hidden = false; requestAnimationFrame(() => ov.classList.add('show'));
+  setTimeout(() => SFX.hit(6), 1700); setTimeout(() => SFX.cap(), 3300);
+}
+function closeOv() { const ov = $('#overlay'); ov.classList.remove('show'); setTimeout(() => { ov.hidden = true; ov.innerHTML = ''; }, 250); }
+
+/* ---------- events ---------- */
+document.addEventListener('submit', e => { if (e.target.id === 'af') { e.preventDefault(); check(); } });
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, a'); if (!t) return;
+  if (t.dataset.l) return setLang(t.dataset.l);
+  if (t.id === 'snd') { ST.snd = !ST.snd; save(); renderHud(); if (ST.snd) SFX.fix(); return; }
+  if (t.id === 'newex') { const p = PT(CUR.pid); for (let i = 0; i < 30; i++) { CUR.ex = p.gen(); if (CUR.ex.traps.length) break; } renderExample(); return; }
+  if (t.id === 'go6') { $('#arena').scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => { const el = $('#ain'); if (el && !el.readOnly) el.focus({ preventScroll: true }); }, 450); return; }
+  if (t.id === 'nextq') return nextQ();
+  if (t.id === 'bkCopy') return copyBackup();
+  if (t.id === 'bkRestore') return restoreBackup();
+  if (t.dataset.day != null) { const el = document.getElementById('day' + t.dataset.day); if (el) el.hidden = !el.hidden; t.classList.toggle('open'); return; }
+  if (t.dataset.retry != null) { const inp = $('#ain'); inp.focus(); inp.select(); return; }
+  if (t.dataset.giveup != null) return giveUp();
+  if (t.dataset.sol != null) { $('#sol').classList.toggle('hide'); return; }
+  if (t.dataset.again) { closeOv(); return startRound(true); }
+  if (t.dataset.close) { closeOv(); return; }
+  if (t.classList.contains('key')) {
+    const card = t.closest('.card'), inp = card.querySelector('.ans'); if (inp.readOnly) return;
+    const k = t.dataset.k; const a = inp.selectionStart ?? inp.value.length, b = inp.selectionEnd ?? inp.value.length;
+    if (k === '⌫') { if (a === b && a > 0) { inp.value = inp.value.slice(0, a - 1) + inp.value.slice(b); inp.setSelectionRange(a - 1, a - 1); } else { inp.value = inp.value.slice(0, a) + inp.value.slice(b); inp.setSelectionRange(a, a); } }
+    else { const ch = k === '␣' ? ' ' : k; inp.value = inp.value.slice(0, a) + ch + inp.value.slice(b); inp.setSelectionRange(a + ch.length, a + ch.length); }
+    inp.focus(); startTimer(); return;
+  }
+});
+document.addEventListener('input', e => { if (e.target.id === 'ain') startTimer(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !$('#overlay').hidden) closeOv();
+  if (e.key === 'Enter' && e.target.id === 'ain' && e.target.readOnly) { e.preventDefault(); nextQ(); }
+});
+
+/* ================= KEEP HISTORY: persistent storage · backup code · daily log (same approach as Tense Runner v9) ================= */
+const STOR = { ok: false, persist: null };
+(function () {
+  try { localStorage.setItem('cq.probe', '1'); STOR.ok = localStorage.getItem('cq.probe') === '1'; } catch (e) { STOR.ok = false; }
+  try { if (navigator.storage && navigator.storage.persisted) navigator.storage.persisted().then(p => { STOR.persist = p; if (!p && navigator.storage.persist) navigator.storage.persist().then(g => { STOR.persist = g; renderDiag(); }).catch(() => { }); renderDiag(); }).catch(() => { }); } catch (e) { }
+})();
+function openedHow() {
+  if (location.protocol === 'file:') return '本地文件（iPad 上用「文件」App 打开的话，常常存不住）';
+  let framed = true; try { framed = window.top !== window; } catch (e) { framed = true; }
+  if (window.navigator.standalone || matchMedia('(display-mode: standalone)').matches) return '主屏幕 App 模式（最稳定）';
+  return framed ? '嵌在 claude.ai 页面里（Edge / Safari 可能会清掉进度）' : '独立网页';
+}
+const DAYMS = 864e5;
+const hasProgress = () => (ST.runs && ST.runs.length) || Object.keys(ST.prog).some(k => (ST.prog[k].rounds || 0) > 0);
+function bkNag() {
+  if (!hasProgress()) return '';
+  if (ST.lastBackup && Date.now() - ST.lastBackup < 7 * DAYMS) return '';
+  return `<div class="nag">💾 ${S2(ST.lastBackup ? '超过一周没备份了，' : '还没有备份过进度，', ST.lastBackup ? 'No backup for over a week — ' : 'Progress not backed up yet — ')}<a href="#parent">${S2('去家长页复制备份码', 'copy a backup code')}</a></div>`;
+}
+const fmtD = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+function ansPlain(q) {
+  if (q.ansType === 'ratio') return q.ans[0] + ' : ' + q.ans[1];
+  const v = q.ans, s = v.term() ? (q.money ? '$' + v.num().toFixed(2) : v.dec()) : (v.int ? String(v.n) : v.n + '/' + v.d);
+  return (q.pre && !q.money && q.pre !== '$' ? 'x = ' : q.pre === '$' && !q.money ? '$' : '') + s + (q.unit || '');
+}
+function renderDiag() {
+  const el = document.getElementById('pDiag'); if (!el) return;
+  el.innerHTML = `🔍 <b>存储检查</b>：本机存储 ${STOR.ok ? '可用 ✅' : '不可用 ❌（关掉就会丢，常见于无痕浏览）'} · 永久保存 ${STOR.persist === true ? '已获准 ✅' : STOR.persist === false ? '未获准' : '未知'} · 打开方式：${openedHow()}`;
+  const lb = document.getElementById('bkLast');
+  if (lb) lb.textContent = ST.lastBackup ? '上次复制备份码：' + fmtD(ST.lastBackup) + (Date.now() - ST.lastBackup > 7 * DAYMS ? ' ⚠️ 超过一周了，建议再复制一次' : '') : '还没有复制过备份码。';
+}
+function b64FromBytes(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+function bytesFromB64(b) { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+async function makeBackupCode() {
+  const json = JSON.stringify(Object.assign({}, ST, { app: 'calc-quest', backupAt: Date.now() }));
+  if (window.CompressionStream) { try { const st = new Blob([json]).stream().pipeThrough(new CompressionStream('gzip')); return 'CQ1:' + b64FromBytes(new Uint8Array(await new Response(st).arrayBuffer())); } catch (e) { } }
+  return 'CQ0:' + b64FromBytes(new TextEncoder().encode(json));
+}
+async function readBackupCode(code) {
+  code = (code || '').replace(/\s+/g, '');
+  if (code.startsWith('CQ1:')) { const st = new Blob([bytesFromB64(code.slice(4))]).stream().pipeThrough(new DecompressionStream('gzip')); return JSON.parse(await new Response(st).text()); }
+  if (code.startsWith('CQ0:')) return JSON.parse(new TextDecoder().decode(bytesFromB64(code.slice(4))));
+  throw new Error('format');
+}
+/* merge, never overwrite: keep the better of each number, union the logs */
+function mergeStore(o) {
+  const before = (ST.runs || []).length;
+  for (const id in (o.prog || {})) {
+    const a = pr(id), b = o.prog[id] || {};
+    for (const f of ['rounds', 'best', 'big', 'small']) a[f] = Math.max(a[f] || 0, b[f] || 0);
+    a.traps = a.traps || {}; for (const k in (b.traps || {})) a.traps[k] = Math.max(a.traps[k] || 0, b.traps[k] || 0);
+    if (b.bestTime && (!a.bestTime || b.bestTime < a.bestTime)) a.bestTime = b.bestTime;
+    if (b.seen) a.seen = 1;
+  }
+  ST.xp = Math.max(ST.xp || 0, o.xp || 0);
+  for (const k in (o.daily || {})) { const x = ST.daily[k], y = o.daily[k]; ST.daily[k] = { s: Math.max(x ? x.s : 0, y ? y.s : 0) }; }
+  if (!Array.isArray(ST.runs)) ST.runs = [];
+  const seenR = new Set(ST.runs.map(r => r.d + '|' + r.p));
+  (o.runs || []).forEach(r => { if (r && r.d && !seenR.has(r.d + '|' + r.p)) { ST.runs.push(r); seenR.add(r.d + '|' + r.p); } });
+  ST.runs.sort((x, y) => x.d - y.d); if (ST.runs.length > 2000) ST.runs = ST.runs.slice(-2000);
+  return ST.runs.length - before;
+}
+async function copyBackup() {
+  const code = await makeBackupCode(), out = $('#bkOut');
+  out.value = code; out.hidden = false;
+  let copied = false; try { await navigator.clipboard.writeText(code); copied = true; } catch (e) { }
+  if (!copied) { out.focus(); out.select(); }
+  ST.lastBackup = Date.now(); save(); renderDiag();
+  $('#bkMsg').textContent = copied ? '✅ 已复制（' + code.length + ' 个字符）。粘贴到备忘录或发给自己保存。' : '请长按上面框里的备份码 →「全选」→「拷贝」，再粘贴到备忘录保存。';
+}
+async function restoreBackup() {
+  const msg = $('#bkMsg'); let o;
+  try { o = await readBackupCode($('#bkIn').value); } catch (e) { msg.textContent = '❌ 备份码不完整或不对，请整段重新粘贴（以 CQ1: 开头）。'; return; }
+  if (!o || typeof o !== 'object' || !o.prog) { msg.textContent = '❌ 这不是计算避坑闯关的备份码。'; return; }
+  const added = mergeStore(o); save(); renderHud(); renderParent();
+  $('#bkMsg').textContent = '✅ 已恢复：收服次数、最好成绩、XP 都取较好的那个，记录多了 ' + added + ' 轮。现在的进度没有被覆盖。';
+}
+function renderParent() {
+  CUR = null; stopTimer();
+  const runs = (ST.runs || []).slice().reverse(), byDay = {};
+  runs.forEach(r => { const k = dkey(new Date(r.d)); (byDay[k] = byDay[k] || []).push(r); });
+  const days = Object.keys(byDay);
+  const nm = p => p === 'daily' ? '🔥 今日混战' : (MON[p] ? MON[p].zh : p) + ' · ' + (PT(p) ? PT(p).sz : '');
+  const tl = id => TRAPL[id] ? TRAPL[id][0] : id;
+  const runRow = (r, i, k) => `<div class="lr"><span class="lt">${pad(new Date(r.d).getHours())}:${pad(new Date(r.d).getMinutes())}</span><span class="ln">${nm(r.p)}</span><span class="ls ${r.s === 6 ? 'ok' : ''}">${r.s}/6${r.s === 6 ? (r.p === 'daily' ? ' 🏆' : ' 🏺') : ''}</span><span class="lm">⏱ ${fmtTime(r.ms || 0)}</span>${r.w && r.w.length ? `<button class="lnk" data-day="${k}-${i}">错题 ${r.w.length}</button>` : '<span class="lm">全对</span>'}</div>` +
+    (r.w && r.w.length ? `<div class="lw" id="day${k}-${i}" hidden>${r.w.map(w => `<div>· <b>${tl(w.t)}</b>${r.p === 'daily' && MON[w.p] ? `（${MON[w.p].zh}）` : ''}：写了 <s>${w.a || '（空）'}</s>，正确 ${w.r}${w.f ? ' · 第二次改对 ✓' : ''}</div>`).join('')}</div>` : '');
+  const tot = {}; Object.keys(ST.prog).forEach(id => { for (const k in (ST.prog[id].traps || {})) tot[k] = (tot[k] || 0) + ST.prog[id].traps[k]; });
+  const top = Object.entries(tot).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  $('#main').innerHTML = `<section class="panel"><div class="crumb"><a href="#home">‹ ${S2('地图', 'Map')}</a></div><h1>👪 家长页</h1>
+    <div class="pnote" id="pDiag"></div>
+    <div class="pnote">📱 进度和记录只存在这台设备的浏览器里，不会上传。请定期复制一份备份码。换 iPad 或进度丢了，把备份码粘贴回来点「恢复」：<b>是合并，不会覆盖现在的进度</b>。</div></section>
+  <section class="panel"><h2>💾 进度备份</h2>
+    <div class="cta" style="margin-top:4px"><button class="btn" id="bkCopy" type="button">📋 复制备份码</button></div>
+    <textarea id="bkOut" class="bk" readonly hidden></textarea>
+    <div class="tip" id="bkLast"></div>
+    <textarea id="bkIn" class="bk" placeholder="把以 CQ1: 开头的备份码粘贴到这里"></textarea>
+    <div class="cta" style="margin-top:8px"><button class="btn jade" id="bkRestore" type="button">↩ 恢复（合并）</button></div>
+    <div class="msg warn" id="bkMsg" style="margin-top:10px">两个孩子如果用不同的 iPad，备份码要分开保存。</div></section>
+  <section class="panel"><h2>📅 每日记录</h2>
+    ${top.length ? `<div class="rec" style="margin:0 0 10px">最常掉的坑（累计）：${top.map(([k, n]) => `<span class="chip">${tl(k)} ×${n}</span>`).join('')}</div>` : ''}
+    ${days.length ? days.map(k => { const L = byDay[k], perf = L.filter(r => r.s === 6).length; return `<div class="lday"><div class="ldh"><b>${k}</b> · 打了 ${L.length} 轮 · 满分 ${perf} 轮 · 共 ${fmtTime(L.reduce((a, r) => a + (r.ms || 0), 0))}</div>${L.map((r, i) => runRow(r, i, k)).join('')}</div>`; }).join('')
+      : `<div class="tip">还没有记录。从这一版开始，每打完一轮都会记在这里（最多保留 2000 轮）。</div>`}
+  </section>`;
+  renderDiag(); window.scrollTo(0, 0);
+}
+
+function route() {
+  const h = (location.hash || '').slice(1);
+  if (PT(h)) renderPoint(h); else if (h === 'dex') renderDex(); else if (h === 'daily') renderDaily(); else if (h === 'parent') renderParent(); else renderHome();
+}
+window.addEventListener('hashchange', () => { closeOv(); route(); });
+
+$('#bg').innerHTML = paintGongbi();
+setLang(ST.lang); renderHud(); route();
+
+</script>
+</body>
+</html>
