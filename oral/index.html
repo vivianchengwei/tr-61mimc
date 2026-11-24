@@ -1,0 +1,625 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Oral Quest"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ff9f1c">
+<link rel="apple-touch-icon" href="icon-180.png"><link rel="icon" href="icon-180.png"><link rel="manifest" href="manifest.json">
+<title>Oral Quest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;700;800;900&display=swap">
+<style>
+:root{
+  --bg:#fff8ea; --surface:#ffffff; --surface2:#fdf0d3; --ink:#22304f; --muted:#6a7590; --line:#ecdcb8;
+  --accent:#ff9f1c; --accent-soft:#ffe9c2; --sun:#ffd23f; --good:#2aa66a; --good-soft:#dff5e8; --bad:#e2574c;
+  --P:#2f7de1; --E1:#2aa66a; --E2:#ef6c35; --L:#8a5cd6;
+  --ra-t:#d6336c; --ra-d:#1971c2; --ra-id:#2b8a3e; --ra-v:#7048e8; --ra-u:#e8590c; --ra-int:#0c8599;
+  --font-head:'Baloo 2','Nunito',system-ui,sans-serif; --font-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --shadow:0 4px 0 rgba(34,48,79,.10), 0 10px 24px rgba(34,48,79,.08);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141a2b; --surface:#1e2740; --surface2:#27324f; --ink:#f3ecd9; --muted:#a7b0c8; --line:#35415f;
+  --accent:#ffb347; --accent-soft:#4a3a1c; --sun:#ffd23f; --good:#4cc98a; --good-soft:#1c3a2c; --bad:#ff7b70;
+  --P:#6aa8ff; --E1:#4cc98a; --E2:#ff9466; --L:#b294f2;
+  --ra-t:#ff7aa8; --ra-d:#6ab0f5; --ra-id:#69c97c; --ra-v:#a995ff; --ra-u:#ff9a57; --ra-int:#4fc7d9;
+  --shadow:0 4px 0 rgba(0,0,0,.25), 0 10px 24px rgba(0,0,0,.25);
+}}
+:root[data-theme="dark"]{
+  --bg:#141a2b; --surface:#1e2740; --surface2:#27324f; --ink:#f3ecd9; --muted:#a7b0c8; --line:#35415f;
+  --accent:#ffb347; --accent-soft:#4a3a1c; --sun:#ffd23f; --good:#4cc98a; --good-soft:#1c3a2c; --bad:#ff7b70;
+  --P:#6aa8ff; --E1:#4cc98a; --E2:#ff9466; --L:#b294f2;
+  --ra-t:#ff7aa8; --ra-d:#6ab0f5; --ra-id:#69c97c; --ra-v:#a995ff; --ra-u:#ff9a57; --ra-int:#4fc7d9;
+  --shadow:0 4px 0 rgba(0,0,0,.25), 0 10px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 17px/1.55 var(--font-body);-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+h1,h2,h3{font-family:var(--font-head);line-height:1.15;margin:0}
+p{margin:0}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:2px solid var(--line)}
+.top-in{max-width:860px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:8px;font:800 20px var(--font-head);margin-right:auto}
+.brand svg{width:38px;height:38px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{padding:7px 13px;border-radius:999px;font-weight:800;font-size:15px;background:var(--surface);border:2px solid var(--line)}
+.tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.starpill{display:inline-flex;align-items:center;gap:4px;font-weight:900;background:var(--sun);color:#3b2c00;border-radius:999px;padding:5px 12px}
+/* player */
+.player{max-width:860px;margin:0 auto;padding:6px 16px 8px;display:none;align-items:center;gap:10px}
+.player.on{display:flex}
+.pbtn{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;font-size:20px;font-weight:900;box-shadow:0 3px 0 rgba(0,0,0,.18);flex:none}
+.pbar{flex:1;height:10px;border-radius:9px;background:var(--surface2);overflow:hidden;min-width:60px}
+.pbar i{display:block;height:100%;width:0;background:var(--accent);border-radius:9px}
+.plabel{font-weight:800;font-size:14px;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pspeed,.pstop{padding:6px 10px;border-radius:999px;border:2px solid var(--line);font-weight:800;font-size:13px;background:var(--surface);flex:none}
+.turn{display:none;font-weight:900;color:var(--bad);white-space:nowrap}
+.turn.on{display:inline}
+@keyframes pulse{50%{opacity:.35}}
+/* generic */
+.card{background:var(--surface);border-radius:22px;padding:18px;box-shadow:var(--shadow);border:2px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 20px;border-radius:16px;font-weight:900;background:var(--accent);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18);min-height:48px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.btn.ghost{background:var(--surface);color:var(--ink);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.btn.green{background:var(--good)}
+.btn.small{padding:8px 14px;min-height:40px;font-size:15px;border-radius:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)} .small{font-size:14px}
+.back{font-weight:800;color:var(--muted);padding:12px 0;display:inline-block}
+.eyebrow{font:800 13px var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+/* home */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin:18px 0;background:linear-gradient(135deg,var(--sun),var(--accent));color:#3b2c00;border-radius:28px;padding:18px 20px;box-shadow:var(--shadow)}
+.hero svg{width:120px;height:120px}
+.hero h1{font-size:clamp(26px,5vw,36px)}
+.hero p{font-weight:700;margin:4px 0 12px}
+.hero .btn{background:#22304f;color:#fff}
+.bubble{position:relative;background:var(--surface);color:var(--ink);border-radius:18px;padding:12px 16px;border:2px solid var(--line);font-weight:700}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:12px 0 24px}
+.unit{display:block;text-align:left;border-radius:24px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);border:3px solid var(--uc);width:100%}
+.unit .pic{height:150px;background-size:cover;background-position:center 25%;position:relative}
+.unit .wk{position:absolute;left:10px;top:10px;background:var(--uc);color:#fff;font-weight:900;font-size:13px;border-radius:999px;padding:3px 10px}
+.unit .body{padding:12px 14px 14px}
+.unit h3{font-size:21px}
+.dots{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.dot{font-size:13px;font-weight:800;border-radius:999px;padding:3px 9px;background:var(--surface2);color:var(--muted)}
+.dot.done{background:var(--good-soft);color:var(--good)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+/* unit page */
+.upic{width:100%;max-height:340px;object-fit:cover;object-position:center 25%;border-radius:22px;border:3px solid var(--uc);display:block}
+.act{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:18px;background:var(--surface);border:2px solid var(--line);box-shadow:0 3px 0 var(--line);margin-top:10px}
+.act .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:var(--us);flex:none}
+.act b{display:block;font-size:17px;line-height:1.3}
+.act .st{margin-left:auto;font-size:18px;white-space:nowrap}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.word{background:var(--surface2);border-radius:14px;padding:8px 12px}
+.word b{display:block}
+/* stepper */
+.steps{display:flex;gap:6px;margin:4px 0 14px;flex-wrap:wrap}
+.sd{flex:1;min-width:26px;height:10px;border-radius:9px;background:var(--surface2)}
+.sd.on{background:var(--accent)} .sd.past{background:var(--good)}
+.tip{text-align:center}
+.tip .big{font-size:54px;line-height:1}
+.tip h2{font-size:clamp(24px,5vw,32px);margin:6px 0}
+.tip .lead{font-weight:700;max-width:560px;margin:0 auto 14px}
+.tip .box{text-align:left;background:var(--surface2);border-radius:18px;padding:14px 16px;margin:12px 0}
+.tipnum{display:inline-block;background:var(--ink);color:var(--bg);font-weight:900;border-radius:999px;padding:2px 12px;font-size:13px;letter-spacing:.05em}
+.checks{display:grid;gap:8px;text-align:left}
+.chk{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--surface);border:2px solid var(--line);font-weight:700;width:100%;text-align:left}
+.chk i{width:26px;height:26px;border-radius:8px;border:3px solid var(--line);display:grid;place-items:center;font-style:normal;flex:none;color:transparent;font-weight:900}
+.chk.on{border-color:var(--good);background:var(--good-soft)} .chk.on i{background:var(--good);border-color:var(--good);color:#fff}
+/* 5W1H */
+.stim{width:100%;border-radius:18px;display:block;border:3px solid var(--uc);max-height:62vh;object-fit:contain;background:var(--surface2)}
+.w5{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.w5 button{padding:10px 6px;border-radius:14px;font-weight:900;background:var(--surface);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.w5 button.on{background:var(--ink);color:var(--bg);border-color:var(--ink);box-shadow:none}
+.w5 button.seen::after{content:' ✓';color:var(--good)}
+.w5 button.on.seen::after{color:var(--sun)}
+.lookt{display:flex;align-items:center;gap:12px;justify-content:center;margin:10px 0}
+.ring{--p:0;width:64px;height:64px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface2) 0);display:grid;place-items:center;font-weight:900;flex:none}
+.ring span{width:48px;height:48px;border-radius:50%;background:var(--surface);display:grid;place-items:center}
+/* tricky words */
+.tricky{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.tw{padding:10px 12px;border-radius:14px;background:var(--surface);border:2px solid var(--line);box-shadow:0 3px 0 var(--line);text-align:left;width:100%}
+.tw b{display:block;font-size:18px} .tw span{font-size:14px;color:var(--muted);font-weight:800}
+.tw.heard{border-color:var(--good)}
+.twrow{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;-webkit-overflow-scrolling:touch}
+.twrow .tw{width:auto;flex:none;padding:7px 12px}
+.twrow .tw b{font-size:16px}
+.twrow .tw span{font-size:13px}
+/* breathing */
+.breath{cursor:pointer;width:150px;height:150px;border-radius:50%;margin:10px auto;background:radial-gradient(circle at 35% 30%,#bfe9ff,#58b9f0);display:grid;place-items:center;color:#0b3b5c;font-weight:900;transform:scale(.6);transition:transform 4s ease-in-out}
+.breath.in{transform:scale(1)}
+/* passage */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{padding:6px 12px;border-radius:999px;border:2px solid var(--line);font-weight:800;font-size:13.5px;background:var(--surface)}
+.chip.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.passage{font-size:clamp(19px,2.6vw,22px);line-height:2.5;font-weight:500;padding:14px 16px 6px}
+.passage p{margin:0 0 .6em;text-indent:1.2em}
+.ra-s{cursor:pointer;border-radius:6px;transition:background .2s}
+.ra-s.now{background:var(--accent-soft);box-shadow:0 0 0 4px var(--accent-soft)}
+.ra-ed-t{color:var(--ra-t);font-weight:800;text-decoration:underline 2px}.ra-ed-d{color:var(--ra-d);font-weight:800;text-decoration:underline 2px}.ra-ed-id{color:var(--ra-id);font-weight:800;text-decoration:underline 2px}
+.ra-edw{position:relative;white-space:nowrap}
+.ra-edw::after{content:attr(data-ed);position:absolute;right:-2px;top:-1.15em;font:800 .55em/1 var(--font-body);padding:1px 3px;border-radius:4px;color:var(--bg);pointer-events:none}
+.ra-edw-t::after{background:var(--ra-t)}.ra-edw-d::after{background:var(--ra-d)}.ra-edw-id::after{background:var(--ra-id)}
+.ra-th-v{color:var(--ra-v);font-weight:800;text-decoration:underline wavy 2px;text-underline-offset:4px}
+.ra-th-u{color:var(--ra-u);font-weight:800;text-decoration:underline dotted 3px;text-underline-offset:4px}
+.ra-sil{opacity:.35;text-decoration:line-through 2px}
+.ra-p1,.ra-p2{color:var(--accent);font-weight:900;margin:0 .18em 0 .1em;letter-spacing:-1px}
+.ra-p2{margin-right:.35em}
+.ra-int{position:relative}
+.ra-int::after{position:absolute;left:50%;transform:translateX(-50%);top:-1.05em;font:900 .95em/1 var(--font-body);color:var(--ra-int);white-space:nowrap}
+.ra-rise::after{content:'↗'}.ra-fall::after{content:'↘'}.ra-risefall::after{content:'↗↘'}
+.ra-soft::after{opacity:.75;font-size:.8em;top:-.95em}
+.ra-int .ra-edw::after{right:auto;left:-1.6em}
+.ra-off-ed .ra-ed-t,.ra-off-ed .ra-ed-d,.ra-off-ed .ra-ed-id{color:inherit;font-weight:inherit;text-decoration:none}.ra-off-ed .ra-edw::after{display:none}
+.ra-off-th .ra-th-v,.ra-off-th .ra-th-u{color:inherit;font-weight:inherit;text-decoration:none}
+.ra-off-sil .ra-sil{opacity:1;text-decoration:none}
+.ra-off-pause .ra-p1,.ra-off-pause .ra-p2{display:none}
+.ra-off-int .ra-int::after{display:none}
+.key{display:grid;gap:4px;font-size:14px;background:var(--surface2);border-radius:14px;padding:10px 14px;line-height:1.9}
+.purpose{background:var(--surface2);border-radius:16px;padding:12px 14px;font-size:15.5px;text-align:left}
+/* rating */
+.rate{display:grid;gap:10px}
+.rrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;background:var(--surface2);border-radius:14px;padding:8px 12px}
+.stars button{font-size:30px;filter:grayscale(1);opacity:.35;padding:0 2px}
+.stars button.on{filter:none;opacity:1}
+/* PEEL */
+.lbl{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;color:#fff;font:800 19px var(--font-head);flex:none}
+.lbl.P{background:var(--P)}.lbl.E1{background:var(--E1)}.lbl.E2{background:var(--E2)}.lbl.L{background:var(--L)}
+.peel{display:grid;gap:10px}
+.prow{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:16px;background:var(--surface);border:2px solid var(--line);border-left-width:7px;transition:background .2s}
+.prow.P{border-left-color:var(--P)}.prow.E1{border-left-color:var(--E1)}.prow.E2{border-left-color:var(--E2)}.prow.L{border-left-color:var(--L)}
+.prow.now{border-color:var(--accent)}
+.as{border-radius:6px}.as.now{background:var(--accent-soft);box-shadow:0 0 0 3px var(--accent-soft)}
+.prow .nm{font-weight:900;font-size:14px;letter-spacing:.03em}
+.prow .nm small{font-weight:700;color:var(--muted)}
+.prow .starter{font-style:italic;color:var(--muted);font-weight:700;font-size:15px}
+.prow textarea{width:100%;min-height:54px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;padding:8px 10px;margin-top:6px;resize:vertical}
+.exam{display:flex;gap:10px;align-items:flex-start;margin:12px 0}
+.exam .face{width:46px;height:46px;border-radius:50%;background:var(--surface2);display:grid;place-items:center;font-size:26px;flex:none}
+.exam .bubble{flex:1;font-size:18px}
+.exam .say{margin-top:6px}
+.fb{border-radius:18px;padding:14px 16px;background:var(--good-soft);border:2px solid var(--good)}
+.fb h3{font-size:20px;margin-bottom:6px}
+.fb ul{margin:4px 0 8px;padding-left:20px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vs>div{border-radius:14px;padding:10px 12px;font-weight:700}
+.vs .no{background:#fde4e1;color:#8d2a22} .vs .yes{background:var(--good-soft);color:var(--good)}
+table.map{width:100%;border-collapse:separate;border-spacing:0 6px;text-align:left}
+table.map td{padding:8px 10px;background:var(--surface2)} table.map td:first-child{border-radius:12px 0 0 12px} table.map td:last-child{border-radius:0 12px 12px 0}
+h2.sec{font-size:24px;margin:26px 0 10px}
+.flow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.flow span{flex:1;min-width:70px;text-align:center;font-weight:800;font-size:14px;background:var(--surface2);border-radius:999px;padding:5px 8px}
+.flow b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:12px;margin-right:4px}
+.qnav{justify-content:space-between;margin-top:26px;padding-top:18px;border-top:2px dashed var(--line)}
+.note{background:var(--accent-soft);border:2px solid var(--accent);border-radius:16px;padding:10px 14px;margin:14px 0;font-weight:700;font-size:15px}
+.linkbtn{text-decoration:underline;font-weight:900}
+.pstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.pstats div{background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:10px;text-align:center}
+.pstats b{display:block;font:800 24px var(--font-head)} .pstats span{font-size:13px;color:var(--muted);font-weight:700}
+.rec-day{background:var(--surface);border:2px solid var(--line);border-radius:16px;margin-bottom:8px;padding:4px 12px}
+.rec-day>summary{cursor:pointer;padding:8px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:baseline}
+.rec-day>summary span{color:var(--muted);font-size:14px;font-weight:700}
+.rec-row{border-top:1px dashed var(--line);padding:8px 0;display:flex;gap:6px 10px;flex-wrap:wrap;align-items:baseline;font-size:15px}
+.rec-t{font-weight:900;color:var(--muted);min-width:44px}.rec-what{flex:1;min-width:200px}
+.rec-ok{color:var(--good);font-weight:900}.rec-q{color:var(--muted);font-weight:800}
+.rec-det{width:100%}.rec-det summary{cursor:pointer;color:var(--P);font-weight:800;font-size:14px}
+.rec-ans{display:grid;gap:6px;margin:6px 0;font-size:14.5px}.rec-ans>div{display:flex;gap:8px;align-items:flex-start}
+textarea.bk{width:100%;min-height:64px;margin:10px 0 6px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:13px/1.4 ui-monospace,monospace;padding:8px}
+@media (max-width:520px){ .pstats{grid-template-columns:repeat(2,1fr)} }
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.confetti i{position:absolute;top:-20px;font-style:normal;font-size:24px;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg)}}
+@media (max-width:520px){ .hero{grid-template-columns:1fr;text-align:center} .hero svg{margin:0 auto;width:96px;height:96px} .vs{grid-template-columns:1fr} .plabel{display:none} }
+@media (prefers-reduced-motion: reduce){ .breath{transition:none} .confetti{display:none} }
+</style>
+
+</head><body><div class="top">
+  <div class="top-in">
+    <button class="brand" data-go="home" aria-label="Home"><svg viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="70" rx="36" ry="40" fill="#2fbf71"/><ellipse cx="60" cy="82" rx="22" ry="24" fill="#ffe08a"/><path d="M50 30q4-18 10-6q6-14 10 2q10-8 6 8z" fill="#ef6c35"/><circle cx="46" cy="54" r="11" fill="#fff"/><circle cx="74" cy="54" r="11" fill="#fff"/><circle cx="48" cy="55" r="5" fill="#22304f"/><circle cx="72" cy="55" r="5" fill="#22304f"/><circle cx="50" cy="53" r="1.6" fill="#fff"/><circle cx="74" cy="53" r="1.6" fill="#fff"/><path d="M52 64h16l-8 14z" fill="#ff9f1c"/><path d="M24 70q-12 14 2 28q4-14 6-26z" fill="#1e9bd7"/><path d="M96 70q12 14-2 28q-4-14-6-26z" fill="#1e9bd7"/><path d="M48 108h8v6h-8zM64 108h8v6h-8z" fill="#ff9f1c"/></svg><span>Oral Quest</span></button>
+    <div class="tabs" id="tabs"></div>
+  </div>
+  <div class="player" id="player">
+    <button class="pbtn" id="pp" aria-label="Play or pause">⏸</button>
+    <span class="plabel" id="plabel"></span><span class="turn" id="turn">Speak along! 🎤</span>
+    <div class="pbar"><i id="pfill"></i></div>
+    <button class="pspeed" id="pspeed">🐢 Slow</button>
+    <button class="pstop" id="pstop">✕</button>
+  </div>
+</div>
+<div class="wrap" id="app"></div>
+
+<script>
+const WEB=true;
+const DATA={"units": [{"id": "journey", "week": 11, "title": "Beyond Classroom Walls", "short": "Learning Journeys", "emoji": "🐠", "color": "#1e9bd7", "soft": "#e3f4fc", "img": "aquarium.jpg", "alt": "Pupils and their teacher in front of a big fish tank at an aquarium", "w5": {"Who": "I can see four pupils in school uniform and a teacher. The pupils look a little younger than me.", "What": "They are standing in front of a huge fish tank. The teacher is explaining something and the children are listening.", "When": "It is probably in the daytime, during school hours, because the children are wearing their uniforms.", "Where": "They are at an aquarium. I can see many fish and corals behind them. It could be the S.E.A. Aquarium.", "Why": "They are on a learning journey, to see sea creatures up close instead of only reading about them in class.", "How": "The children look curious and excited. They are paying attention, so they must be enjoying the trip."}, "qs": [{"q": "Look at the picture. Would you like to visit the aquarium as part of your learning journey? Why or why not?", "kind": "pic", "tag": "Picture question", "start": {"P": "Yes, I would like to visit …", "E1": "This is because …  In the picture, I can see …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I think that …"}, "ans": {"P": "Yes, I would like to visit the aquarium as part of my learning journey.", "E1": "This picture is about a group of students and their teacher on a learning journey to the aquarium. I think I would learn a lot about aquatic creatures at the aquarium, far more than if I were in a classroom. The children in the picture are able to see the creatures up close, and connect what they have learnt in their classroom to what they can observe at the aquarium. As seen in the picture, the children are able to engage in a discussion with their teacher about what they are observing. It helps them visualize and further understand what they have learnt in class. At the aquarium, students can observe many varieties of sea creatures in their habitats and learn more about them in a fun and engaging way.", "E2": "My classmates and I have been learning about sea creatures this term in school. As such, visiting the aquarium will be very beneficial. It will help deepen our understanding of ocean life and its ecosystems, and have a first-hand experience learning about them beyond the classroom. In this way, learning journeys also encourage life-long learning in us, encouraging us to learn from our surroundings everywhere we go.", "L": "I wish to experience such a holistic learning experience with my classmates in the aquarium, so that we may better understand what we learn in the classrooms out there in real life. Therefore, I too would like to visit the aquarium as part of my learning journey."}}, {"q": "Tell me about the most interesting place you have gone to as part of your learning journey.", "kind": "chat", "tag": "Your experience", "start": {"P": "I have been to …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "Link back: I am really glad …"}, "ans": {"P": "The most interesting place I have been to as part of my school's learning journey is the Mandai Bird Paradise.", "E1": "I had a wonderful time learning about the diversity of birds there! I saw many types of birds, from brightly coloured parrots to graceful flamingos. I even caught sight of a powerful eagle soaring in the sky. The most exciting part of that excursion was the talk show, where I was selected to be a volunteer for the show. I was given the opportunity to go up on stage and interact with a beautiful macaw. The guide directed the macaw to perch gently on my arm, and I was able to stroke its soft, delicate feathers. Being so up close to such a beautiful creature was an incredible experience!", "E2": "This hands-on experience was so beneficial as it was not just about what I had learnt in the classroom. I was able to observe and understand the birds in such close proximity, which deepened my appreciation for them. This would not have been possible in the classroom.", "L": "I am really glad I got that opportunity to go to the Mandai Bird Paradise as part of my learning journey."}}, {"q": "What other interesting place would you like to visit as part of your learning journey?", "kind": "chat", "tag": "Your opinion", "start": {"P": "I would love to …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I believe that going to …"}, "ans": {"P": "I would love to visit KidZania as part of my learning journey.", "E1": "My classmates and I are learning about being responsible with money as part of our curriculum in school. It would be beneficial to apply my lessons in an exciting and engaging way. KidZania is packed with role-play activities that would allow me to explore different careers, learn about money management, and experience life beyond school.", "E2": "KidZania is like a mini city, where I can try out real jobs like being a doctor, firefighter, chef, or even a pilot! Through these activities, I will be able to get a hands-on experience of what these roles involve and learn important life skills. I think it is a great way to explore the wider world independently, and learn through problem-solving, being willing to take risks, building resilience, and gaining self-confidence.", "L": "I believe that going to KidZania as part of my learning journey would be a really valuable learning experience."}}], "reads": [{"title": "Why Learning Journeys Are Great", "kind": "talk", "mood": "Clear and cheerful, like a presenter", "purpose": "You are a student leader tasked to give a presentation to students during assembly about the benefits of Learning Journeys. Your goal is to help them understand the interesting aspects of Learning Journeys, the various places one can visit, and the benefits that await students.", "paras": ["Embarking on learning journeys with schools is an exciting and valuable experience for students. These trips allow us to learn outside the classroom and see how the lessons we learn connect to the real world. For example, visits to places like the Esplanade and ArtScience Museum give us hands-on experiences in the arts, culture, and science. At the Esplanade, we can watch performances and explore the creativity behind the arts. At the ArtScience Museum, we can engage with interactive exhibits that blend technology and science, making learning both interesting and memorable.", "Learning journeys also teach important skills like teamwork, curiosity, and independence. When we work on activities together or complete tasks on these trips, we learn to communicate and help each other. We build friendships, and work on our own self-confidence as well. Exploring new environments encourages us to be curious and to think outside of the box. The experience stays with us longer, as we are doing and seeing things ourselves, and not just reading about them in the classroom.", "Overall, learning journeys make learning fun and meaningful, helping us grow both in our knowledge of the world, and us as individuals."], "tricky": [["embarking", "em·BAR·king"], ["valuable", "VAL·yoo·buh·l"], ["Esplanade", "ES·pluh·nade"], ["performances", "per·FOR·mun·siz"], ["curiosity", "kyoor·ree·OS·i·tee"], ["independence", "in·di·PEN·dunce"], ["environments", "en·VY·run·ments"], ["individuals", "in·di·VID·yoo·uhlz"]]}, {"title": "Mary's Treasure Hunt at Kampung Glam", "kind": "story", "mood": "Lively, like a storyteller. Sound excited when they win!", "purpose": "You are a student leader volunteering at the local library. You are tasked to narrate stories to young children on different themes. This story's theme is Learning Journeys. You are to narrate this story about a student who learns more about Kampung Glam through her school's learning journey trip, and the different interesting aspects that Kampung Glam has to offer.", "paras": ["Yesterday, Mary and her classmates went to Kampung Glam as part of their school's learning journey. They were excited to explore the vibrant area. As soon as she arrived, Mary noticed the beautiful shophouses with the colourful mosaic tiles and detailed designs. Mary and her classmates marvelled at the grand Sultan Mosque, with its golden dome shining under the sun.", "Mary's teacher split the classroom into groups, and handed them a map. He announced that they would be doing a treasure hunt! Mary's team was thrilled. Following the map, they visited various shops which sold unique items like traditional clothes, perfumes, and carpets. At each shop, they had to solve a riddle to find the next clue. Mary and her classmates worked together, searching high and low. They had a ball of a time, laughing and hurrying along the lively streets.", "Finally, they solved the last clue and rushed to the meeting point. Mary's team was the first to arrive, they had won! Their prize was a special Chapteh, a traditional Malay toy with colourful feathers. Mary felt proud and happy, having learnt so much on this exciting adventure."], "tricky": [["vibrant", "VY·brunt"], ["mosaic", "moh·ZAY·ik"], ["marvelled", "MAR·vuld"], ["mosque", "mosk"], ["announced", "uh·NOWNST"], ["unique", "yoo·NEEK"], ["traditional", "truh·DISH·uh·nul"], ["perfumes", "PER·fyoomz"]]}], "words": [["learning journey", "a school trip where you learn outside the classroom"], ["hands-on", "learning by doing it yourself"], ["up close", "very near, so you can see clearly"], ["beneficial", "good and helpful for you"], ["beyond the classroom", "outside school lessons"], ["valuable", "very useful and important"]]}, {"id": "sports", "week": 16, "title": "Healthy Bodies Happy Minds", "short": "Sports & Health", "emoji": "🏃", "color": "#ef6c35", "soft": "#fdeee6", "img": "sportsday.jpg", "alt": "Primary school boys running a relay race towards the finishing line on Sports Day", "w5": {"Who": "I can see a few boys in school sports attire. They are primary school pupils, a little older than me.", "What": "They are running a relay race. They are holding batons in their hands and dashing towards the finishing line.", "When": "It is in the daytime. It is most likely their school's Sports Day.", "Where": "They are on a running track at a stadium or school field. There are HDB flats and trees in the background.", "Why": "They are racing to win for their class or house, and to stay active and healthy. A relay race also builds team spirit.", "How": "The boys are running with all their might. They look determined, and the boy in front looks thrilled to reach the line first."}, "qs": [{"q": "Look at the picture. Would you participate in a race or sports activity on your school's Sports Day? Why or why not?", "kind": "pic", "tag": "Picture question", "start": {"P": "Yes, I would like to take part in …", "E1": "This is because …  In the picture, I can see …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I wish to …"}, "ans": {"P": "Yes, I would like to take part in a race on my school's Sports Day.", "E1": "This picture is about a group of students taking part in a relay race for their school's Sports Day. I think I would enjoy taking part in an activity on my school's Sports Day as it is a great opportunity to stay active and challenge myself. I enjoy sports and competing, and this event would allow me to push my limits in a fun way. It is also exciting to cheer for my classmates and build team spirit together.", "E2": "My classmates and I would be able to bond due to our similar interests and in support for our class team, as we compete against others. Participating in Sports Day would also help me develop qualities like discipline and teamwork, which are useful beyond just sports. Also, in my personal experience from the Sports Days that I have taken part in, it is always a fun day which is full of energy and excitement!", "L": "I wish to contribute to my team's success, just like the students in the picture. Therefore, I would also like to take part in such a race on my school's Sports Day."}}, {"q": "Why do you think engaging in sports or exercise is important?", "kind": "chat", "tag": "Your opinion", "start": {"P": "Engaging in sports and exercise …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "Therefore, I believe that …"}, "ans": {"P": "Engaging in sports or exercise keeps our bodies and minds fit and healthy.", "E1": "Engaging in sports or exercise is important because studies have shown that it helps reduce the risk of obesity and other health conditions like diabetes and heart disease. Staying active also boosts mental health by helping students fight depression, feel less isolated, and improve their moods. Regular exercise releases endorphins, which reduce stress and anxiety, making students feel happier and more relaxed.", "E2": "Did you know that obesity rates among children and adolescents are rising in Singapore? Indeed, the Singapore government has made great efforts to keep us fit and healthy, like introducing the ACES Day initiative back in 1993, the Great Singapore Workout and even updating it to create the Greater Singapore Workout!", "L": "Therefore, I believe that engaging in sports or exercise keeps our bodies and minds fit and healthy."}}, {"q": "What is your favourite game or physical activity?", "kind": "chat", "tag": "Your experience", "start": {"P": "I enjoy …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I believe that …"}, "ans": {"P": "My favourite physical activity is rock climbing.", "E1": "My family and I usually go to the local climbing gym most weekends, and it is something we all really enjoy doing together. Not only is it a great workout that builds strength and endurance, but it also keeps you mentally sharp!", "E2": "I have to figure out the best route to the top and ensure that I stay focused so that I do not miss a step! I love the mix of physical challenge and mental strategy, and it is also really rewarding to see how far I can now climb against my father and mother, who have already mastered several tiers above me.", "L": "I believe that everyone should give rock climbing a try. They would be pleasantly surprised at how enjoyable it is!"}}], "reads": [{"title": "Exercise Keeps Us Healthy", "kind": "talk", "mood": "Clear and confident, like a presenter", "purpose": "You are a student doing a group project about exercise. You are tasked to give a presentation on the benefits of exercise and sports to your classmates. Your goal is to help them understand the problem of obesity, the importance of exercise, and keeping fit.", "paras": ["Exercise and sports are very important for staying healthy. They keep our bodies strong by improving our hearts, muscles, and bones. This helps us avoid health issues like obesity and heart disease. Being active also boosts our energy, and makes daily tasks feel easier.", "Childhood obesity has become a big problem globally. Contributing factors include poor eating habits, too much screen time, and a general lack of exercise. Many children spend hours on gadgets, or watching the television. This leads to weight gain and low energy levels.", "Exercise is also great for our mental health. When we move, our body releases chemicals that make us feel happier and reduce stress. Playing sports can improve self-confidence, as we reach goals and improve skills.", "Playing team sports also helps children learn the value of teamwork, and communication. It also is a great way to make friends and socialise. Starting healthy habits young is essential for a healthy future, as active kids are more likely to become healthy adults.", "Overall, exercise and sports are key to building strong, balanced lives. This is to keep both our bodies and minds healthy for the long run."], "tricky": [["muscles", "MUH·sulz"], ["obesity", "oh·BEE·si·tee"], ["disease", "di·ZEEZ"], ["globally", "GLOH·buh·lee"], ["contributing", "kun·TRIB·yoo·ting"], ["chemicals", "KEM·i·kulz"], ["communication", "kuh·myoo·ni·KAY·shun"], ["essential", "i·SEN·shul"]]}, {"title": "Ahmad's Big Race", "kind": "story", "mood": "Exciting! Build up the suspense, then sound thrilled when he wins", "purpose": "You are a student leader volunteering at the local library. You are tasked to narrate stories to young children on different themes. This story's theme is on Sports Day. Your goal is to narrate this story about a boy who is participating in the inter-class sprint race for his school's Sports Day, and is eager to win the race for his class.", "paras": ["Ahmad stood at the starting line, his heart pounding as he looked out at the cheering crowd. It was the annual Sports Day. Everyone had gathered around the track to watch the races. His classmates and teachers were all there, cheering his name and waving. Ahmad felt a mix of excitement and nerves, this was his big chance to win.", "He took a deep breath and shook his hands to relax. \"I can do this!\" he thought to himself and felt a surge of determination. The whistle blew, and Ahmad exploded off the starting line. His legs propelled him forward as fast as they could. The wind rushed past him as he focused on the finish line ahead. The cheering grew louder, but he blocked out everything except the goal.", "With each stride, Ahmad got closer. His muscles burned, but he pushed harder. As he crossed the finish line, he heard the crowd erupt in applause. Ahmad had won! Ahmad grinned widely, feeling proud and thrilled. All his hard work and patience had paid off, and he could not wait to celebrate with his friends and family."], "tricky": [["annual", "AN·yoo·ul"], ["excitement", "ik·SITE·ment"], ["determination", "di·ter·mi·NAY·shun"], ["whistle", "WI·sul"], ["propelled", "pruh·PELD"], ["applause", "uh·PLAWZ"], ["patience", "PAY·shunce"], ["celebrate", "SEL·uh·brate"]]}], "words": [["aerobics", "exercise with rhythm that uses your big muscles"], ["camaraderie", "trust and friendship in a team"], ["chronic", "(an illness) lasting a long time"], ["obesity", "having too much body fat"], ["simultaneous", "happening at the same time"], ["team spirit", "the feeling of working together as one team"]]}, {"id": "family", "week": 22, "title": "All in the Family", "short": "Family", "emoji": "🧺", "color": "#2aa66a", "soft": "#e5f6ec", "img": "picnic.jpg", "alt": "A father, mother and three boys having a picnic on the grass and taking a selfie", "w5": {"Who": "I can see a family of five: a father, a mother and three boys who seem to be brothers.", "What": "They are having a picnic. The father is taking a selfie of the whole family, and everyone is smiling widely.", "When": "It is in the daytime, maybe on a weekend. The weather looks pleasant, perfect for an outdoor picnic.", "Where": "They are sitting on a mat on a large grassy lawn. It could be a park or a garden.", "Why": "They are enjoying family bonding time. The photo will help them remember this happy day.", "How": "They are sitting close together and cuddling. They look joyful and relaxed, like a close-knit family."}, "qs": [{"q": "Look at the picture. Would you and your family like to have a picnic like them?", "kind": "pic", "tag": "Picture question", "start": {"P": "Yes, my family and I would love to …", "E1": "This is because …  In the picture, I can see …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I am eager …"}, "ans": {"P": "Yes, my family and I would love to have a picnic like them.", "E1": "This picture is about a family having a picnic at what seems to be a lawn or a garden. There is the mother, father, and three boys who seem to be siblings. There is a variety of food items laid out in front of them, like bread, fruits, and even a jug of what I think is fruit juice. The father is taking a selfie picture of the family, perhaps to capture those joyous moments forever.", "E2": "My siblings and I are quite fond of doing activities with our family, such as going to the beach or even rock climbing. However, we have not gone for a picnic before. I can see that the family in the picture is a close-knit family, like my own. The father and mother are cuddling their children, while the third child is sitting comfortably in between them. The family might be having a picnic to share good food, enjoy nature, and even play some games, as a family bonding activity.", "L": "I am eager to suggest to my family members that we should go for a picnic, as family bonding helps strengthen relationships and create happy memories. The family in the picture seems happy and relaxed. Therefore, I would like to have a picnic with my family, just like them."}}, {"q": "Tell me about a family member that you like to spend time with.", "kind": "chat", "tag": "Your experience", "start": {"P": "I love spending time with …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "Link back: I am really thankful …"}, "ans": {"P": "One family member I love spending time with is my younger brother! We are 2 years apart in age and have been playmates for as long as we can remember.", "E1": "I love spending time with him because the time spent with him is always filled with laughter and fun. Be it playing video games, playing pretend, or just watching cartoons together, those are the best times of my day!", "E2": "One unique sibling tradition that we have is that on Christmas Eve, we pull our blankets and drape it across our two beds. The space between the two beds becomes a little \"cave\" in which we put sleeping bags, throw some pillows about and we even have some fairy lights on to light up that cozy area. Sometimes, we imagine we are explorers on Treasure Island. Other times, we pretend we are pirates at sea, in search of merchant ships. Before we go to bed, we get our father to read us the story 'The Night Before Christmas'. It feels magical and heart-warming.", "L": "I am really thankful that I have such a close-knit relationship with my younger brother."}}, {"q": "How do you spend time together as a family?", "kind": "chat", "tag": "Your experience", "start": {"P": "My mother …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "Link back to the question"}, "ans": {"P": "My mother always tells us that there is nothing more important than family. Hence, it is a family tradition that we have a meal together whenever possible.", "E1": "Having a meal together sounds like a very simple thing, but it is a lot more challenging than expected. With both my parents working, it can be difficult whenever one of them has to work overtime. To overcome this problem, we have set aside every Saturday night as family night. Sometimes my mother would cook up a feast at home, and other times we would head out to a nice restaurant to have our meal there.", "E2": "I remember that once we were out having dinner at a nice restaurant by the beach. The view was awesome with the sun setting on the horizon. However, my little brother was so engrossed in playing with his mobile phone and my father was also on the phone handling some work. My mother was so upset that night that she enforced a new rule for our family dinners: No Phones Allowed!", "L": "I really enjoy our family dinners together as it is the time that we can talk to one another and learn more about each other's lives."}}], "reads": [{"title": "Family Time Matters", "kind": "talk", "mood": "Warm and clear, like a presenter", "purpose": "You are a student leader involved in the preparations for the school's Family Day event. You are tasked to give a presentation on the importance of family in front of your school during assembly. Your goal is to help them understand the importance of family, family bonding, and positive family relationships.", "paras": ["Family bonding time is important for keeping families strong and happy. When families spend time together, they make special memories that everyone can remember and cherish. This time helps each person in the family feel loved and important, which helps build self-confidence too.", "One big benefit of family time is that communication between children and parents can be improved. When families engage in fun activities, it encourages open conversations. Children learn to express their feelings, and their thoughts. Parents get to understand their children better. This connection can lead to a more supportive home environment.", "Family time also helps reduce stress. Whether it is a picnic, game night, or watching movies, these moments let everyone relax and enjoy being together. Laughter and fun help everyone feel better.", "Finally, bonding time teaches teamwork. When families do things together, they learn to work as a team and solve problems together. Overall, spending time as a family makes everyone feel closer, happier, and more connected."], "tricky": [["memories", "MEM·uh·reez"], ["cherish", "CHAIR·ish"], ["confidence", "KON·fi·dunce"], ["communication", "kuh·myoo·ni·KAY·shun"], ["encourages", "en·KUH·ri·jiz"], ["conversations", "kon·ver·SAY·shunz"], ["supportive", "suh·POR·tiv"], ["laughter", "LAHF·ter"]]}, {"title": "Tom and Lola's Beach Day", "kind": "story", "mood": "Happy and gentle, like a storyteller", "purpose": "You are a student leader volunteering at the local library. You are tasked to narrate stories to young children on different themes. This story's theme is Family. You are to narrate this story about a boy named Tom and his sister Lola. They are having a fun day out at the beach with their family.", "paras": ["Tom and his sister Lola were excited. Today was the day they were going to the beach with their family! The sun was shining, and the waves were calling them. When they arrived, Tom and Lola ran straight to the water, laughing and splashing each other.", "Their parents set up a colourful umbrella and spread out a big blanket. After a while, they all sat down to enjoy a picnic of sandwiches, fruit, and cookies. Tom loved the peanut butter and jelly sandwiches and grabbed two in his hands. However, Lola wanted one too, and began to sob. Tom quickly gave one of the sandwiches to Lola, which made her happy.", "After lunch, Tom and Lola built a huge sandcastle together. They worked hard, adding towers and a moat. Their parents joined in, helping them decorate it with seashells. Everyone was laughing and having fun. Tom felt so happy to be with his family.", "Later, they played beach volleyball, and another family that was next to them joined in as well! Tom's parents snapped many pictures of the joyful time that they had. As the sun began to set, Tom looked at his family and felt grateful. They made great memories together that day. He knew that moments such as these would always make them closer. It was a perfect beach day for Tom and his family."], "tricky": [["excited", "ik·SY·tid"], ["colourful", "KUH·luh·ful"], ["umbrella", "um·BREL·uh"], ["sandwiches", "SAN·wi·jiz"], ["sandcastle", "SAND·kah·sul"], ["decorate", "DEK·uh·rate"], ["volleyball", "VOL·ee·bawl"], ["grateful", "GRATE·ful"]]}], "words": [["close-knit", "very close and caring towards one another"], ["family bonding", "spending time together to grow closer"], ["cherish", "to love and treasure something"], ["joyous", "full of happiness"], ["tradition", "something a family always does together"], ["heart-warming", "making you feel happy and loved"]]}, {"id": "hobby", "week": 32, "title": "Find Your Hobby", "short": "Hobbies", "emoji": "🏊", "color": "#8a5cd6", "soft": "#f0eafb", "img": "swimming.jpg", "alt": "Pupils in swimming caps sitting by a pool, listening to an instructor during a swimming lesson", "w5": {"Who": "The picture shows a group of students in uniform with swimming caps on, an adult, and another student in front wearing a life jacket.", "What": "The students are at a swimming lesson. They are listening to the adult, who I think is the swimming instructor. The student in front has probably been called up for a demonstration.", "When": "It should be in the day, by the looks of the bright sky. This is a school-arranged activity, which is usually conducted in the day.", "Where": "They are at a swimming complex. I can see many other people in the background, so I think it is a public pool.", "Why": "The school may have arranged these classes so that the students can learn a valuable life skill, water safety, and stay healthy.", "How": "The students are sitting neatly in rows and paying attention. It is a small class, so the instructor can guide each of them."}, "qs": [{"q": "Look at the picture. Would you pursue swimming as a hobby outside of school? Why or why not?", "kind": "pic", "tag": "Picture question", "start": {"P": "Yes, I would love to take up …", "E1": "This is because …  In the picture, I can see …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I wish to …"}, "ans": {"P": "Yes, I would love to take up swimming as a hobby outside of school.", "E1": "This picture is about a group of students involved in swimming lessons as a co-curricular activity, possibly organised by their school. I have participated in such lessons before. I would love to take up swimming as a hobby for several reasons. First, swimming is a great way to stay physically fit. Second, I find being in the water very relaxing. It helps reduce stress and clears my mind. Third, it is nice to socialise with people outside of my school, like my instructor, and other people who love swimming.", "E2": "Swimming engages both my mind and body, as I work out my muscles, and also stay focused and alert on what I am doing, so as to avoid injuries. As this is an activity I would do outside of school, I think swimming would also be a way to clear my mind, providing a peaceful escape from my school or even home pressures. Another important aspect that I would benefit from taking up swimming as a hobby is the opportunity to learn essential life skills such as water safety. Finally, swimming can be a social activity. Joining a swim club or attending classes allows me to meet new people and form friendships in a fun, supportive environment.", "L": "Swimming combines fitness, relaxation, and socialisation, making it a perfect hobby for me."}}, {"q": "Why do you think having hobbies is important?", "kind": "chat", "tag": "Your opinion", "start": {"P": "I think that …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I think that hobbies …"}, "ans": {"P": "I think that it is important to have hobbies as they develop us into holistic individuals, and enrich our lives.", "E1": "Hobbies help reduce stress by providing an outlet for relaxation and enjoyment. They also nurture our creativity, encouraging us to explore new ideas and express ourselves in unique ways.", "E2": "Many successful people have used their passions to transform their lives, creating careers out of their hobbies and inspiring others as well. Satoshi Tajiri is now well known for being the founder of Pokémon, but did you know that it was borne from his deep interest in bugs and his hobby of collecting insects? He used his vast collection of bugs as inspiration for the characters we now see in the games. In his youth, he combined this hobby with another passion of his, video games. His story is about how his hobbies allowed him to expand himself creatively and create something so unique. Tom Daley, the Olympics gold-medallist swimmer, turned his childhood passion into a successful and inspiring job. However, he now has a hobby that is quite different from swimming, knitting! He has said that knitting allows him to clear his mind, and even called it a form of 'meditation'. He has been photographed knitting before going for incredibly stressful competitions like the Olympics, where he has won multiple medals. This shows that hobbies are not just for passing the time, they can be very beneficial for one's mind and body as well.", "L": "Overall, I think that hobbies play a vital role in our personal development and help feed the passions that we have in our lives."}}, {"q": "Tell me about a hobby you would like to pursue.", "kind": "chat", "tag": "Your opinion", "start": {"P": "One hobby …", "E1": "This is because …", "E2": "This reminds me of …  /  Last year, …  /  I once experienced …  /  For example, …", "L": "I think that …"}, "ans": {"P": "One hobby that I would like to pursue is cooking.", "E1": "My siblings and I have always chipped in cooking our daily meals with our parents. However, I am interested in diving deeper into the culinary world, trying out different recipes and documenting my journey on social media.", "E2": "Cooking is a great way to express my creativity. I would be able to experiment with different ingredients and flavours, and create unique dishes. I could even explore cooking various cuisines from different countries! Additionally, cooking is a valuable life skill, like swimming. Being able to prepare my own meals will help promote my self-confidence and independence. As I help my parents in the kitchen to prepare our meals, I have found that cooking is a great stress reliever as well. The process of chopping, stirring, and mixing is relaxing and enjoyable. If I take up cooking as a hobby, I might perhaps record my journey on my social media, allowing others to see and share my experience with food and cooking. It is a way to socialise with others who have the same interests as me, perhaps even from people outside of Singapore!", "L": "I think that cooking is a great hobby to have as it combines creativity, skill-building, and social interaction, making it something that I know will definitely enrich my life."}}], "reads": [{"title": "Why Hobbies Are Good for Us", "kind": "talk", "mood": "Clear and bright, like a presenter", "purpose": "You are a student doing a group project about hobbies. You are tasked to give a presentation on the benefits of having hobbies and taking up co-curricular activities. Your goal is to help them understand how hobbies and having interests outside of school help to develop students beyond academics.", "paras": ["Hobbies play a vital role in our lives, offering numerous benefits that enhance our overall well-being. Engaging in hobbies provides a wonderful escape from the stresses of daily life. Whether it is painting, gardening, or playing a musical instrument, these activities allow us to unwind and recharge, promoting mental health and reducing anxiety.", "Additionally, hobbies nurture creativity and encourage self-expression. They provide a platform for exploring new ideas and experimenting with different techniques. This can lead to personal growth and a deeper understanding of ourselves.", "Hobbies also boost physical health. Activities like dancing, hiking, or playing sports keep us active, improve our fitness levels, and boost our mood through the release of endorphins.", "Moreover, participating in hobbies can improve social skills by connecting us with like-minded individuals. Group classes or clubs foster friendships and create a sense of community.", "Lastly, hobbies teach us important life skills, such as time management, and discipline. They can even open doors to new career opportunities, transforming passions into professions.", "Hobbies enrich our lives by providing joy, fulfillment, and a sense of purpose. This makes them an essential aspect of a balanced lifestyle."], "tricky": [["numerous", "NYOO·muh·rus"], ["anxiety", "ang·ZY·uh·tee"], ["nurture", "NER·cher"], ["techniques", "tek·NEEKS"], ["endorphins", "en·DOR·finz"], ["participating", "par·TIS·i·pay·ting"], ["discipline", "DIS·uh·plin"], ["opportunities", "op·er·TYOO·ni·teez"]]}], "words": [["pursue", "to take up and keep doing something"], ["unwind", "to relax after working hard"], ["life skill", "something useful to know for your whole life"], ["creativity", "using your imagination to make new things"], ["socialise", "to spend time with other people"], ["enrich", "to make something better and fuller"]]}], "cheat": [{"q": "Have you ever tried a new sport before?", "ans": {"P": "Yes, I have tried a new sport before.", "E1": "Last year, I tried badminton for the first time during my school's sports programme.", "E2": "At first, I found it quite difficult because I kept missing the shuttlecock, and I felt a bit frustrated. However, after practicing for a few weeks, I improved and was able to hit the shuttlecock properly.", "L": "I felt very happy and proud of myself, and I also enjoyed playing with my friends."}}, {"q": "What sport would you like to try, and why?", "ans": {"P": "I would like to try swimming because it looks fun and relaxing.", "E1": "I think swimming is also an important skill as it can help to keep me safe in water.", "E2": "For example, if I fall into a pool, I will know how to stay afloat. I also like that swimming can help me stay healthy and strong.", "L": "I hope to learn swimming soon and become more confident in the water."}}]};
+const TIMES={"ans-sports-3":{"s":[[0.25,3.28],[4.08,11.35],[11.85,17.78],[18.58,24.47],[24.97,36.3],[37.1,40.07],[40.57,43.7]],"r":[0,1,1,2,2,3,3]},"ans-family-3":{"s":[[0.25,4.2],[4.7,8.94],[9.74,15.5],[16.0,21.23],[21.73,26.64],[27.14,33.94],[34.74,38.9],[39.4,42.52],[43.02,50.31],[50.81,56.83],[57.63,65.12]],"r":[0,0,1,1,1,1,2,2,2,2,3]},"read-journey-1":[[[0.3,5.97],[6.57,12.4],[13.0,21.43],[22.03,27.08],[27.68,36.64]],[[37.74,43.63],[44.23,50.37],[50.97,54.56],[55.16,60.55],[61.15,68.54]],[[69.64,77.36]]],"read-family-2":[[[0.3,2.67],[3.27,6.43],[7.03,9.82],[10.42,15.48]],[[16.58,20.82],[21.42,26.48],[27.08,31.75],[32.35,35.36],[35.96,39.95]],[[41.05,44.55],[45.15,47.81],[48.41,52.23],[52.83,55.18],[55.78,58.23]],[[59.33,64.58],[65.18,69.06],[69.66,73.69],[74.29,76.7],[77.3,80.74],[81.34,84.22]]],"ans-family-2":{"s":[[0.25,4.05],[4.55,9.22],[10.02,15.61],[16.11,22.62],[23.42,30.18],[30.68,41.02],[41.52,44.96],[45.46,49.77],[50.27,54.92],[55.42,57.57],[58.37,63.02]],"r":[0,0,1,1,2,2,2,2,2,2,3]},"read-sports-2":[[[0.3,5.4],[6.0,7.9],[8.5,11.61],[12.21,16.41],[17.01,21.6]],[[22.7,25.58],[26.18,27.4],[28.0,31.03],[31.63,34.98],[35.58,38.5],[39.1,42.81],[43.41,47.4]],[[48.5,50.89],[51.49,53.81],[54.41,58.3],[58.9,60.17],[60.77,63.51],[64.11,69.97]]],"ans-journey-1":{"s":[[0.25,3.98],[4.78,9.84],[10.34,16.16],[16.66,24.86],[25.36,31.78],[32.28,36.5],[37.0,45.09],[45.89,49.98],[50.48,53.62],[54.12,62.22],[62.72,70.36],[71.16,80.76],[81.26,85.34]],"r":[0,1,1,1,1,1,1,2,2,2,2,3,3]},"ans-hobby-1":{"s":[[0.25,3.83],[4.63,12.16],[12.66,15.46],[15.96,19.29],[19.79,22.84],[23.34,26.26],[26.76,29.36],[29.86,36.95],[37.75,47.0],[47.5,57.66],[58.16,67.1],[67.6,70.24],[70.74,78.19],[78.99,84.73]],"r":[0,1,1,1,1,1,1,1,2,2,2,2,2,3]},"ans-journey-3":{"s":[[0.25,4.13],[4.93,10.8],[11.3,15.72],[16.22,25.56],[26.36,33.89],[34.39,41.79],[42.29,52.58],[53.38,59.73]],"r":[0,1,1,1,2,2,2,3]},"ans-journey-2":{"s":[[0.25,6.33],[7.13,10.78],[11.28,16.04],[16.54,19.93],[20.43,26.44],[26.94,31.57],[32.07,38.41],[38.91,43.47],[44.27,50.14],[50.64,57.15],[57.65,60.23],[61.03,67.43]],"r":[0,1,1,1,1,1,1,1,2,2,2,3]},"ans-cheat-1":{"s":[[0.25,2.53],[3.33,7.96],[8.76,14.61],[15.11,20.65],[21.45,26.53]],"r":[0,1,2,2,3]},"ans-cheat-2":{"s":[[0.25,3.51],[4.31,9.28],[10.08,14.14],[14.64,18.05],[18.85,22.65]],"r":[0,1,2,2,3]},"read-journey-2":[[[0.3,5.57],[6.17,8.94],[9.54,16.65],[17.25,23.26]],[[24.36,28.31],[28.91,31.49],[32.09,34.06],[34.66,41.35],[41.95,45.05],[45.65,49.25],[49.85,54.05]],[[55.15,58.69],[59.29,62.22],[62.82,67.89],[68.49,73.17]]],"ans-hobby-3":{"s":[[0.25,2.85],[3.65,7.9],[8.4,16.85],[17.65,20.68],[21.18,26.42],[26.92,30.49],[30.99,34.34],[34.84,39.93],[40.43,46.96],[47.46,51.77],[52.27,61.47],[61.97,68.43],[69.23,79.32]],"r":[0,1,1,2,2,2,2,2,2,2,2,2,3]},"read-hobby-1":[[[0.3,6.47],[7.07,11.72],[12.32,22.64]],[[23.74,28.05],[28.65,33.75],[34.35,38.55]],[[39.65,41.85],[42.45,51.41]],[[52.51,59.21],[59.81,64.25]],[[65.35,70.59],[71.19,76.87]],[[77.97,82.9],[83.5,87.17]]],"read-sports-1":[[[0.3,3.73],[4.33,8.26],[8.86,12.83],[13.43,17.97]],[[19.07,22.55],[23.15,29.66],[30.26,34.2],[34.8,37.6]],[[38.7,41.51],[42.11,46.93],[47.53,52.48]],[[53.58,58.75],[59.35,62.5],[63.1,70.19]],[[71.29,75.75],[76.35,80.1]]],"ans-hobby-2":{"s":[[0.25,6.8],[7.6,12.16],[12.66,19.43],[20.23,28.44],[28.94,38.95],[39.45,45.18],[45.68,49.97],[50.47,56.87],[57.37,64.05],[64.55,68.39],[68.89,74.35],[74.85,82.92],[83.42,89.86],[90.66,97.63]],"r":[0,1,1,2,2,2,2,2,2,2,2,2,2,3]},"ans-sports-2":{"s":[[0.25,5.16],[5.96,17.37],[17.87,25.38],[25.88,33.22],[34.02,38.63],[39.13,54.59],[55.39,61.52]],"r":[0,1,1,1,2,2,3]},"ans-sports-1":{"s":[[0.25,3.71],[4.51,9.78],[10.28,18.47],[18.97,24.41],[24.91,29.49],[30.29,38.06],[38.56,46.2],[46.7,54.91],[55.71,60.21],[60.71,65.08]],"r":[0,1,1,1,1,2,2,2,3,3]},"read-family-1":[[[0.3,4.52],[5.12,10.91],[11.51,17.71]],[[18.81,24.77],[25.37,30.61],[31.21,34.41],[35.01,37.72],[38.32,41.78]],[[42.88,45.44],[46.04,52.93],[53.53,56.13]],[[57.23,59.83],[60.43,65.47],[66.07,71.47]]],"ans-family-1":{"s":[[0.25,3.56],[4.36,9.05],[9.55,13.35],[13.85,21.31],[21.81,27.49],[28.29,35.16],[35.66,38.3],[38.8,43.16],[43.66,49.14],[49.64,57.45],[58.25,66.65],[67.15,70.03],[70.53,74.26]],"r":[0,1,1,1,1,2,2,2,2,2,3,3,3]}};
+const IMG={"aquarium.jpg": "img/aquarium.jpg", "picnic.jpg": "img/picnic.jpg", "sportsday.jpg": "img/sportsday.jpg", "swimming.jpg": "img/swimming.jpg"};
+const AUD='audio/';
+const WEB_URL='https://vivianchengwei.github.io/tr-61mimc/oral/';
+const PIP=document.querySelector('.brand svg').outerHTML;
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const U=id=>DATA.units.find(u=>u.id===id);
+
+/* ---------- saved progress (this device only) ---------- */
+const KEY='oralquest.v1', OLDKEY='';
+let ST={done:{},ra:{},log:[],lastBackup:0};
+try{ const s=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLDKEY)||'null'); if(s&&s.done) ST={...ST,...s}; }catch(e){}
+if(!Array.isArray(ST.log)) ST.log=[];
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(ST)); }catch(e){} }
+function totalStars(){ return Object.values(ST.done).reduce((a,d)=>a+(d.stars||0),0); }
+function finish(id,stars){ const p=ST.done[id]; ST.done[id]={stars:Math.max(stars,p?p.stars:0),n:(p?p.n:0)+1}; save(); confetti(); }
+
+/* ---------- practice log: every visit to an activity is one round ---------- */
+let SESS=null;
+const snap=c=>JSON.stringify([c&&c.text||{},c&&c.rate||{},c&&c.fb&&c.fb.stars||0]);
+function sessStart(v){ SESS=(v.name==='read'||v.name==='talk')?{t:Date.now(),k:v.name,u:v.u,i:v.i,l:0,sh:0,s0:snap(CTX[v.name+v.u+v.i])}:null; }
+function sessCount(f){ if(SESS) SESS[f]++; }
+function sessEnd(stars){ if(!SESS) return; const s=SESS; SESS=null; const c=CTX[s.k+s.u+s.i]||{};
+  const ans={}; if(s.k==='talk') ['P','E1','E2','L'].forEach(k=>{ const v=((c.text||{})[k]||'').trim(); if(v) ans[k]=v; });
+  const typed=Object.keys(ans).length>0, rated=c.rate&&Object.keys(c.rate).length>0, changed=snap(c)!==s.s0;
+  if(!stars&&!s.l&&!s.sh&&!changed) return;
+  const r={t:s.t,k:s.k,u:s.u,i:s.i,d:Math.max(1,Math.round((Date.now()-s.t)/1000)),l:s.l,sh:s.sh};
+  if(stars) r.st=stars; else r.q=1;
+  if(rated) r.rt={...c.rate};
+  if(typed) r.ans=ans;
+  if(c.fb&&c.fb.stars&&!c.fb.loading) r.cs=c.fb.stars;
+  ST.log.unshift(r); if(ST.log.length>5000) ST.log.length=5000; save(); }
+addEventListener('pagehide',()=>{ const v=SESS&&{name:SESS.k,u:SESS.u,i:SESS.i}; sessEnd(0); if(v) sessStart(v); });
+
+/* ---------- storage check + backup code ---------- */
+const openMode=()=>{ let fr=false; try{ fr=window.top!==window.self; }catch(e){ fr=true; }
+  if(fr) return ['embedded','嵌在 claude.ai 页面里']; if(location.protocol==='file:') return ['file','本地文件'];
+  if((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone) return ['app','主屏幕 App']; return ['web','独立网页']; };
+let persistState='检查中…';
+try{ if(navigator.storage&&navigator.storage.persisted){ navigator.storage.persisted().then(g=>{ if(g){ persistState='已获准'; return; } if(!navigator.storage.persist){ persistState='未获准'; return; } navigator.storage.persist().then(x=>{ persistState=x?'已获准':'未获准'; }).catch(()=>{ persistState='未获准'; }); }).catch(()=>{ persistState='未获准'; }); } else persistState='这个浏览器不支持'; }catch(e){ persistState='这个浏览器不支持'; }
+const lsWorks=()=>{ try{ localStorage.setItem('oq-test','1'); const ok=localStorage.getItem('oq-test')==='1'; localStorage.removeItem('oq-test'); return ok; }catch(e){ return false; } };
+const b64enc=u8=>{ let s=''; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); };
+const b64dec=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const gz=async(u8,on)=>{ const cs=on?new CompressionStream('gzip'):new DecompressionStream('gzip'); return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(cs)).arrayBuffer()); };
+async function makeBackup(){ const raw=new TextEncoder().encode(JSON.stringify({app:'oral-quest',v:1,at:Date.now(),done:ST.done,log:ST.log,ra:ST.ra}));
+  if(window.CompressionStream){ try{ return 'OQ1Z:'+b64enc(await gz(raw,true)); }catch(e){} } return 'OQ1:'+b64enc(raw); }
+async function readBackup(code){ code=String(code||'').replace(/\s+/g,'');
+  if(code.startsWith('OQ1Z:')) return JSON.parse(new TextDecoder().decode(await gz(b64dec(code.slice(5)),false)));
+  if(code.startsWith('OQ1:')) return JSON.parse(new TextDecoder().decode(b64dec(code.slice(4))));
+  throw new Error('这不是 Oral Quest 的备份码（应该以 OQ1 开头）'); }
+function mergeBackup(b){ if(!b||b.app!=='oral-quest') throw new Error('这不是 Oral Quest 的备份码');
+  let added=0; Object.entries(b.done||{}).forEach(([k,v])=>{ const p=ST.done[k]; ST.done[k]={stars:Math.max(v.stars||0,p?p.stars:0),n:Math.max(v.n||0,p?p.n:0)}; });
+  const key=r=>r.t+'|'+r.k+'|'+r.u+'|'+r.i; const seen=new Set(ST.log.map(key));
+  (b.log||[]).forEach(r=>{ if(!seen.has(key(r))){ ST.log.push(r); seen.add(key(r)); added++; } });
+  ST.log.sort((x,y)=>y.t-x.t); if(ST.log.length>5000) ST.log.length=5000; save(); return added; }
+
+/* ---------- reading mark-up engine ---------- */
+const RA={
+  edNot:new Set(['bed','red','fed','led','wed','shed','sled','bred','shred','need','seed','feed','weed','speed','reed','deed','greed','breed','bleed','freed','hundred','kindred','naked','wicked','sacred','rugged','ragged','crooked','beloved','learned','aged','blessed','dogged','jagged','wretched','embed','exceed','succeed','proceed','indeed','steed','tweed','heed','creed','agreed','ahead','instead','spread','bread','dead','head','read','thread','tread','lead','dread','ahead','overhead','embed']),
+  edT:new Set(['based','focused','released','increased','decreased','chased','purchased','promised','pressed','passed','missed','crossed','dressed','discussed','addressed','expressed','impressed','stressed','guessed','kissed','tossed','processed','danced','placed','faced','raced','traced','produced','reduced','introduced','practised','practiced','noticed','sliced','priced','forced','convinced','balanced','announced','pronounced','experienced','embraced','replaced','advanced','influenced','fixed','mixed','relaxed','boxed','taxed','faxed','laughed','coughed','helped','stopped','dropped','shopped','hoped','jumped','tapped','wrapped','swiped','typed','stepped','skipped','shaped','escaped','developed','equipped','clapped','gripped','looked','cooked','liked','asked','walked','talked','worked','picked','checked','packed','thanked','baked','joked','parked','marked','knocked','locked','blocked','tricked','kicked','shocked','smoked','booked','hooked','linked','thanked','attacked','tracked','stacked','cracked','remarked','sparked','shaked','soaked','poked','invoked','washed','wished','pushed','rushed','finished','crashed','splashed','brushed','polished','published','punished','established','vanished','flashed','watched','touched','reached','matched','searched','teached','stretched','scratched','switched','attached','launched','marched','fetched','approached','preached','sketched','stuffed','puffed','sniffed','scoffed','huffed','surfed','briefed','roofed','proofed','sipped','zipped','ripped','dipped','tipped','slipped','mopped','chopped','swapped','scrolled']),
+  edD:new Set(['caused','raised','praised','pleased','closed','chose','supposed','surprised','realised','realized','organised','organized','recognised','recognized','apologised','apologized','advised','amused','excused','paused','exposed','opposed','proposed','composed','refused','accused','confused','bruised','cruised','eased','teased','squeezed','sneezed','seized','gazed','amazed','buzzed','quizzed','sized','prized','prioritised','prioritized','emphasised','emphasized','encouraged','arranged','changed','managed','damaged','judged','nudged','engaged','exchanged','challenged','scrolled','smiled']),
+  thVoiced:new Set(['the','this','that','these','those','they','them','their','theirs','there','then','than','thus','though','although','thee','thy','thou','themselves','therefore','thereby','thereafter','with','without','within','withdraw','other','others','another','mother','mothers','father','fathers','brother','brothers','grandmother','grandfather','together','weather','whether','rather','either','neither','further','furthermore','gather','gathered','gathering','gatherings','bother','feather','leather','southern','northern','smooth','smoothly','clothes','clothing','breathe','breathing','bathe','soothe','worthy','rhythm','nevertheless','otherwise','nonetheless','farther']),
+  thSkip:new Set(['thomas','thames','thai','thailand','thyme','anthony','esther','pothole','lighthouse','hothouse','goatherd']),
+  silent:{know:[0],knew:[0],known:[0],knee:[0],knees:[0],knife:[0],knives:[0],knock:[0],knocked:[0],knowledge:[0],knowing:[0],knot:[0],knit:[0],knight:[0],kneel:[0],
+    write:[0],writes:[0],writing:[0],written:[0],wrote:[0],wrong:[0],wrap:[0],wrapped:[0],wrapping:[0],wrist:[0],wreck:[0],wrinkle:[0],
+    hour:[0],hours:[0],honest:[0],honestly:[0],honour:[0],honor:[0],heir:[0],
+    could:[3],would:[3],should:[4],walk:[2],walks:[2],walked:[2],walking:[2],talk:[2],talks:[2],talked:[2],talking:[2],chalk:[2],half:[2],calm:[2],calmly:[2],calmer:[2],palm:[2],salmon:[2],folk:[2],folks:[2],yolk:[2],
+    climb:[4],climbing:[4],climbed:[4],thumb:[4],thumbs:[4],comb:[3],lamb:[3],bomb:[3],tomb:[3],womb:[3],crumb:[4],crumbs:[4],numb:[3],plumber:[4],debt:[2],debts:[2],doubt:[3],doubts:[3],subtle:[2],
+    psychology:[0],receipt:[4],receipts:[4],pneumonia:[0],cupboard:[2],
+    sign:[2],signs:[2],design:[4],designs:[4],designed:[4],campaign:[6],campaigns:[6],foreign:[5],reign:[3],gnaw:[0],gnome:[0],align:[3],resign:[4],
+    listen:[3],listening:[3],listened:[3],fasten:[3],castle:[3],whistle:[3],glisten:[3],often:[2],christmas:[2],
+    island:[1],islands:[1],aisle:[1],
+    autumn:[5],column:[5],solemn:[5],hymn:[3],condemn:[6],
+    science:[1],scientist:[1],scientists:[1],scene:[1],scenes:[1],scenery:[1],scissors:[1],muscle:[2],muscles:[2],fascinate:[2],fascinating:[2],
+    wednesday:[2],handsome:[2],sandwich:[3],sandwiches:[3],
+    guide:[1],guides:[1],guided:[1],guidance:[1],guest:[1],guests:[1],guess:[1],guitar:[1],guard:[1],build:[1],builds:[1],building:[1],buildings:[1],built:[1],biscuit:[1],biscuits:[1],
+    answer:[2],answers:[2],answered:[2],sword:[1],two:[1],
+    night:[2,3],nights:[2,3],light:[2,3],lights:[2,3],bright:[3,4],brightly:[3,4],right:[2,3],fight:[2,3],might:[2,3],sight:[2,3],tight:[2,3],flight:[3,4],delight:[3,4],midnight:[5,6],tonight:[4,5],high:[2,3],higher:[2,3],highlight:[2,3,7,8],thigh:[3,4],sigh:[2,3],
+    eight:[2,3],weigh:[3,4],weight:[3,4],neighbour:[3,4],neighbours:[3,4],neighbourhood:[3,4],neighbouring:[3,4],neighborhood:[3,4],
+    thought:[4,5],thoughts:[4,5],thoughtful:[4,5],though:[4,5],although:[5,6],through:[5,6],bought:[3,4],brought:[4,5],fought:[3,4],sought:[3,4],ought:[2,3],
+    daughter:[3,4],caught:[3,4],taught:[3,4],naughty:[3,4],
+    calf:[2],could_:[]},
+  wh:new Set(['what','where','when','why','who','whom','whose','which','how'])
+};
+function raEd(w){ const l=w.toLowerCase(); if(l.length<4||!/ed$/.test(l)||RA.edNot.has(l)) return null;
+  if(RA.edT.has(l)) return 't'; if(RA.edD.has(l)) return 'd';
+  const s=l.slice(0,-2); // stem before "ed"
+  if(/(t|d)$/.test(s)||/(te|de)$/.test(l.slice(0,-1))&&/[td]$/.test(s)) return 'id';
+  if(/[td]e?$/.test(s)) return 'id';
+  if(/(p|k|ck|f|ss|sh|ch|x|gh)$/.test(s)||/(c)$/.test(s)) return 't';
+  return 'd'; }
+function raTh(l){ if(!l.includes('th')||RA.thSkip.has(l)) return null; if(RA.thVoiced.has(l)) return 'v'; if(/^(th(e|is|at|ese|ose|ey|em|eir|ere|en|an|us|ough))/.test(l)&&RA.thVoiced.has(l.replace(/(s|'s)$/,''))) return 'v'; if(/ther/.test(l)&&!/^(ther)/.test(l)&&!/(ether|thermo)/.test(l.slice(0,5))) return 'v'; if(/the[sd]?$/.test(l)&&l.length>4) return 'v'; return 'u'; }
+/* token -> HTML with marks */
+function raWord(w,forceEd){
+  const l=w.toLowerCase().replace(/[’']s$/,'').replace(/[’']/g,"'"); let marks=[]; const chars=[...w]; const cls=new Array(chars.length).fill('');
+  const sil=RA.silent[l]; if(sil) sil.forEach(i=>{ if(i<chars.length) cls[i]+=' ra-sil'; });
+  else { // pattern fallbacks
+    if(/^kn/.test(l)) cls[0]+=' ra-sil'; if(/^wr/.test(l)) cls[0]+=' ra-sil'; if(/mb$/.test(l)) cls[chars.length-1]+=' ra-sil';
+    const ig=l.search(/igh(t|ts|ten|ter|est|ly)?$/); if(ig>=0){ cls[ig+1]+=' ra-sil'; cls[ig+2]+=' ra-sil'; } }
+  const th=raTh(l); if(th){ let i=l.indexOf('th'); while(i>=0){ cls[i]+=` ra-th-${th}`; cls[i+1]+=` ra-th-${th}`; i=l.indexOf('th',i+2); } }
+  const ed=forceEd||raEd(l); let edTag='';
+  if(ed){ const n=chars.length; cls[n-2]+=` ra-ed-${ed}`; cls[n-1]+=` ra-ed-${ed}`; edTag=ed; }
+  let html=''; let cur=null, buf='';
+  const flush=()=>{ if(!buf) return; html+=cur?`<span class="${cur.trim()}">${esc(buf)}</span>`:esc(buf); buf=''; };
+  chars.forEach((c,i)=>{ if(cls[i]!==cur){ flush(); cur=cls[i]; } buf+=c; }); flush();
+  if(edTag) html=`<span class="ra-edw ra-edw-${edTag}" data-ed="${edTag==='id'?'/ɪd/':'/'+edTag+'/'}">${html}</span>`;
+  return html;
+}
+/* passage -> sentences -> tokens; returns HTML */
+function raSentences(text){ const out=[]; let re=/[^.!?]+[.!?]+["')\]]*\s*|[^.!?]+$/g; let m; while((m=re.exec(text))) { const s=m[0]; if(s.trim()) out.push(s); } return out; }
+function raMark(text,sIdx){
+  const sents=raSentences(text); let html='';
+  sents.forEach((s,si)=>{
+    const trimmed=s.trim(); const endP=(trimmed.match(/([.!?])["')\]]*$/)||[])[1]||'';
+    const firstWord=(trimmed.replace(/^["'(]+/,'').match(/^[A-Za-z]+/)||[''])[0].toLowerCase();
+    const parts=s.match(/[A-Za-z’'][A-Za-z’'\-]*|\s+|—|–|[^A-Za-z\s]/g)||[]; let body='';
+    // find index of last word before end punctuation, and words before commas
+    const wordIdx=[]; parts.forEach((p,i)=>{ if(/^[A-Za-z]/.test(p)) wordIdx.push(i); });
+    const lastW=wordIdx[wordIdx.length-1];
+    parts.forEach((p,i)=>{
+      if(/^[A-Za-z]/.test(p)){
+        const nxt=parts.slice(i+1).find(x=>!/^\s+$/.test(x)&&!/^["')\]]$/.test(x))||''; let fe=null; if(p.toLowerCase()==='used') fe=(nxt.toLowerCase()==='to')?'t':'d'; let w=raWord(p,fe);
+        if(i===lastW&&endP){ const arr=endP==='?'?(RA.wh.has(firstWord)?'fall':'rise'):endP==='!'?'risefall':'fall'; w=`<span class="ra-int ra-${arr}">${w}</span>`; }
+        else if(nxt===','||nxt===';'||nxt===':'||nxt==='—'||nxt==='–'){ w=`<span class="ra-int ra-rise ra-soft">${w}</span>`; }
+        body+=w;
+      } else if(p===','||p===';'||p===':'){ body+=esc(p)+'<span class="ra-p1" title="pause 1 count">/</span>'; }
+      else if(p==='—'||p==='–'){ body+=' '+esc(p)+'<span class="ra-p1" title="pause 1 count">/</span>'; }
+      else if(p==='.'||p==='?'||p==='!'){ const isEnd=!parts.slice(i+1).some(x=>/[.!?]/.test(x)); body+=esc(p)+(isEnd?'<span class="ra-p2" title="pause 2 counts">//</span>':''); }
+      else body+=esc(p);
+    });
+    html+=`<span class="ra-s" data-s="${sIdx}-${si}">${body}</span>`;
+  });
+  return html;
+}
+
+/* ---------- audio player (sits at the top of the page) ---------- */
+const A=new Audio(); A.preload='auto';
+const PL={name:null,label:'',times:null,onTime:null,shadow:false,wait:null,slow:false,stopAt:null};
+function playClip(name,label,opt){ opt=opt||{}; clearTimeout(PL.wait); $('#turn').classList.remove('on');
+  PL.label=label; PL.times=opt.times||null; PL.onTime=opt.onTime||null; PL.shadow=!!opt.shadow; PL.stopAt=null; PL.last=-1;
+  const start=opt.start||0;
+  const go=()=>{ try{ A.currentTime=start; }catch(e){} A.playbackRate=PL.slow?0.85:1; A.play().catch(()=>{}); };
+  if(PL.name!==name){ PL.name=name; A.src=(typeof AUDMAP!=='undefined'&&AUDMAP[name])||AUD+name+'.mp3'; A.addEventListener('loadedmetadata',go,{once:true}); A.load(); } else go();
+  $('#player').classList.toggle('on',!opt.quiet); $('#plabel').textContent=label; $('#turn').classList.toggle('on',PL.shadow); }
+function stopClip(){ clearTimeout(PL.wait); A.pause(); PL.onTime&&PL.onTime(-1); PL.onTime=null; $('#player').classList.remove('on'); $('#turn').classList.remove('on'); }
+A.addEventListener('timeupdate',()=>{ const t=A.currentTime; if(A.duration) $('#pfill').style.width=(100*t/A.duration)+'%';
+  if(!PL.times) return; let i=-1; PL.times.forEach((r,k)=>{ if(t>=r[0]-0.05) i=k; });
+  if(i!==PL.last){ PL.last=i; PL.onTime&&PL.onTime(i); } });
+A.addEventListener('play',()=>$('#pp').textContent='⏸'); A.addEventListener('pause',()=>$('#pp').textContent='▶');
+A.addEventListener('ended',()=>{ PL.onTime&&PL.onTime(-1); $('#turn').classList.remove('on'); });
+$('#pp').onclick=()=>{ A.paused?A.play():A.pause(); };
+$('#pstop').onclick=stopClip;
+$('#pspeed').onclick=()=>{ PL.slow=!PL.slow; A.playbackRate=PL.slow?0.85:1; $('#pspeed').textContent=PL.slow?'🐢 Slow ✓':'🐢 Slow'; };
+
+/* ---------- views ---------- */
+let V={name:'home'};
+const CTX={}; // per-activity scratch (ticks, typed text, feedback)
+function go(v){ stopClip(); clearInterval(LOOK.t); sessEnd(0); V=v; sessStart(v); render(); window.scrollTo(0,0); }
+function actId(kind,u,i){ return kind+'-'+u+'-'+(i+1); }
+function acts(u){ return [...u.reads.map((r,i)=>({kind:'read',i,title:r.title,ic:r.kind==='story'?'📖':'🎤',sub:'Read aloud · '+(r.kind==='story'?'Story':'Presentation')})),
+  ...u.qs.map((q,i)=>({kind:'talk',i,title:q.q,ic:i?'💬':'🖼️',sub:'Picture talk · '+q.tag}))]; }
+function nextMission(){ for(const u of DATA.units) for(const a of acts(u)) if(!ST.done[actId(a.kind,u.id,a.i)]) return {u,a}; return null; }
+
+function render(){
+  $('#tabs').innerHTML=[['home','🏠 Home'],['tips','💡 Tips']].map(([k,l])=>`<button class="tab ${V.name===k?'on':''}" data-go="${k}">${l}</button>`).join('')+`<span class="starpill">⭐ ${totalStars()}</span>`;
+  const f={home:vHome,unit:vUnit,read:vRead,talk:vTalk,tips:vTips,parents:vParents}[V.name]; $('#app').innerHTML=f();
+}
+
+function homeNotes(){ const m=openMode()[0]; let h='';
+  if(m==='embedded') h+=`<div class="note">📌 This copy is inside claude.ai, where the browser may clear your stars. Use the Oral Quest page instead: <b>${WEB_URL}</b><br><span class="small">家长：在这里的家长页复制备份码，到上面的网址恢复。</span></div>`;
+  else if(ST.log.length&&Date.now()-(ST.lastBackup||0)>7*864e5) h+=`<div class="note">💾 ${ST.lastBackup?'超过一周没备份了':'还没备份过'}。家长可以在 <button class="linkbtn" data-go="parents">家长页</button> 复制备份码，存到备忘录。</div>`;
+  return h; }
+function vHome(){ const nm=nextMission();
+  return homeNotes()+`<section class="hero">${PIP}<div><h1>Hi there! Ready to talk?</h1>
+    <p>${nm?`Today's mission: <b>${esc(nm.u.short)}</b> — ${nm.a.kind==='read'?'read aloud':'picture talk'}.`:'You finished every mission. Play any one again to get even better!'}</p>
+    ${nm?`<button class="btn" data-open="${nm.a.kind}" data-u="${nm.u.id}" data-i="${nm.a.i}">▶ Start my mission</button>`:''}</div></section>
+  <h2 class="sec">Pick an adventure</h2>
+  <div class="units">${DATA.units.map(u=>{ const as=acts(u); return `<button class="unit" style="--uc:${u.color}" data-unit="${u.id}">
+    <div class="pic" style="background-image:url('${IMG[u.img]}')"></div>
+    <div class="body"><h3>${u.emoji} ${esc(u.title)}</h3>
+    <div class="dots">${as.map(a=>{ const d=ST.done[actId(a.kind,u.id,a.i)]; return `<span class="dot ${d?'done':''}">${a.ic}${d?' '+'⭐'.repeat(d.stars):''}</span>`; }).join('')}</div></div></button>`; }).join('')}</div>
+  <div class="two">
+    <div class="card"><div class="eyebrow">Part 1</div><h3 style="font-size:22px;margin:2px 0 6px">📖 Reading Aloud</h3><p class="small">Watch the marks, listen, shadow the voice, then read on your own.</p></div>
+    <div class="card"><div class="eyebrow">Part 2</div><h3 style="font-size:22px;margin:2px 0 6px">🖼️ Picture Talk</h3><p class="small">Read, listen, shadow, then it is your turn. Build your answer with <b style="color:var(--P)">P</b><b style="color:var(--E1)">E</b><b style="color:var(--E2)">E</b><b style="color:var(--L)">L</b>.</p></div>
+  </div>
+  <p class="row" style="justify-content:center;margin-top:28px"><button class="btn ghost small" data-go="parents">👪 家长页 · 记录和备份</button> <button class="btn ghost small" id="reset">↺ Reset my progress</button></p>`; }
+
+function vUnit(){ const u=U(V.u);
+  return `<button class="back" data-go="home">← All adventures</button>
+  <div style="--uc:${u.color};--us:${u.soft}">
+  <h1 style="font-size:clamp(28px,6vw,38px);margin-bottom:12px">${u.emoji} ${esc(u.title)}</h1>
+  <img class="upic" src="${IMG[u.img]}" alt="${esc(u.alt)}">
+  <h2 class="sec">📖 Part 1 · Reading Aloud</h2>
+  ${acts(u).filter(a=>a.kind==='read').map(a=>actBtn(u,a)).join('')}
+  <h2 class="sec">🖼️ Part 2 · Picture Talk</h2>
+  ${acts(u).filter(a=>a.kind==='talk').map(a=>actBtn(u,a)).join('')}
+  <h2 class="sec">✨ Power words</h2>
+  <div class="words">${u.words.map(w=>`<div class="word"><b>${esc(w[0])}</b><span class="small muted">${esc(w[1])}</span></div>`).join('')}</div></div>`; }
+function actBtn(u,a){ const d=ST.done[actId(a.kind,u.id,a.i)];
+  return `<button class="act" data-open="${a.kind}" data-u="${u.id}" data-i="${a.i}"><span class="ic">${a.ic}</span><span><span class="small muted">${a.sub}</span><b>${esc(a.title)}</b></span><span class="st">${d?'⭐'.repeat(d.stars):'▶'}</span></button>`; }
+
+function stepDots(n,cur){ return `<div class="steps">${Array.from({length:n},(_,k)=>`<i class="sd ${k<cur?'past':k===cur?'on':''}"></i>`).join('')}</div>`; }
+function navBtns(last,lastLabel){ return `<div class="row" style="justify-content:center;margin-top:16px">${V.step>0?`<button class="btn ghost" data-step="-1">← Back</button>`:''}<button class="btn" data-step="1">${last?lastLabel:'Next tip →'}</button></div>`; }
+function ctx(){ const k=V.name+V.u+V.i; return CTX[k]||(CTX[k]={ticks:{},seen:{},heard:{},text:{},rate:{}}); }
+function checks(items){ return `<div class="checks">${items.map(t=>`<div class="chk"><span>👉</span>${t}</div>`).join('')}</div>`; }
+
+/* ===== Reading Aloud ===== */
+const RA_KEYS=[['pause','/ Pauses'],['int','↗ Voice up & down'],['ed','-ed endings'],['th','th sounds'],['sil','Silent letters']];
+function raCls(){ return RA_KEYS.filter(([k])=>ST.ra[k]===false).map(([k])=>'ra-off-'+k).join(' '); }
+function vRead(){ const u=U(V.u), r=u.reads[V.i], c=ctx();
+  const name='read-'+u.id+'-'+(V.i+1); const stars=Math.round(((c.rate.a||0)+(c.rate.b||0)+(c.rate.c||0))/3);
+  const rr=(k,label,hint)=>`<div class="rrow"><span><b>${label}</b><br><span class="small muted">${hint}</span></span><span class="stars">${[1,2,3].map(n=>`<button class="${(c.rate[k]||0)>=n?'on':''}" data-rate="${k}" data-n="${n}" aria-label="${n} star">⭐</button>`).join('')}</span></div>`;
+  return `<button class="back" data-unit="${u.id}">← ${esc(u.title)}</button><div style="--uc:${u.color};--us:${u.soft}">
+   <div class="eyebrow">Reading aloud · ${r.kind==='story'?'Story':'Presentation'} · ${V.i+1} of ${u.reads.length}</div><h1 style="font-size:clamp(24px,5vw,32px);margin-bottom:10px">${esc(r.title)}</h1>
+   <div class="key" style="margin-bottom:12px"><span><b>🎭 How to sound:</b> ${esc(r.mood)}</span>
+    <span><b class="ra-p1">/</b> short pause &nbsp;·&nbsp; <b class="ra-p2">//</b> longer pause, take a breath &nbsp;·&nbsp; <b style="color:var(--ra-int)">↗</b> voice up &nbsp;·&nbsp; <b style="color:var(--ra-int)">↘</b> voice down &nbsp;·&nbsp; <b style="color:var(--ra-int)">↗↘</b> excited!</span>
+    <span>Say the endings clearly: jump<b class="ra-ed-t">ed</b> /t/ · play<b class="ra-ed-d">ed</b> /d/ · want<b class="ra-ed-id">ed</b> /ɪd/ · <b class="ra-th-v">th</b>is · <b class="ra-th-u">th</b>ink · <span class="ra-sil">k</span>now (silent)</span></div>
+   <div class="eyebrow" style="margin-bottom:6px">Tricky words · tap to hear</div>
+   <div class="twrow">${r.tricky.map((w,k)=>`<button class="tw ${c.heard[k]?'heard':''}" data-word="${k}"><b>🔊 ${esc(w[0])}</b><span>${esc(w[1])}</span></button>`).join('')}</div>
+   <div class="row" style="margin-top:16px"><button class="btn" data-listen="${name}">🎧 1. Listen</button><button class="btn ghost" data-shadow="${name}">🦜 2. Shadow</button></div>
+   <p class="small muted" style="margin:8px 4px 0"><b>Shadow</b> = say it together with the voice, like an echo. The voice keeps going.</p>
+   <div class="chips">${RA_KEYS.map(([k,l])=>`<button class="chip ${ST.ra[k]===false?'':'on'}" data-ra="${k}">${l}</button>`).join('')}</div>
+   <div class="card passage ${raCls()}" id="passage">${r.paras.map((p,pi)=>`<p>${raMark(p,pi)}</p>`).join('')}</div>
+   <p class="small muted" style="margin:8px 4px">Tap any sentence to hear it from there.</p>
+   <h2 class="sec">🎤 3. Read it by yourself</h2>
+   <div class="card"><p style="margin-bottom:10px">Read the whole passage out loud. Then give yourself stars.</p>
+    <div class="rate">${rr('a','Clear words','Every word and ending sound was clear')}${rr('b','Smooth and steady','I paused at / and //, and did not rush')}${rr('c','Expression','My voice went up and down with the feeling')}</div>
+    <div class="row" style="margin-top:14px"><button class="btn green" data-finish="${stars}" ${c.rate.a&&c.rate.b&&c.rate.c?'':'disabled style="opacity:.45"'}>I did it! ${'⭐'.repeat(stars||0)}</button></div></div>${navQ(u,'read','passage')}</div>`; }
+
+/* ===== Picture Talk ===== */
+const W5=[['Who','Who is in the picture?'],['What','What are they doing?'],['When','When is this happening?'],['Where','Where are they?'],['Why','Why is this happening?'],['How','How does it affect the people in the picture?']];
+const PEEL=[['P','Point','Main point: answer the question'],['E1','Explain','Elaborate: give your reasons'],['E2','Example','Evidence: your own experience'],['L','Link','Thoughts: link back to the question']];
+const LOOK={t:null,left:0};
+function peelRows(ans,opt){ opt=opt||{}; return `<div class="peel" ${opt.id?`id="${opt.id}"`:''}>${PEEL.map(([k,n,d],i)=>`<div class="prow ${k}" data-row="${i}"><span class="lbl ${k}">${k[0]}</span><div><div class="nm">${n} <small>· ${d}</small></div>${ans?`<div>${raSentences(ans[k]).map(x=>`<span class="as">${esc(x)}</span>`).join('')}</div>`:''}${opt.extra?opt.extra(k):''}</div></div>`).join('')}</div>`; }
+function examiner(u,q,name){ return `<div class="exam"><span class="face">👩‍🏫</span><div class="bubble">${esc(q)}<div class="say"><button class="btn small ghost" data-say="${name}">🔊 Hear the question</button></div></div></div>`; }
+function vTalk(){ const u=U(V.u), q=u.qs[V.i], c=ctx(); const pic=q.kind==='pic'; const N=pic?5:0; const qn='q-'+u.id+'-'+(V.i+1), an='ans-'+u.id+'-'+(V.i+1);
+  const head=`<button class="back" data-unit="${u.id}">← ${esc(u.title)}</button><div style="--uc:${u.color};--us:${u.soft}">
+    <div class="eyebrow">Picture talk · Question ${V.i+1} of ${u.qs.length} · ${esc(q.tag)}</div>${pic?stepDots(N+1,V.step):''}`;
+  if(V.step<N){
+    const w=c.w5||'Who';
+    const tips=[
+     ['👀','Look at the picture carefully','Take your time before speaking. Ask yourself the 5W1H questions.',
+       `<img class="stim" src="${IMG[u.img]}" alt="${esc(u.alt)}">
+        <div class="lookt"><div class="ring" id="ring" style="--p:0"><span id="ringn">30</span></div><button class="btn small ghost" data-look="1">⏱ Start my 30-second look</button></div>
+        <div class="w5">${W5.map(([k])=>`<button class="${w===k?'on':''} ${c.seen[k]?'seen':''}" data-w5="${k}">${k}</button>`).join('')}</div>
+        <div class="box"><b>${W5.find(x=>x[0]===w)[1]}</b><p class="small muted" style="margin:4px 0 8px">Say your own answer out loud first, then peek.</p>
+        ${c.seen[w]?`<p>💡 ${esc(u.w5[w])}</p>`:`<button class="btn small ghost" data-peek="${w}">👀 Peek at an idea</button>`}</div>`],
+     ['🎯','Answer the question clearly','Listen to what the examiner asks. Stay on topic. Start simply, then add more details.',
+       examiner(u,q.q,qn)+`<div class="box"><b>Start simply:</b><br><i>“${esc(q.start.P)}”</i></div>
+        <div class="vs"><div class="no">✗ Talking about something else</div><div class="yes">✓ Answering exactly what was asked</div></div>`],
+     ['💭','Share your own experience','Link the picture to your own life. It makes your answer interesting.',
+       `<div class="box"><b>Useful starters</b><br><i>“This reminds me of …”</i><br><i>“I once experienced …”</i><br><i>“Last year, …”</i></div>
+        ${checks(['Give a personal experience','Share your feelings (frustrated, happy, proud)','Give reasons why, and an example of what you did'],'exp')}`],
+     ['📝','Speak in full sentences','No one-word answers! Full sentences help the conversation grow.',
+       `<div class="vs"><div class="no">✗ “Yes.”</div><div class="yes">✓ “Yes, I think it is important because …”</div></div>
+        <div class="box"><b>Build your answer with PEEL</b></div>${peelRows(null,{extra:k=>`<div class="starter">“${esc(q.start[k])}”</div>`})}`],
+     ['😀','Speak clearly and confidently','The examiner listens to HOW you speak, not just what you say.',
+       checks(['Speak loudly and clearly','Do not rush','Stay calm and smile!'],'conf')]
+    ]; const t=tips[V.step];
+    return head+`<div class="card tip"><span class="tipnum">STEP ${V.step+1} OF 5</span><div class="big" style="margin-top:10px">${t[0]}</div><h2>${t[1]}</h2><p class="lead">${t[2]}</p>${t[3]}${navBtns(V.step===N-1,"Let's talk! →")}
+      <p style="margin-top:10px"><button class="small muted" data-step="${N-V.step}" style="text-decoration:underline">Skip to the question</button></p></div></div>`;
+  }
+  const fb=c.fb;
+  return head+`${pic?`<img class="stim" style="max-height:38vh" src="${IMG[u.img]}" alt="${esc(u.alt)}">`:''}
+   ${examiner(u,q.q,qn)}
+   <div class="flow"><span><b>1</b> Read</span><span><b>2</b> Listen</span><span><b>3</b> Shadow</span><span><b>4</b> My turn</span></div>
+   <h2 class="sec" style="margin-top:14px">📖 1. Read the model answer</h2>
+   <p class="small muted" style="margin-bottom:8px">Read it out loud once. See how it is built with PEEL, and spot phrases you can borrow.</p>
+   ${peelRows(q.ans,{id:'model'})}
+   <h2 class="sec">🎧 2. Listen &nbsp; 🦜 3. Shadow</h2>
+   <div class="row"><button class="btn" data-model="${an}">🎧 Listen</button><button class="btn ghost" data-modelshadow="${an}">🦜 Shadow</button></div>
+   <p class="small muted" style="margin:8px 4px 0"><b>Shadow</b> = say it together with the voice, like an echo. The voice keeps going.</p>
+   <h2 class="sec">🎤 4. My turn</h2>
+   <p class="small muted" style="margin-bottom:8px">Now answer with your own ideas. Say each part out loud. You can also type it, or tap the 🎤 on the iPad keyboard and speak.</p>
+   ${peelRows(null,{extra:k=>`<div class="starter">“${esc(q.start[k])}”</div><textarea data-txt="${k}" placeholder="My ${k==='P'?'point':k==='E1'?'reasons':k==='E2'?'example':'ending'}…">${esc(c.text[k]||'')}</textarea>`})}
+   <div class="row" style="margin-top:12px"><button class="btn" data-coach="1">✨ Ask Coach Pip</button>${pic?`<button class="btn ghost" data-step="-5">↺ 5 steps</button>`:''}</div>
+   <div id="fb" style="margin-top:12px">${fb?fbHTML(fb):''}</div>
+   <div class="row" style="margin-top:22px;justify-content:center"><button class="btn green" data-finishtalk="1">🎉 I did it! ⭐⭐⭐</button></div>
+   ${navQ(u,'talk','question')}</div>`; }
+function navQ(u,kind,word){ const n=(kind==='talk'?u.qs:u.reads).length, i=V.i;
+  return `<div class="row qnav">${i>0?`<button class="btn ghost" data-open="${kind}" data-u="${u.id}" data-i="${i-1}">← Previous ${word}</button>`:'<span></span>'}<button class="btn ghost" data-unit="${u.id}">🏠 Back to topic</button>${i<n-1?`<button class="btn" data-open="${kind}" data-u="${u.id}" data-i="${i+1}">Next ${word} →</button>`:'<span></span>'}</div>`; }
+function talkStars(c){ return 3; }
+function fbHTML(f){ if(f.loading) return `<div class="fb">Coach Pip is thinking… 🦜</div>`;
+  return `<div class="fb"><h3>🦜 Coach Pip says ${'⭐'.repeat(f.stars||1)}</h3><b>Well done</b><ul>${(f.praise||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul><b>Try next</b><ul>${(f.tips||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>${f.better?`<b>An even better version</b><p style="margin-top:4px">${esc(f.better)}</p>`:''}${f.note?`<p class="small muted" style="margin-top:8px">${esc(f.note)}</p>`:''}</div>`; }
+function offlineCheck(t){ const all=PEEL.map(([k])=>(t[k]||'').trim()); const txt=all.join(' '); const words=txt.split(/\s+/).filter(Boolean).length; const praise=[],tips=[];
+  if(all[0]) praise.push('You started with a clear point.'); else tips.push('Start with your Point: answer the question in one clear sentence.');
+  if(/\bbecause\b|\bas\b|\bso that\b/i.test(txt)) praise.push('You gave a reason with “because”.'); else tips.push('Add a reason. Try “I think … because …”.');
+  if(/\b(I once|last (year|week|month)|reminds me|for example|my (family|classmates|friends|mother|father|brother|sister))\b/i.test(txt)) praise.push('You shared your own experience.'); else tips.push('Share your own experience: “This reminds me of …” or “I once …”.');
+  if(!all[3]) tips.push('Finish with a Link sentence: “Therefore, I would …”.');
+  if(words<35) tips.push('Say a little more. Aim for at least 5 full sentences.');
+  if(!praise.length) praise.push('Good try! Every practice makes you better.');
+  return {stars:tips.length<=1?3:tips.length<=2?2:1,praise:praise.slice(0,3),tips:tips.slice(0,2)}; }
+let SAMPLE=null; if(WEB&&window.claude&&window.claude.use){ window.claude.use('sample').then(s=>{SAMPLE=s;}).catch(()=>{}); }
+async function coach(){ const u=U(V.u), q=u.qs[V.i], c=ctx(); const txt=PEEL.map(([k,n])=>n+': '+(c.text[k]||'').trim()).join('\n');
+  if(!PEEL.some(([k])=>(c.text[k]||'').trim())){ c.fb={stars:1,praise:['You are ready to start!'],tips:['Type or dictate your answer in the boxes first, then ask me again.']}; render(); return; }
+  const off=offlineCheck(c.text);
+  if(!SAMPLE){ c.fb={...off,note:WEB?'':'Quick check only. Open the web link to get Coach Pip’s full feedback.'}; render(); return; }
+  c.fb={loading:true}; render();
+  try{ const sys=`You are Coach Pip, a warm, encouraging English oral coach for a Primary 3 pupil (age 9) in Singapore preparing for Stimulus-Based Conversation. His school uses PEEL (Point, Explain, Example with own experience, Link back). Judge his answer against these five tips: answer the question clearly and stay on topic; share his own experience and feelings; speak in full sentences; give reasons and an example; end by linking back. Picture: ${u.alt}. Question: "${q.q}". Use simple words a 9-year-old understands, British spelling, and be kind and specific. Reply ONLY with JSON: {"stars":1-3,"praise":[two short specific things he did well],"tips":[one or two short next steps],"better":"his own answer improved in 4-6 simple sentences following PEEL, keeping his ideas"}.`;
+    const r=await SAMPLE.json([{role:'user',content:sys+'\n\nThe pupil\'s answer:\n'+txt}],{modelTier:'default',cache:false});
+    c.fb=(r&&r.praise)?r:off; }catch(e){ c.fb={...off,note:'Coach Pip could not connect just now, so this is a quick check.'}; }
+  render(); }
+
+/* ===== Parents ===== */
+const pad2=n=>String(n).padStart(2,'0');
+const fmtDur=s=>s<60?s+' 秒':Math.floor(s/60)+' 分 '+pad2(s%60)+' 秒';
+function recName(r){ const u=U(r.u); if(!u) return esc(r.u); const em=u.emoji+' '+esc(u.short);
+  if(r.k==='read'){ const x=u.reads[r.i]; return `${em} · 📖 朗读 <b>${esc(x?x.title:'')}</b>`; }
+  const q=u.qs[r.i]; return `${em} · 💬 第 ${r.i+1} 题 <b>${esc(q?(q.q.length>70?q.q.slice(0,68)+'…':q.q):'')}</b>`; }
+function vParents(){ const L=ST.log; const N=DATA.units.reduce((a,u)=>a+acts(u).length,0), D=Object.keys(ST.done).length;
+  const days=new Map(); L.forEach(r=>{ const d=new Date(r.t); const k=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); if(!days.has(k)) days.set(k,[]); days.get(k).push(r); });
+  const mins=Math.round(L.reduce((a,r)=>a+(r.d||0),0)/60); const m=openMode(); const keys=[...days.keys()];
+  const RT={a:'Clear words',b:'Smooth',c:'Expression'};
+  const rows=keys.slice(0,120).map((k,di)=>{ const list=days.get(k); const fin=list.filter(r=>r.st).length; const secs=list.reduce((a,r)=>a+(r.d||0),0); const d=new Date(list[0].t);
+    return `<details class="rec-day"${di===0?' open':''}><summary><b>${d.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'})}</b><span>${list.length} 次练习 · ${fin} 次完成 · ${Math.max(1,Math.round(secs/60))} 分钟</span></summary>${list.map(r=>{ const t=new Date(r.t);
+      const res=r.st?`<span class="rec-ok">${'⭐'.repeat(r.st)} 完成</span>`:`<span class="rec-q">没做完</span>`;
+      const extra=[r.l?`听 ${r.l} 次`:'',r.sh?`跟读 ${r.sh} 次`:'',r.cs?`Coach ${'⭐'.repeat(r.cs)}`:''].filter(Boolean).join(' · ');
+      const det=(r.ans?`<div class="rec-ans">${['P','E1','E2','L'].filter(x=>r.ans[x]).map(x=>`<div><span class="lbl ${x}" style="width:24px;height:24px;font-size:14px;border-radius:7px">${x[0]}</span> ${esc(r.ans[x])}</div>`).join('')}</div>`:'')
+        +(r.rt?`<div class="small muted">自评：${Object.keys(RT).map(x=>RT[x]+' '+'⭐'.repeat(r.rt[x]||0)).join(' · ')}</div>`:'');
+      return `<div class="rec-row"><span class="rec-t">${pad2(t.getHours())}:${pad2(t.getMinutes())}</span><span class="rec-what">${recName(r)}</span>${res}<span class="small muted">${extra}${extra?' · ':''}${fmtDur(r.d||0)}</span>${det?`<details class="rec-det"><summary>${r.ans?'他写的答案':'看详情'}</summary>${det}</details>`:''}</div>`; }).join('')}</details>`; }).join('');
+  return `<button class="back" data-go="home">← Home</button><h1 style="font-size:clamp(26px,5vw,34px);margin-bottom:6px">👪 家长页</h1>
+  ${m[0]==='embedded'?`<div class="note">这里是嵌在 claude.ai 里的版本，浏览器可能会清掉记录。孩子请用独立网址 <b>${WEB_URL}</b>。搬过去：在这里「复制备份码」，到新网址的家长页「恢复」。</div>`:''}
+  <div class="pstats"><div><b>${totalStars()}</b><span>星星</span></div><div><b>${D}/${N}</b><span>练习做完过</span></div><div><b>${days.size}</b><span>练习天数</span></div><div><b>${mins}</b><span>总分钟</span></div></div>
+  <h2 class="sec">📅 每日记录</h2>
+  <p class="small muted" style="margin-bottom:8px">每次打开一个练习算一次；没做完就离开的也记（只要听过、跟读过或写过答案）。Reset 不会删这些记录。</p>
+  ${L.length?rows+(keys.length>120?`<p class="small muted">只显示最近 120 天，更早的 ${keys.length-120} 天仍然保存着。</p>`:''):'<div class="card muted">还没有练习记录。</div>'}
+  <h2 class="sec">💾 进度备份</h2>
+  <div class="card"><p class="small" style="margin-bottom:10px">「复制备份码」把星星和全部记录变成一段以 OQ1 开头的文字，存到备忘录或发给自己。记录丢了时粘贴回来点「恢复」，是<b>合并</b>，不会删掉现在的记录。${ST.lastBackup?'上次备份：'+new Date(ST.lastBackup).toLocaleString('zh-CN'):'还没备份过。'}</p>
+   <div class="row"><button class="btn small" id="bk-copy">📋 复制备份码</button></div>
+   <textarea id="bk-out" class="bk" readonly placeholder="备份码会出现在这里"></textarea>
+   <textarea id="bk-in" class="bk" placeholder="恢复：把备份码粘贴到这里"></textarea>
+   <div class="row"><button class="btn small ghost" id="bk-restore">↩ 恢复</button><span id="bk-msg" class="small"></span></div></div>
+  <h2 class="sec">🔍 存储检查</h2>
+  <div class="card"><table class="map small">
+   <tr><td>本机存储</td><td>${lsWorks()?'✅ 可以用':'❌ 不能用（记录存不住）'}</td></tr>
+   <tr><td>永久保存</td><td>${persistState}${persistState==='已获准'?'':'（iPad 上常常要“添加到主屏幕”后才获准；记录照样会存，备份码是保险）'}</td></tr>
+   <tr><td>打开方式</td><td>${m[1]}${m[0]==='web'||m[0]==='app'?' ✅':''}</td></tr>
+   <tr><td>已存记录</td><td>${L.length} 次练习</td></tr></table></div>`; }
+
+/* ===== Tips ===== */
+function vTips(){ return `<h1 style="font-size:clamp(28px,6vw,38px);margin:18px 0 4px">💡 My cheat sheet</h1><p class="muted">From your Writers at Work notes. Read these before every practice.</p>
+  <h2 class="sec">🖼️ Picture Talk: 5 easy steps</h2>
+  <div class="two">${[['👀','1. Look at the picture carefully','Who? What? When? Where? Why? How?'],['🎯','2. Answer the question clearly','Stay on topic. Start simply, then add details.'],['💭','3. Share your own experience','“This reminds me of …” · “I once experienced …”'],['📝','4. Speak in full sentences','Not “Yes.” Say “Yes, I think … because …”'],['😀','5. Speak clearly and confidently','Loud and clear. Do not rush. Stay calm and smile!']].map(t=>`<div class="card"><div style="font-size:34px">${t[0]}</div><h3 style="font-size:19px;margin:4px 0">${t[1]}</h3><p class="small">${t[2]}</p></div>`).join('')}
+  <div class="card"><div class="eyebrow">Common questions</div><ul style="margin:6px 0 0;padding-left:20px"><li>What do you see in the picture?</li><li>Have you ever done this before?</li><li>Why is this activity important?</li><li>What would you do in this situation?</li></ul></div></div>
+  <h2 class="sec">🧱 PEEL is the same as your tuition “MEET”</h2>
+  <div class="card"><table class="map">${[['P','Point','Main point','Answer the question'],['E1','Explain','Elaborate','Give your reasons'],['E2','Example','Evidence / Example','Your own experience'],['L','Link','Thoughts & opinions','Wrap up and link back']].map(r=>`<tr><td><span class="lbl ${r[0]}">${r[0][0]}</span></td><td><b>${r[1]}</b><br><span class="small muted">school</span></td><td><b>${r[2]}</b><br><span class="small muted">Writers at Work</span></td><td class="small">${r[3]}</td></tr>`).join('')}</table></div>
+  <h2 class="sec">⭐ Example of a good conversation</h2>
+  ${DATA.cheat.map((x,i)=>`<div class="card" style="margin-bottom:14px">${examiner(null,x.q,'q-cheat-'+(i+1))}<div class="row" style="margin-bottom:10px"><button class="btn small" data-model="ans-cheat-${i+1}" data-target="cheat${i}">🎧 Listen</button><button class="btn small ghost" data-modelshadow="ans-cheat-${i+1}" data-target="cheat${i}">🦜 Shadow</button></div>${peelRows(x.ans,{id:'cheat'+i})}</div>`).join('')}
+  <h2 class="sec">📖 Reading Aloud: what to watch</h2>
+  <div class="two">${[['🔍','Understand the text','Know what it is about and how it should sound.'],['🗣️','Say every word clearly','Break long words into chunks. Finish the ending sounds: -ed, s, t, th.'],['🐢','Pace yourself','Comma = short pause. Full stop = longer pause.'],['🎭','Read with expression','Higher voice for excitement, lower for serious parts.']].map(t=>`<div class="card"><div style="font-size:34px">${t[0]}</div><h3 style="font-size:19px;margin:4px 0">${t[1]}</h3><p class="small">${t[2]}</p></div>`).join('')}</div>
+  <h2 class="sec">🎨 What the colours mean</h2>
+  <div class="key"><span><b class="ra-p1">/</b> short pause (comma) &nbsp; <b class="ra-p2">//</b> longer pause (full stop)</span><span>↗ voice up · ↘ voice down · ↗↘ excited!</span><span>jump<b class="ra-ed-t">ed</b> sounds /t/ · play<b class="ra-ed-d">ed</b> sounds /d/ · want<b class="ra-ed-id">ed</b> sounds /ɪd/</span><span><b class="ra-th-v">th</b>is (buzzing th) · <b class="ra-th-u">th</b>ink (soft, airy th)</span><span><span class="ra-sil">k</span>now: crossed-out letters are silent</span></div>
+  <p class="small muted" style="margin-top:22px">Progress is saved on this device. Grown-ups can back it up on the 👪 Parents page.</p>`; }
+
+/* ---------- events ---------- */
+function hiSent(i,times){ $$('.ra-s.now').forEach(e=>e.classList.remove('now')); if(i<0) return; let k=0; for(let p=0;p<times.length;p++){ if(i<k+times[p].length){ const el=document.querySelector(`#passage .ra-s[data-s="${p}-${i-k}"]`); if(el){ el.classList.add('now'); try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} } return; } k+=times[p].length; } }
+function playRead(name,shadow,from){ const tt=TIMES[name]; const flat=tt.flat(); playClip(name,shadow?'Shadowing':'Listening',{times:flat,shadow,start:from?flat[from][0]:0,onTime:i=>hiSent(i,tt)}); if(from) PL.last=from-1; }
+function playAns(name,shadow,target){ const T=TIMES[name]; playClip(name,shadow?'Shadowing':'Model answer',{times:T.s,shadow,onTime:i=>{ $$('.prow.now,.as.now').forEach(e=>e.classList.remove('now')); if(i<0) return; const el=document.querySelector(`#${target} .prow[data-row="${T.r[i]}"]`); const sp=$$(`#${target} .as`)[i]; if(sp) sp.classList.add('now'); if(el){ el.classList.add('now'); try{ (sp||el).scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} } }}); }
+function confetti(){ const d=document.createElement('div'); d.className='confetti'; d.innerHTML=Array.from({length:26},()=>`<i style="left:${Math.random()*100}%;animation-delay:${Math.random()*.6}s">${['⭐','🎉','🦜','✨','🌟'][Math.floor(Math.random()*5)]}</i>`).join(''); document.body.appendChild(d); setTimeout(()=>d.remove(),2600); }
+document.addEventListener('click',e=>{ const t=e.target.closest('button,[data-s],#breath'); if(!t) return; const d=t.dataset, c=(V.name==='read'||V.name==='talk')?ctx():null;
+  if(t.id==='reset'){ if(t.dataset.arm){ ST={done:{},ra:ST.ra,log:ST.log,lastBackup:ST.lastBackup}; save(); for(const k in CTX) delete CTX[k]; render(); return; } t.dataset.arm=1; t.textContent='Tap again to erase all stars'; t.style.color='var(--bad)'; setTimeout(()=>{ if(t.isConnected){ delete t.dataset.arm; t.textContent='↺ Reset my progress'; t.style.color=''; } },4000); return; }
+  if(t.id==='bk-copy'){ makeBackup().then(code=>{ const o=$('#bk-out'); o.value=code; o.select(); let ok=false; try{ ok=document.execCommand('copy'); }catch(e){} if(navigator.clipboard) navigator.clipboard.writeText(code).then(()=>{},()=>{}); ST.lastBackup=Date.now(); save(); $('#bk-msg').textContent='已生成'+(ok?'并复制':'，请长按选中复制')+'。'; }); return; }
+  if(t.id==='bk-restore'){ readBackup($('#bk-in').value).then(b=>{ const n=mergeBackup(b); render(); $('#bk-msg').textContent='✅ 恢复好了，新加 '+n+' 条记录。'; }).catch(err=>{ $('#bk-msg').textContent='❌ '+err.message; }); return; }
+  if(d.go) return go({name:d.go});
+  if(d.unit) return go({name:'unit',u:d.unit});
+  if(d.open) return go({name:d.open,u:d.u,i:+d.i,step:0});
+  if(d.step){ stopClip(); clearInterval(LOOK.t); V.step=Math.max(0,V.step+ +d.step); render(); window.scrollTo(0,0); return; }
+  if(d.tick){ c.ticks[d.tick]=!c.ticks[d.tick]; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+  if(d.word!==undefined){ const w=U(V.u).reads[V.i].tricky[+d.word][0]; c.heard[+d.word]=1; t.classList.add('heard'); playClip('w-'+w.toLowerCase().replace(/[^a-z]/g,''),w,{quiet:true}); return; }
+  if(t.id==='breath'){ if(t.dataset.busy) return; t.dataset.busy=1; let n=0; const b=t; const cyc=()=>{ if(n>=3){ b.textContent='Ready! 😊'; b.classList.remove('in'); delete b.dataset.busy; return; } b.textContent='Breathe in…'; b.classList.add('in'); setTimeout(()=>{ b.textContent='Breathe out…'; b.classList.remove('in'); n++; setTimeout(cyc,4000); },4000); }; cyc(); return; }
+  if(d.ra){ ST.ra[d.ra]=ST.ra[d.ra]===false; save(); $('#passage').className='card passage '+raCls(); t.classList.toggle('on'); return; }
+  if(d.listen){ sessCount('l'); return playRead(d.listen,false); }
+  if(d.shadow){ sessCount('sh'); return playRead(d.shadow,true); }
+  if(d.s!==undefined&&t.closest('#passage')){ const [p,s]=d.s.split('-').map(Number); const name='read-'+V.u+'-'+(V.i+1); const tt=TIMES[name]; let k=0; for(let x=0;x<p;x++) k+=tt[x].length; return playRead(name,PL.shadow&&PL.name===name,k+s); }
+  if(d.rate){ c.rate[d.rate]=+d.n; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+  if(d.finish!==undefined){ if(t.disabled) return; finish(actId('read',V.u,V.i),Math.max(1,+d.finish)); sessEnd(Math.max(1,+d.finish)); sessStart(V); render(); const q=$('.qnav'); q&&q.scrollIntoView({block:'center',behavior:'smooth'}); return; }
+  if(d.w5){ c.w5=d.w5; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+  if(d.peek){ c.seen[d.peek]=1; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+  if(d.look){ clearInterval(LOOK.t); LOOK.left=30; const tick=()=>{ const r=$('#ring'); if(!r){ clearInterval(LOOK.t); return; } r.style.setProperty('--p',100*(30-LOOK.left)/30); $('#ringn').textContent=LOOK.left>0?LOOK.left:'👍'; if(LOOK.left<=0) clearInterval(LOOK.t); LOOK.left--; }; tick(); LOOK.t=setInterval(tick,1000); return; }
+  if(d.say) return playClip(d.say,'Examiner',{quiet:true});
+  if(d.coach) return coach();
+  if(d.showmodel){ c.model=1; const y=window.scrollY; render(); window.scrollTo(0,y); return; }
+  if(d.model){ sessCount('l'); return playAns(d.model,false,d.target||'model'); }
+  if(d.modelshadow){ sessCount('sh'); return playAns(d.modelshadow,true,d.target||'model'); }
+  if(d.finishtalk){ finish(actId('talk',V.u,V.i),talkStars(c)); sessEnd(talkStars(c)); sessStart(V); render(); const q=$('.qnav'); q&&q.scrollIntoView({block:'center',behavior:'smooth'}); return; }
+});
+document.addEventListener('input',e=>{ const k=e.target.dataset&&e.target.dataset.txt; if(k) ctx().text[k]=e.target.value; });
+render();
+</script>
+</body></html>
