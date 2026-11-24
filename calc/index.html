@@ -1487,7 +1487,7 @@ function renderHome() {
       <div class="stat"><div class="v">★ ${t.small}</div><div class="l">${S2('题一次做对', 'right first time')}</div></div>
     </div>
     <div class="cta"><a class="btn big" href="#${nx.id}">⚔ ${S2('继续闯关：' + (seen(nx.id) ? MON[nx.id].zh : '易错点 ' + nx.no), 'Next: ' + (seen(nx.id) ? MON[nx.id].en : 'Trap ' + nx.no))}</a>
-      <a class="btn gold" href="#daily">${dd ? '✓ ' : '🔥 '}${S2('今日混战', 'Daily Brawl')}${dd ? ` ${dd.s}/6` : ''}</a><a class="btn jade" href="#dex">📖 ${S2('坑怪图鉴', 'Monster Book')}</a><a class="btn ghost" href="#parent">👪 ${S2('家长页', 'Parents')}</a></div>${bkNag()}</div>
+      <a class="btn gold" href="#daily">${dd ? '✓ ' : '🔥 '}${S2('今日混战', 'Daily Brawl')}${dd ? ` ${dd.s}/6` : ''}</a><a class="btn jade" href="#dex">📖 ${S2('坑怪图鉴', 'Monster Book')}</a><a class="btn ghost" href="#parent">👪 ${S2('家长页', 'Parents')}</a></div>${embedNote()}${bkNag()}</div>
     <div class="hero-g">${gourdSVG()}<div class="cnt">${cap}<small> / 14</small></div></div>
   </section>
   <section class="panel"><h2>${S2('闯关地图', 'Quest Map')}</h2><div class="tip" style="margin:0">${B2('可以跳着打任何一关。灰色问号 = 还没遇见的坑怪；红印 = 已收服。', 'Jump to any stage. Grey “?” = not met yet; red seal = caught.')}</div>
@@ -1747,6 +1747,10 @@ function openedHow() {
 }
 const DAYMS = 864e5;
 const hasProgress = () => (ST.runs && ST.runs.length) || Object.keys(ST.prog).some(k => (ST.prog[k].rounds || 0) > 0);
+function embedNote() {
+  let f; try { f = window.self !== window.top; } catch (e) { f = true; }
+  return f ? `<div class="nag">⚠️ 这个页面现在嵌在 claude.ai 里，浏览器可能会清掉进度。孩子请用独立网址：<b>vivianchengwei.github.io/tr-61mimc/calc/</b>（先在家长页复制备份码，到新网址后点「恢复」）。</div>` : '';
+}
 function bkNag() {
   if (!hasProgress()) return '';
   if (ST.lastBackup && Date.now() - ST.lastBackup < 7 * DAYMS) return '';
