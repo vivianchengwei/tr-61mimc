@@ -849,6 +849,15 @@ GI.buildRound = (islandId, level, grade, boxes) => {
   const weight = it => { const b = boxes[it.id]; if (!b) return 3; return [5, 2, 0.7][b.b] || 1; };
   const picked = [];
   let cands = pool.slice();
+  const share = (GI.FOCUS || {})[islandId];
+  if (share) {   // e.g. Who Decides?: half the round from the extra-information phrases
+    let fc = cands.filter(c => c.focus); const want = Math.round(10 * share);
+    while (picked.length < want && fc.length) {
+      const total = fc.reduce((s, c) => s + weight(c), 0); let r = Math.random() * total, idx = 0;
+      for (; idx < fc.length; idx++) { r -= weight(fc[idx]); if (r <= 0) break; }
+      idx = Math.min(idx, fc.length - 1); const it = fc[idx]; picked.push(it); fc.splice(idx, 1); cands.splice(cands.indexOf(it), 1);
+    }
+  }
   while (picked.length < 10 && cands.length) {
     const total = cands.reduce((s, c) => s + weight(c), 0);
     let r = Math.random() * total, idx = 0;
@@ -872,7 +881,10 @@ GI.buildDaily = (grade, boxes, rec) => {
   const recd = GI.shuffle(all.filter(it => rec.includes(it.island) && !boxes[it.id]));
   const rest = GI.shuffle(all.filter(it => !boxes[it.id] || boxes[it.id].b < 2));
   const picked = []; const seen = new Set();
-  for (const src of [weak.slice(0, 10), recd, rest]) for (const it of src) { if (picked.length >= 20) break; if (!seen.has(it.id)) { seen.add(it.id); picked.push(it); } }
+  const nFocus = (GI.FOCUS_DAILY || {})[upper ? 'P6' : 'P4'] || 0;
+  const focusPool = all.filter(it => it.focus && (!boxes[it.id] || boxes[it.id].b < 2));
+  const focus = GI.shuffle(focusPool.filter(it => boxes[it.id] && boxes[it.id].w > 0)).concat(GI.shuffle(focusPool.filter(it => !(boxes[it.id] && boxes[it.id].w > 0)))).slice(0, nFocus);
+  for (const src of [focus, weak.slice(0, 10), recd, rest]) for (const it of src) { if (picked.length >= 20) break; if (!seen.has(it.id)) { seen.add(it.id); picked.push(it); } }
   return GI.shuffle(picked).map(it => { const q = it.make('mcq'); q.id = it.id; q.mode = 'mcq'; if (!q.fixedOrder) q.options = GI.shuffle(q.options); return q; });
 };
 
@@ -2016,6 +2028,124 @@ GI.SEED_WEAK = { p2: { version: 'wow-2026-11', prompts: [
   'Gemma does not like sandwiches', 'Mr Gan was walking back', 'Janice likes to sing', 'Crystal likes sour candy', 'Henry does not like to eat peas', "John's team was losing", 'Desmond is different', 'Ali is my friend', 'Father likes to play basketball', 'A shrill scream woke Ginger',
 ] } };
 
+/* ===== Extra-information phrases (Who Decides?) — Emma's online mistakes, Nov 2026 =====
+   accompanied by / in addition to / apart from / besides / rather than / like / no less than
+   + together with / as well as / along with / except / including
+   Markup in each sentence:  [subject words]  *head word*  {extra phrase to cover}
+   [sentence, answer, crossed-by-number, crossed-by-tense, [time word, tense reason] | null, number key, level, ref?] */
+GI.SVA_EXTRA_SPEC = [
+  // accompanied by
+  ['[The *principal*], {accompanied by two teachers}, ___ visiting the zoo tomorrow.', 'is', ['are', 'were'], ['was'], ['tomorrow', 'a plan → present continuous'], 'sg', 2],
+  ['[The *pupils*], {accompanied by their form teacher}, ___ taken to the museum last Friday.', 'were', ['was', 'is'], ['are'], ['last Friday', 'past'], 'pl', 2],
+  ['[*Grandma*], {accompanied by her grandchildren}, ___ the market every Sunday.', 'visits', ['visit'], [], null, 'sg', 1],
+  ['[The *firefighters*], {accompanied by a rescue dog}, ___ searching the building now.', 'are', ['is', 'was'], ['were'], ['now', 'happening now → present continuous'], 'pl', 2],
+  ['[The *minister*], {accompanied by his officers}, ___ already arrived.', 'has', ['have'], [], null, 'sg', 1],
+  // in addition to
+  ['[*Mia*], {in addition to her two sisters}, ___ taking piano lessons this year.', 'is', ['are', 'were'], ['was'], ['this year', 'still going on → present continuous'], 'sg', 2],
+  ['[The *children*], {in addition to their father}, ___ fond of cats.', 'are', ['is'], [], null, 'pl', 1],
+  ['[*Ravi*], {in addition to his classmates}, ___ been chosen for the choir.', 'has', ['have'], [], null, 'sg', 1],
+  ['[The *volunteers*], {in addition to the organiser}, ___ at the beach last Saturday.', 'were', ['was', 'is'], ['are'], ['last Saturday', 'past'], 'pl', 2],
+  ['[A new *laptop*], {in addition to two textbooks}, ___ in my bag.', 'is', ['are'], [], null, 'sg', 1],
+  // apart from
+  ['{Apart from Leo,} [all the *boys*] ___ the answer.', 'know', ['knows'], [], null, 'pl', 1],
+  ['[My *mother*], {apart from my aunts}, ___ cooking for the party tomorrow.', 'is', ['are', 'were'], ['was'], ['tomorrow', 'a plan → present continuous'], 'sg', 2],
+  ['[The *twins*], {apart from their cousin}, ___ finished the race.', 'have', ['has'], [], null, 'pl', 1],
+  ['{Apart from the rain,} [the *trip*] ___ great fun last weekend.', 'was', ['were', 'are'], ['is'], ['last weekend', 'past'], 'sg', 2],
+  ['[*Everyone*], {apart from Sam}, ___ brought an umbrella.', 'has', ['have'], [], null, 'every', 1],
+  // besides
+  ['{Besides Mia,} [*Ali*] ___ also coming to the party tonight.', 'is', ['are', 'were'], ['was'], ['tonight', 'a plan → present continuous'], 'sg', 2],
+  ['[The *girls*], {besides their brother}, ___ learning to swim.', 'are', ['is'], [], null, 'pl', 1],
+  ['[My *uncle*], {besides my parents}, ___ at the airport yesterday.', 'was', ['were', 'are'], ['is'], ['yesterday', 'past'], 'sg', 2],
+  ['{Besides the cake,} [the *sandwiches*] ___ been eaten.', 'have', ['has'], [], null, 'pl', 1],
+  ['[*Nobody*], {besides the coach}, ___ the password.', 'knows', ['know'], [], null, 'every', 2],
+  // rather than
+  ['[The *parents*], {rather than the child}, ___ blamed for the accident yesterday.', 'were', ['was', 'is'], ['are'], ['yesterday', 'past'], 'pl', 2],
+  ['[*Leo*], {rather than his friends}, ___ to blame.', 'is', ['are'], [], null, 'sg', 1],
+  ['[The *players*], {rather than the coach}, ___ made the decision.', 'have', ['has'], [], null, 'pl', 1],
+  ['[*Mum*], {rather than Dad}, usually ___ the cooking.', 'does', ['do'], [], null, 'sg', 1],
+  ['[The *manager*], {rather than his staff}, ___ going to meet the customers tomorrow.', 'is', ['are', 'were'], ['was'], ['tomorrow', 'a plan → is/are going to'], 'sg', 2],
+  // like
+  ['[My *brothers*], {like my father}, ___ fishing.', 'enjoy', ['enjoys'], [], null, 'pl', 1],
+  ['[*Leo*], {like many boys his age}, ___ crazy about football.', 'is', ['are'], [], null, 'sg', 1],
+  ['[The *pupils*], {like their teacher}, ___ shocked by the news last Monday.', 'were', ['was', 'is'], ['are'], ['last Monday', 'past'], 'pl', 2],
+  ['[*Grandpa*], {like my parents}, ___ an early riser.', 'is', ['are'], [], null, 'sg', 1],
+  ['[*You*], {like your sister}, ___ very good at drawing.', 'are', ['is', 'am'], [], null, 'you', 2],
+  // no less than
+  ['[The *pupils*], {no less than their teacher}, ___ thrilled with the results yesterday.', 'were', ['was', 'is'], ['are'], ['yesterday', 'past'], 'pl', 2],
+  ['[*Mia*], {no less than her parents}, ___ worried about the exam.', 'is', ['are'], [], null, 'sg', 2],
+  ['[The *mayor*], {no less than the residents}, ___ been asking for a new park.', 'has', ['have'], [], null, 'sg', 2],
+  ['[The *children*], {no less than the adults}, ___ the magic show every year.', 'enjoy', ['enjoys'], [], null, 'pl', 2],
+  ['[*I*], {no less than my friends}, ___ looking forward to the holidays.', 'am', ['are', 'is'], [], null, 'I', 2],
+  // together with (Emma: wrong twice)
+  ["[*Emily*], {together with her brothers}, ___ attending their cousin's wedding tomorrow night.", 'is', ['are', 'were'], ['was'], ['tomorrow night', 'a plan → present continuous'], 'sg', 2, 'Real mistake · online (wrong twice)'],
+  ['[The *boys*], {together with their coach}, ___ at the stadium last night.', 'were', ['was', 'is'], ['are'], ['last night', 'past'], 'pl', 2],
+  ['[*Dad*], {together with his colleagues}, ___ working late tonight.', 'is', ['are', 'were'], ['was'], ['tonight', 'a plan → present continuous'], 'sg', 2],
+  // as well as
+  ['[*I*], {as well as my best friend}, ___ taking part in the race next week.', 'am', ['are', 'is'], ['was'], ['next week', 'a plan → present continuous'], 'I', 2],
+  ['[The *teachers*], {as well as the principal}, ___ happy with the results.', 'are', ['is'], [], null, 'pl', 1],
+  ['[*She*], {as well as her friends}, ___ visited the museum twice.', 'has', ['have'], [], null, 'sg', 1],
+  // along with
+  ['[The *captain*], {along with his crew}, ___ rescued last night.', 'was', ['were', 'are'], ['is'], ['last night', 'past'], 'sg', 2],
+  ['[My *cousins*], {along with my aunt}, ___ staying with us this week.', 'are', ['is', 'was'], ['were'], ['this week', 'going on now → present continuous'], 'pl', 2],
+  ['[A *bowl* of rice], {along with two eggs}, ___ my usual breakfast.', 'is', ['are'], [], null, 'sg', 2],
+  // except
+  ['[All the *pupils*] {except Mei} ___ passed the test.', 'have', ['has'], [], null, 'pl', 1],
+  ['[*Nobody*] {except the twins} ___ the answer.', 'knows', ['know'], [], null, 'every', 2],
+  ['[*Everyone*] {except the teachers} ___ wearing a costume yesterday.', 'was', ['were', 'are'], ['is'], ['yesterday', 'past'], 'every', 2],
+  // including
+  ['[*Everyone*], {including the teachers}, ___ invited to the party.', 'is', ['are'], [], null, 'every', 2],
+  ['[The *students*], {including Ali}, ___ going on a trip next week.', 'are', ['is', 'was'], ['were'], ['next week', 'a plan → present continuous'], 'pl', 2],
+  ['[The *box*], {including all its contents}, ___ only two kilograms.', 'weighs', ['weigh'], [], null, 'sg', 2],
+];
+
+GI.EXTRA_RE = /\b(accompanied by|in addition to|apart from|besides|rather than|no less than|together with|as well as|along with|except|including|excluding)\b|, like /i;
+
+/* parse one spec line → words, subject/head/extra indices */
+GI.parseExtra = s => {
+  const toks = s[0].split(' '); const words = [], subject = [], head = [], extra = []; let inSub = false, inEx = false;
+  toks.forEach((t, i) => {
+    let w = t;
+    if (w.startsWith('{')) { inEx = true; w = w.slice(1); }
+    if (w.startsWith('[')) { inSub = true; w = w.slice(1); }
+    const isHead = /^\*/.test(w); if (isHead) w = w.replace(/\*/g, '');
+    else if (/\*/.test(w)) { w = w.replace(/\*/g, ''); head.push(i); }
+    const endSub = /\]/.test(w), endEx = /\}/.test(w); w = w.replace(/[\]\}]/g, '');
+    if (inEx) extra.push(i); if (inSub) subject.push(i); if (isHead) head.push(i);
+    if (endEx) inEx = false; if (endSub) inSub = false;
+    words.push(w);
+  });
+  const clean = ws => ws.join(' ').replace(/[,]$/, '');
+  return { words, subject, head, extra, phrase: clean(extra.map(i => words[i])), subj: clean(subject.map(i => words[i])), headWord: clean(head.map(i => words[i])) };
+};
+GI.NUM_TXT = { sg: 'singular', pl: 'plural', I: 'I → am', you: 'you → are', every: 'singular (every one / no one = one)' };
+
+GI.SVA_EXTRA = GI.SVA_EXTRA_SPEC.map(s => {
+  const P = GI.parseExtra(s); const [, ans, numW, tenseW, time, num, level, ref] = s;
+  const sentence = P.words.join(' ');
+  const numStep = num === 'I' ? `Subject: [[I]] → always [[I am]]` : num === 'you' ? `Subject: [[You]] → always [[you are]]` : num === 'every' ? `Subject: [[${P.subj}]] → ${P.headWord} = one person → [[singular]]` : `Subject: [[${P.subj}]] → the word that decides is [[${P.headWord}]] → [[${GI.NUM_TXT[num]}]]`;
+  let rule = `Cover [[${P.phrase}]] — it is extra information, not the subject. || ${numStep} → ${numW.map(w => `~~${w}~~`).join(' ')}`;
+  rule += time ? ` || [[${time[0]}]] → ${time[1]} → ${tenseW.map(w => `~~${w}~~`).join(' ')} → **${ans}**` : ` → **${ans}**`;
+  return { sentence, ans, wrongs: numW.concat(tenseW), rule, level, ref: ref || 'Extra-information phrases', P, num, time };
+});
+
+/* drill items → Who Decides? */
+(() => {
+  const base = GI.catalogue.sva;
+  GI.catalogue.sva = () => {
+    const items = base().concat(GI.SVA_EXTRA.map((x, i) => ({ id: `svx:${i}`, level: x.level, focus: true, make: () => ({ prompt: x.sentence, answer: x.ans, options: GI.uniq([x.ans, ...x.wrongs]), rule: x.rule, ref: `📝 ${x.ref}`, mode: 'mcq' }) })));
+    items.forEach(it => { if (!it.focus) { let p = ''; try { p = it.make('mcq').prompt; } catch (e) {} if (GI.EXTRA_RE.test(p)) it.focus = true; } });
+    return items;
+  };
+})();
+
+/* weighting: half of every Who Decides? drill round, and a few in each Daily Drill */
+GI.FOCUS = { sva: 0.3 };   // forced share; with the ones drawn normally, about 6 in 10 questions
+GI.FOCUS_DAILY = { P6: 4, P4: 2 };
+
+/* the P6 player's repeated real mistake goes straight into her review box (once) */
+GI.SEED_WEAK = GI.SEED_WEAK || {};
+GI.SEED_WEAK.p1 = { version: 'extra-2026-11', prompts: ["Emily, together with her brothers, ___ attending their cousin's wedding tomorrow night."] };
+
 /* Real animal recordings, embedded as data URIs.
    Sources: ESC-50 dataset (K. J. Piczak, 2015; CC BY-NC 3.0; clips originate from freesound.org contributors) for dog, rooster, pig, cow, cat, hen, insects, sheep, chirping birds;
    CC0 clips from the AgentSynth Animals pack: crow (Mish7913), owl (felix.blume), frog (kvgarlic), wolf (betchkal) via Freesound. Trimmed, normalised and compressed. */
@@ -2247,8 +2377,8 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
             const picked = sortNum(chips.filter(c => c.classList.contains('covered')).map(c => +c.dataset.k));
             const ok = claimNone ? s.extra.length === 0 : (picked.length > 0 && JSON.stringify(picked) === JSON.stringify(sortNum(s.extra)));
             chips.forEach(c => { c.onclick = null; c.classList.toggle('covered', s.extra.includes(+c.dataset.k)); });
-            if (ok) { api.good(); flashRule(sb(1), '<span class="fc-lab">1 · Distractor</span> ' + (s.extra.length ? `✓ Distractor: <b>${s.extra.map(k => esc(s.words[k])).join(' ')}</b> — cover it with your finger.` : `✓ No distractor here${s.note ? ` — ${s.note}` : ''}.`), true); }
-            else { slipped = true; api.bad(true); flashRule(sb(1), '<span class="fc-lab">1 · Distractor</span> ' + (s.extra.length ? `Not quite. The distractor is <b>${s.extra.map(k => esc(s.words[k])).join(' ')}</b> (one of: ${DIST}).` : `There is <b>no distractor</b> in this sentence${s.note ? ` — ${s.note}` : ''}. Only those seven phrases count.`), false); }
+            if (ok) { api.good(); flashRule(sb(1), '<span class="fc-lab">1 · Distractor</span> ' + (s.extra.length ? `✓ Distractor: <b>${s.extra.map(k => esc(s.words[k])).join(' ').replace(/,$/, '')}</b> — cover it with your finger.` : `✓ No distractor here${s.note ? ` — ${s.note}` : ''}.`), true); }
+            else { slipped = true; api.bad(true); flashRule(sb(1), '<span class="fc-lab">1 · Distractor</span> ' + (s.extra.length ? `Not quite. The distractor is <b>${s.extra.map(k => esc(s.words[k])).join(' ').replace(/,$/, '')}</b> (one of: ${DIST}).` : `There is <b>no distractor</b> in this sentence${s.note ? ` — ${s.note}` : ''}. Only those seven phrases count.`), false); }
             nextStep(2);
           };
           const b1 = el('button', 'btn primary', 'Cover it ✋'); b1.type = 'button'; b1.onclick = () => done(false); actions.appendChild(b1);
@@ -2453,6 +2583,8 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { words: ['The', 'information', 'you', 'gave', 'me', '___', 'very', 'useful.'], extra: [], subject: [0, 1, 2, 3, 4], head: [1], number: 'singular — information is uncountable', note: '"you gave me" only tells which information', options: ['is', 'are'], answer: 'is', rule: '<b>information</b> is uncountable → singular → <b>is</b>.' },
     { words: ['Ms', 'Kwek,', 'a', 'strong', 'supporter', 'of', 'waste', 'reduction,', '___', 'habits', 'that', 'help', 'reduce', 'waste.'], extra: [], subject: [0, 1, 2, 3, 4, 5, 6, 7], head: [0, 1], number: 'singular', note: '"a strong supporter of waste reduction" describes Ms Kwek (not one of the seven distractors)', options: ['practises', 'practise', 'practices'], answer: 'practises', rule: '<b>Ms Kwek</b> → singular → add -s; practice is the noun → <b>practises</b>.' },
   ];
+  // Extra-information phrases (data6.js) → Finger Trick sentences
+  G.SVA_SENT.push(...GI.SVA_EXTRA.map(x => ({ words: x.P.words, extra: x.P.extra, subject: x.P.subject, head: x.P.head, number: GI.NUM_TXT[x.num], tense: x.time ? `${x.time[0]} → ${x.time[1]}` : undefined, options: GI.uniq([x.ans, ...x.wrongs]), answer: x.ans, rule: `Cover "<b>${x.P.phrase}</b>" → <b>${x.P.headWord}</b> → ${GI.NUM_TXT[x.num]}${x.time ? `; <b>${x.time[0]}</b> → ${x.time[1]}` : ''} → <b>${x.ans}</b>.` })));
   // More traps for the Finger Trick
   G.SVA_SENT.push(
     { words: ['The', 'teacher,', 'accompanied', 'by', 'her', 'pupils,', '___', 'waiting', 'at', 'the', 'gate.'], extra: [2, 3, 4, 5], subject: [0, 1], head: [1], number: 'singular', options: ['is', 'are'], answer: 'is', rule: '<b>accompanied by her pupils</b> is extra → <b>teacher</b> → singular → <b>is</b>.' },
@@ -2535,7 +2667,8 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { id: 'pl-memory', island: 'plurals', name: 'Plural Pairs', icon: '🃏', engine: 'lineMatch', desc: 'Draw lines · singular ↔ plural', cfg: () => ({ instr: 'Find each <b>singular</b> and its <b>plural</b>.', pairs: GI.PLURALS.filter(p => /^(irr|ves|ies|oes|os|fs)$/.test(p[2])).map(p => [p[0], p[1]]), n: 8 }) },
     { id: 'noun-sorter', island: 'plurals', name: 'Noun Sorter', icon: '🪣', engine: 'sorter', desc: 'Person · Animal · Thing · Place · Idea (book p.2)', cfg: () => ({ instr: 'A noun names a person, animal, thing, place or idea. <b>Drag</b> each word into its bucket.', n: 12, buckets: [{ id: 'person', label: 'Person', emoji: '🧑' }, { id: 'animal', label: 'Animal', emoji: '🐾' }, { id: 'thing', label: 'Thing', emoji: '🎒' }, { id: 'place', label: 'Place', emoji: '📍' }, { id: 'idea', label: 'Idea', emoji: '💭' }], items: Object.entries(G.NOUN_SORT).flatMap(([b, ws]) => ws.map(w => ({ text: w, bucket: b }))) }) },
     // Who Decides?
-    { id: 'sva-finger', island: 'sva', name: 'Finger Trick', icon: '👆', engine: 'fingerCover', desc: 'Distractor? → who decides? → choose the verb (W@W method)', cfg: () => ({ n: 8, sentences: G.SVA_SENT }) },
+    { id: 'sva-finger', island: 'sva', name: 'Finger Trick', icon: '👆', engine: 'fingerCover', desc: 'Distractor? → who decides? → choose the verb (W@W method)', cfg: () => { const ex = shuffle(G.SVA_SENT.filter(s => s.extra.length)), other = shuffle(G.SVA_SENT.filter(s => !s.extra.length)); return { n: 8, sentences: ex.slice(0, 5).concat(other.slice(0, 3)) }; } },
+    { id: 'sva-extra', island: 'sva', name: 'Finger Trick · Extra Words', icon: '🙈', engine: 'fingerCover', desc: 'accompanied by · in addition to · apart from · besides · rather than · like · no less than', cfg: () => ({ n: 10, sentences: G.SVA_SENT.filter(s => s.extra.length) }) },
     { id: 'sva-finger2', island: 'sva', name: 'Finger Trick · Hard', icon: '🧠', engine: 'fingerCover', desc: 'Quantity words, or / both, collective nouns, turned-around sentences', cfg: () => ({ n: 8, sentences: G.SVA_SENT.filter(s => !s.extra.length) }) },
     // Count It
     { id: 'count-sorter', island: 'count', name: 'Count Conveyor', icon: '🧺', engine: 'sorter', desc: 'Countable or uncountable? Drag it fast', cfg: () => ({ instr: 'Can you say "one ___, two ___s"? <b>Drag</b> each noun into the right basket.', n: 14, buckets: [{ id: 'c', label: 'Countable', emoji: '🍎', hint: 'a / an, plural' }, { id: 'u', label: 'Uncountable', emoji: '💧', hint: 'some / much, no plural' }], items: [...GI.UNCOUNTABLE.map(w => ({ text: w, bucket: 'u', rule: `no "a ${w}", no plural` })), ...GI.COUNTABLE.map(w => ({ text: w, bucket: 'c', rule: `a ${w}, two ${GI.PLURALS.find(p => p[0] === w)?.[1] || w + 's'}` }))] }) },
