@@ -325,6 +325,12 @@ u.ed-wrong{text-decoration:underline;text-decoration-thickness:3px;text-decorati
 .ed-u{border-bottom:3px solid var(--sea);padding:0 2px;border-radius:4px} .ed-u sup{font-size:11px;color:var(--muted);margin-right:2px} .ed-u.now{background:var(--sun);color:var(--onacc)} .ed-u.ok{background:var(--grass);color:#fff;border-color:var(--grass)} .ed-u.bad{background:var(--berry);color:#fff;border-color:var(--berry)} .ed-u.bad s{opacity:.75}
 .ed-q{margin-top:12px;font-size:18px;font-weight:800;display:flex;gap:8px;align-items:center;flex-wrap:wrap} .ed-wrong-chip{text-decoration:underline;text-decoration-color:var(--berry);text-decoration-thickness:3px}
 .ed-q input{font:inherit;font-size:20px;font-weight:800;padding:8px 12px;border:2.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);min-width:0;flex:1;max-width:280px}
+/* grammar cloze */
+.cz-box{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;background:var(--card);border:2.5px solid var(--line);border-radius:14px;padding:10px}
+.cz-chip{background:var(--card2);border:2px solid var(--line);border-radius:10px;padding:5px 9px;font-weight:800;font-size:16px} .cz-chip b{color:var(--muted);font-size:12px} .cz-chip.used{opacity:.3}
+.cz-b{background:var(--card);border:none;border-bottom:3px solid var(--sea);border-radius:6px;padding:0 6px;min-width:4.2em;font:inherit;font-weight:800;color:var(--sea);line-height:1.6} .cz-b sup{color:var(--muted);font-size:11px;margin-right:2px} .cz-b.sel{background:var(--sun);color:var(--onacc)} .cz-b.ok{background:var(--grass);color:#fff;border-color:var(--grass)} .cz-b.bad{background:var(--berry);color:#fff;border-color:var(--berry)} .cz-b.bad s{opacity:.75}
+.cz-why{margin:6px 0 0;padding-left:22px;font-size:14px;line-height:1.5} .cz-why li.cz-wrong{font-weight:800}
+u.syn{text-decoration-color:var(--sea)}
 /* builder */
 .b-rule-tag{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--sun);color:var(--onacc);margin-bottom:10px}
 .b-given{font-size:clamp(17px,2.6vw,21px);font-weight:800;line-height:1.5;background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:10px 14px}
@@ -2707,6 +2713,101 @@ GI.ISLANDS.push({ id: 'edit', en: 'Fix-It Workshop', name: 'Editing · 改错（
 /* For the P6 player: lower-level (P3–P4) islands are shown faded, listed last and left out of her Daily Drill */
 GI.LOW_P6 = ['st', 'vocab', 'zoo', 'words', 'opp', 'homo', 'punct', 'plurals', 'adj', 'prov', 'colloc'];
 
+/* ===== Word Lab · PSLE Paper 2 vocabulary (Q11–20) + Grammar Cloze =====
+   Q11–15: choose the most suitable word (precise word, phrasal verb, collocation, look-alike words)
+   Q16–20: choose the word closest in meaning to the underlined word
+   Grammar Cloze: 10 blanks, a box of 15 words, each word used once
+   All sentences and passages are NEW (PSLE-style, not copied). */
+
+/* Q11–15 style: [sentence, answer, [cross ×2], last wrong, clue, why the two are out, why the last is out] */
+GI.WORD_SPEC = [
+  ['The museum asks visitors not to touch the old paintings to ensure their ___.', 'preservation', ['consumption', 'digestion'], 'reservation', 'not to touch … old paintings', 'consumption = eating / using up; digestion = in the stomach', 'reservation = a booking'],
+  ['Our plan to go camping ___ when the campsite was closed for repairs.', 'fell through', ['broke out', 'took off'], 'turned up', 'the campsite was closed → the plan did not happen', 'broke out = (fire, war) started suddenly; took off = (plane) left the ground', 'turned up = arrived / appeared'],
+  ['The silk scarf Mum chose ___ her red dress perfectly.', 'complements', ['supplements', 'implements'], 'compliments', 'goes well with her dress', 'supplements = adds something extra (like vitamins); implements = carries out a plan', 'compliments (with an i) = praises — the look-alike trap'],
+  ['Scratching the mosquito bite will only ___ the itch.', 'aggravate', ['alleviate', 'abandon'], 'agitate', 'scratching makes it worse', 'alleviate = make better (the opposite); abandon = leave behind', 'agitate = make someone upset, or stir a liquid'],
+  ['The fallen tree ___ the flow of traffic for hours.', 'obstructed', ['discouraged', 'ceased'], 'prohibited', 'the tree was in the way', 'discouraged = made someone lose confidence; ceased = stopped (by itself)', 'prohibited = forbade by a rule'],
+  ['Please ___ from talking during the performance.', 'refrain', ['retain', 'remain'], 'restrain', 'Please ___ FROM talking', 'retain = keep; remain = stay', 'restrain needs an object: restrain YOURSELF from'],
+  ['The new library is ___ to all residents, including wheelchair users.', 'accessible', ['acceptable', 'accountable'], 'approachable', 'everyone can get in, even wheelchair users', 'acceptable = good enough; accountable = responsible', 'approachable = friendly and easy to talk to (a person)'],
+  ['Leo could not ___ the temptation to eat another slice of cake.', 'resist', ['reject', 'restrain'], 'refuse', 'the fixed phrase is “resist (the) temptation”', 'reject = turn down an idea or offer; restrain = hold someone back', 'refuse = say no to an offer — we do not “refuse temptation”'],
+  ['The magician\'s trick ___ the audience, who could not work out how it was done.', 'baffled', ['enlightened', 'informed'], 'amused', 'could not work out how', 'enlightened / informed = helped them understand (the opposite)', 'amused = made them laugh — the clue is “could not work out”'],
+  ['The twins look so alike that people often ___ one for the other.', 'mistake', ['exchange', 'replace'], 'confuse', '___ one FOR the other', 'exchange = swap; replace = put something new in its place', 'confuse goes with “with”: confuse one WITH the other'],
+  ['The school ___ a new rule: no mobile phones during lessons.', 'implemented', ['complemented', 'complimented'], 'impressed', 'put a rule into action', 'complemented = went well with; complimented = praised', 'impressed = made people admire'],
+  ['The doctor ___ some medicine for my cough.', 'prescribed', ['described', 'subscribed'], 'prescription', 'a doctor gives medicine', 'described = said what it is like; subscribed = signed up for', 'prescription is a NOUN — the blank needs a verb'],
+  ['Mia ___ her fear of the dark by sleeping with a night light.', 'overcame', ['overtook', 'overlooked'], 'overdid', 'she beat her fear', 'overtook = passed (a car / runner); overlooked = did not notice', 'overdid = did too much'],
+  ['The heavy rain ___ the outdoor concert to be postponed.', 'caused', ['resulted', 'led'], 'made', '___ the concert TO be postponed', 'resulted needs “in”; led needs “to”', 'made + base verb (made it be) — not “made … to be postponed”'],
+  ['The fire alarm suddenly ___ and everyone left the building.', 'went off', ['went on', 'went out'], 'went through', 'an alarm started ringing', 'went on = continued; went out = (a fire / light) stopped burning', 'went through = experienced (a hard time)'],
+  ['Leo really ___ his grandfather — they have the same nose and smile.', 'takes after', ['looks after', 'takes over'], 'looks up to', 'same nose and smile → looks like an older family member', 'looks after = takes care of; takes over = gains control', 'looks up to = admires — not about looks'],
+  ['We have run ___ milk, so Dad went to the shop.', 'out of', ['into', 'over'], 'away from', 'no milk left', 'run into = meet by chance; run over = knock down with a vehicle', 'run away from = escape'],
+  ['The teacher asked us to ___ our mistakes so that all the answers were correct.', 'rectify', ['ratify', 'notify'], 'identify', 'so that the answers were correct', 'ratify = officially approve; notify = inform', 'identify only FINDS the mistakes — it does not correct them'],
+  ['Smoking is ___ to your health.', 'detrimental', ['beneficial', 'essential'], 'determined', 'smoking harms you', 'beneficial = good for (the opposite); essential = very necessary', 'determined = having made up your mind'],
+  ['With the exams approaching, Mia has to ___ her time wisely.', 'allocate', ['locate', 'relocate'], 'allow', 'share out her time', 'locate = find; relocate = move to a new place', '“allow her time wisely” makes no sense'],
+  ['The village was ___ by the flood — almost every house was destroyed.', 'devastated', ['decorated', 'delighted'], 'deserted', 'almost every house destroyed', 'decorated = made pretty; delighted = very happy', 'deserted = left empty by people — the clue is “destroyed”'],
+  ['Raju\'s ___ to help others makes him a good prefect.', 'willingness', ['wilderness', 'wickedness'], 'willpower', '___ to help others', 'wilderness = wild land; wickedness = being evil', 'willpower = strength to control yourself'],
+  ['The thief ___ capture by hiding in a drain.', 'evaded', ['invaded', 'pervaded'], 'evacuated', 'escaped being caught', 'invaded = entered by force; pervaded = spread through', 'evacuated = moved people out of danger'],
+  ['The coach gave us ___ feedback that helped us improve.', 'constructive', ['destructive', 'conductive'], 'reconstructed', 'feedback that helped us improve', 'destructive = causing damage; conductive = lets heat or electricity pass', 'reconstructed = built again'],
+];
+
+/* Q16–20 style: [sentence with {underlined word}, answer, [cross ×2], last wrong, meaning of the underlined word, why the last is out] */
+GI.SYN_SPEC = [
+  ['The hungry boy {gobbled} his lunch in two minutes.', 'devoured', ['sniffed', 'sampled'], 'nibbled', 'gobbled = ate very quickly and greedily', 'nibbled = took tiny bites — the opposite of fast'],
+  ['Mia {yanked} the stuck door open.', 'tugged', ['pushed', 'slammed'], 'eased', 'yanked = pulled hard and suddenly', 'eased = moved gently'],
+  ['The exhausted hikers {trudged} up the muddy hill.', 'plodded', ['sprinted', 'skipped'], 'strolled', 'trudged = walked slowly and heavily because tired', 'strolled = walked in a relaxed, happy way'],
+  ['Grandma {scrutinised} the label before buying the jam.', 'examined', ['ignored', 'tore'], 'admired', 'scrutinised = looked at very carefully', 'admired = looked at with pleasure — not checking'],
+  ['The {frail} old man needed help to climb the stairs.', 'feeble', ['sturdy', 'cheerful'], 'elderly', 'frail = weak and easily hurt', 'elderly = old, but not necessarily weak'],
+  ['Leo was {reluctant} to jump into the cold pool.', 'hesitant', ['eager', 'excited'], 'unable', 'reluctant = not wanting to', 'unable = cannot — he could, he just did not want to'],
+  ['The lost puppy looked {forlorn} in the rain.', 'miserable', ['playful', 'fierce'], 'drenched', 'forlorn = sad and lonely', 'drenched = very wet — not a feeling'],
+  ['The noise from the construction site was {incessant}.', 'continuous', ['occasional', 'faint'], 'deafening', 'incessant = never stopping', 'deafening = very loud — that is a different idea'],
+  ['Mia {meticulously} arranged her stamps in the album.', 'painstakingly', ['carelessly', 'hurriedly'], 'proudly', 'meticulously = with great care about every detail', 'proudly = feeling proud — not about care'],
+  ['The villagers were {elated} when they heard the good news.', 'overjoyed', ['furious', 'puzzled'], 'surprised', 'elated = extremely happy', 'surprised = not expecting it — not the same as happy'],
+  ['The children {huddled} together to keep warm.', 'clustered', ['scattered', 'argued'], 'hid', 'huddled = crowded closely together', 'hid = kept out of sight'],
+  ['The principal {commended} Raju for his honesty.', 'praised', ['scolded', 'questioned'], 'thanked', 'commended = praised formally', 'thanked = said thank you — commend means praise'],
+  ['The thief {fled} when he heard the siren.', 'escaped', ['returned', 'surrendered'], 'hid', 'fled = ran away quickly', 'hid = stayed out of sight — he ran away'],
+  ['The sudden bang {startled} the sleeping baby.', 'alarmed', ['comforted', 'bored'], 'woke', 'startled = gave a sudden shock or fright', 'woke = stopped sleeping — not the meaning of startled'],
+  ['We {gingerly} stepped onto the frozen pond.', 'cautiously', ['boldly', 'noisily'], 'quickly', 'gingerly = very carefully, in case of danger', 'quickly = fast — not careful'],
+  ['The {vivid} colours of the painting caught my eye.', 'brilliant', ['dull', 'pale'], 'mixed', 'vivid = very bright and strong', 'mixed = blended — not about brightness'],
+  ['Mum {reprimanded} us for leaving the gate open.', 'scolded', ['praised', 'thanked'], 'reminded', 'reprimanded = told off sharply', 'reminded = helped us remember — no telling off'],
+  ['The audience was {captivated} by the young pianist.', 'enchanted', ['bored', 'annoyed'], 'confused', 'captivated = held the attention completely; delighted', 'confused = did not understand'],
+  ['The {deserted} beach was perfect for a quiet walk.', 'empty', ['crowded', 'dirty'], 'sandy', 'deserted = with no people', 'sandy = covered in sand — not about people'],
+  ['Despite the storm, the captain remained {composed}.', 'calm', ['anxious', 'angry'], 'written', 'composed (about a person) = calm and in control', 'written = composed music — a different meaning of the word'],
+  ['The old house had been {abandoned} for years.', 'deserted', ['renovated', 'rented'], 'haunted', 'abandoned = left empty, no one looking after it', 'haunted = with ghosts — not the meaning'],
+  ['Leo {pondered} the question before answering.', 'considered', ['ignored', 'shouted'], 'answered', 'pondered = thought about carefully', 'answered = replied — he did that AFTER pondering'],
+  ['The athlete was {determined} to break the record.', 'resolute', ['unwilling', 'afraid'], 'measured', 'determined = firmly decided, would not give up', 'measured = found the size of — a different use of “determine”'],
+  ['The good news {lifted} our spirits.', 'boosted', ['dampened', 'broke'], 'carried', 'lifted our spirits = made us feel happier', 'carried = held and moved — the other meaning of lift'],
+];
+
+GI.LAB_ITEMS = [];
+GI.WORD_SPEC.forEach((s, i) => {
+  const [sent, ans, first, last, clue, firstWhy, lastWhy] = s;
+  GI.LAB_ITEMS.push({ id: `wl:${i}`, level: 2, prompt: sent, ans, opts: [ans, ...first, last], sub: 'Vocabulary (Q11–15) · choose the most suitable word', rule: `Clue: [[${clue}]] || ${firstWhy} → ${first.map(x => `~~${x}~~`).join(' ')} || ${lastWhy} → ~~${last}~~ → **${ans}**` });
+});
+GI.SYN_SPEC.forEach((s, i) => {
+  const [sent, ans, first, last, meaning, lastWhy] = s;
+  const word = (sent.match(/\{(.+?)\}/) || [])[1];
+  GI.LAB_ITEMS.push({ id: `sy:${i}`, level: 2, prompt: sent.replace(/\{(.+?)\}/, '<u class="ed-wrong syn">$1</u>'), ans, opts: [ans, ...first, last], sub: 'Vocabulary (Q16–20) · closest in meaning to the underlined word', rule: `[[${meaning}]] || ${first.map(x => `~~${x}~~`).join(' ')} mean something very different || ${lastWhy} → ~~${last}~~ → **${ans}**` });
+});
+GI.catalogue.lab = () => GI.LAB_ITEMS.map(t => ({ id: t.id, level: t.level, make: () => ({ prompt: t.prompt, sub: t.sub, answer: t.ans, options: t.opts, rule: t.rule, ref: '📝 PSLE-style vocabulary (new sentences)', mode: 'mcq' }) }));
+
+/* phrasal verbs for line matching */
+GI.PHRASAL = [
+  ['fell through', 'failed to happen'], ['went off', '(an alarm) rang suddenly'], ['took after', 'looked or behaved like a parent'], ['looked up to', 'admired'],
+  ['put off', 'postponed'], ['called off', 'cancelled'], ['gave in', 'finally agreed / surrendered'], ['turned down', 'rejected an offer'],
+  ['broke out', '(a fire or war) started suddenly'], ['came across', 'found by chance'], ['ran out of', 'used up all of'], ['looked into', 'investigated'],
+  ['put up with', 'tolerated'], ['got over', 'recovered from'], ['set off', 'started a journey'], ['carried out', 'did / performed (a task)'],
+  ['brought up', 'raised (a child)'], ['made up', 'invented (a story)'], ['held up', 'delayed'], ['turned up', 'arrived / appeared'],
+  ['stood out', 'was easy to notice'], ['dropped out', 'quit (a race or course)'], ['pointed out', 'drew attention to'], ['warded off', 'kept away'],
+];
+
+/* Grammar Cloze passages: {answer|why}; box = the 10 answers + 5 extra words (each word used once) */
+GI.CLOZE_PASSAGES = [
+  { title: 'Busy Bees', extra: ['unless', 'until', 'who', 'on', 'only'], text: 'Honey bees are tiny, {but|tiny, yet a huge role → contrast → but} they play a huge role {in|play a role IN something} our food supply. Without them, many fruits and vegetables would not grow. A bee sips nectar from a flower and {then|first sips, THEN flies on → time order} flies on to the next one. {As|at the same time as it moves → as} it moves from flower to flower, it carries pollen on its fuzzy body. This is {what|“This is ___ helps …” = the thing that → what} helps plants make seeds. Sadly, the number of bees has been falling {since|has been falling + a starting point (2010) → since} 2010. Scientists are {still|they have not finished → still} trying to find out why. Some believe that pesticides, {which|extra information about a thing, after a comma → which} are sprayed on crops, are to blame. Others think that bees are running out {of|run out OF something} food. We can all help {by|help BY doing something (-ing)} planting more flowers in our gardens.' },
+  { title: 'The Lost Wallet', extra: ['who', 'if', 'since', 'off', 'in'], text: 'Last Sunday, I found a wallet lying {on|lying ON the pavement (a surface)} the pavement. {When|at the time I opened it → when} I opened it, I saw a large sum of money and an identity card. At first, I did not know {what|did not know ___ to do → what} to do. {Although|could have kept it, BUT knew it was wrong → contrast + clause → although} I could have kept the money, I knew that it would be wrong. I decided to hand it in {at|hand it in AT a place} the nearest police station. The officer thanked me and said he would contact the owner {as|the fixed phrase is AS soon as possible} soon as possible. Two days later, an old lady {whose|the lady + her wallet → whose (possession)} wallet I had found called my mother. She had been worried {about|worried ABOUT something} losing her savings. She wanted to give me a reward, {but|wanted to give / I refused → contrast → but} I politely refused. I felt proud {of|proud OF someone} myself for doing the right thing.' },
+  { title: 'Our Plastic Problem', extra: ['unless', 'to', 'until', 'who', 'on'], text: 'Plastic is everywhere — {from|FROM … TO … (a range)} the bottles we drink from to the bags we carry. It is cheap and light, {which|“, which is why” → which refers to the whole idea} is why it is so popular. However, plastic takes hundreds of years to break down. {If|a condition: if we do not … (unless + not would be a double negative)} we do not reduce our use of plastic, our oceans will soon be filled {with|filled WITH something} rubbish. Many sea creatures mistake plastic bags {for|mistake A FOR B} food. Turtles, {in|the fixed phrase is IN particular} particular, often swallow bags that look like jellyfish. Some countries have {already|it has happened before now → already} banned plastic straws. Supermarkets in Singapore now charge five cents {per|five cents for EACH bag → per} bag. Each of us can do our part {by|do our part BY doing something (-ing)} bringing our own bags {when|at the time we go shopping → when} we go shopping.' },
+  { title: 'Grandpa\'s Kampung', extra: ['which', 'despite', 'if', 'by', 'unless'], text: 'My grandfather grew up in a kampung {where|a place + everyone knew one another there → where} everyone knew one another. {Although|poor, yet shared → contrast + clause → although (despite needs a noun)} the families were poor, they shared {what|shared the little that they had → what little} little they had. When a neighbour fell ill, the others would take turns to look {after|look AFTER = take care of} him. The children played together {until|kept playing up to the moment the sun went down → until} the sun went down. There were no televisions, {so|no TV → therefore made their own toys → so} they made their own toys {out|make something OUT of materials} of tin cans and rubber bands. Grandpa says he misses those days {because|the reason he misses them → because} people cared {for|cared FOR = looked after / loved} one another. {Unlike|today is different → unlike} today, nobody locked their doors.' },
+  { title: 'The Science Fair', extra: ['which', 'its', 'during', 'on', 'unless'], text: 'Our class took part {in|take part IN something} the school science fair last month. Our project was {about|a project ABOUT a topic} how plants grow under different colours of light. We grew three pots of beans: one under red light, one under blue light and {another|one … one … and ___ (a third one) → another} under green light. Every day, we measured the plants and recorded {their|the plants → plural → their (not its)} heights. {After|at the end of two weeks → after (during = throughout)} two weeks, the beans under blue light were the tallest, {while|comparing two things → while (= whereas)} those under green light hardly grew {at|the fixed phrase is hardly … AT all} all. We were very pleased {with|pleased WITH something} the results. Our teacher explained that plants absorb blue and red light {but|absorb … but reflect → contrast} reflect green light. Although we did not win, we learnt a lot {from|learn FROM an experience} the experience.' },
+];
+
+GI.ISLANDS.push({ id: 'lab', en: 'Word Lab', name: 'PSLE vocabulary & Grammar Cloze · 词汇与选词填空', emoji: '🧪', ref: '📝 PSLE-style (new sentences)', blurb: 'fell through · complement / compliment · closest meaning · word-box cloze', stickers: ['🧪', '🔬', '🧫', '📚', '🔭', '🧲'] });
+
 /* Real animal recordings, embedded as data URIs.
    Sources: ESC-50 dataset (K. J. Piczak, 2015; CC BY-NC 3.0; clips originate from freesound.org contributors) for dog, rooster, pig, cow, cat, hen, insects, sheep, chirping birds;
    CC0 clips from the AgentSynth Animals pack: crow (Mish7913), owl (felix.blume), frog (kvgarlic), wolf (betchkal) via Freesound. Trimmed, normalised and compressed. */
@@ -3170,6 +3271,49 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     startP();
   };
 
+
+  /* ================= 14. GRAMMAR CLOZE (PSLE word box: 15 words, 10 blanks, each word once) ================= */
+  G.wordBox = (area, cfg, api) => {
+    const ps = shuffle(cfg.passages).slice(0, cfg.n || 1); let pi = 0, correct = 0, total = 0;
+    const LET = 'ABCDEFGHJKLMNPQ'.split('');
+    const RE = /\{([^|}]+)\|([^}]*)\}/g;
+    const startP = () => {
+      if (pi >= ps.length) return api.finish({ correct, total });
+      const P = ps[pi]; const blanks = [];
+      let html = esc(P.text.replace(RE, (m, a, why) => { blanks.push({ a, why }); return `@@${blanks.length - 1}@@`; }));
+      html = html.replace(/@@(\d+)@@/g, (m, k) => `<button type="button" class="cz-b" data-i="${k}"><sup>${+k + 1}</sup><span class="cz-w">&nbsp;</span></button>`);
+      const words = GI.uniq(blanks.map(b => b.a.toLowerCase()).concat(P.extra)).sort();
+      area.innerHTML = `<div class="g-instr">✏️ <b>${esc(P.title)}</b> — tap a blank, then tap a word from the box. <b>Each word can be used only once.</b> Tap a filled blank twice to empty it.</div><div class="cz-box">${words.map((w, i) => `<button type="button" class="cz-chip" data-w="${esc(w)}"><b>(${LET[i]})</b> ${esc(w)}</button>`).join('')}</div><div class="ed-passage cz-passage">${html}</div><div id="cz-rule"></div><div class="g-actions" id="cz-actions"></div>`;
+      const fill = {}; let sel = 0, done = false;
+      const act = $('#cz-actions', area); const chk = el('button', 'btn primary', 'Check all'); chk.type = 'button'; act.appendChild(chk);
+      const render = () => {
+        area.querySelectorAll('.cz-b').forEach(b => { const k = +b.dataset.i; b.classList.toggle('sel', k === sel && !done); if (!done) b.querySelector('.cz-w').innerHTML = fill[k] ? esc(fill[k]) : '&nbsp;'; });
+        const used = new Set(Object.values(fill)); area.querySelectorAll('.cz-chip').forEach(c => c.classList.toggle('used', used.has(c.dataset.w)));
+        chk.disabled = Object.keys(fill).length < blanks.length; api.progress(Object.keys(fill).length, blanks.length);
+      };
+      area.querySelectorAll('.cz-b').forEach(b => b.onclick = () => { if (done) return; const k = +b.dataset.i; if (sel === k && fill[k]) delete fill[k]; sel = k; render(); });
+      area.querySelectorAll('.cz-chip').forEach(c => c.onclick = () => {
+        if (done) return; const w = c.dataset.w;
+        Object.keys(fill).forEach(k => { if (fill[k] === w) delete fill[k]; });
+        fill[sel] = w; const nxt = blanks.findIndex((b, i) => !fill[i]); if (nxt >= 0) sel = nxt; render();
+      });
+      chk.onclick = () => {
+        done = true; let c = 0; const lines = [];
+        blanks.forEach((b, i) => {
+          const ok = (fill[i] || '') === b.a.toLowerCase(); if (ok) { c++; api.good(); } else { api.bad(true); api.miss && api.miss(`${P.title} (${i + 1})`, fill[i] || '', b.a); }
+          const bt = area.querySelector(`.cz-b[data-i="${i}"]`); bt.classList.remove('sel'); bt.classList.add(ok ? 'ok' : 'bad');
+          bt.querySelector('.cz-w').innerHTML = ok ? esc(b.a) : `<s>${esc(fill[i] || '—')}</s> ${esc(b.a)}`;
+          lines.push(`<li class="${ok ? '' : 'cz-wrong'}"><b>${esc(b.a)}</b>${ok ? ' ✓' : ` <small>(you: ${esc(fill[i] || '—')})</small>`} — ${esc(b.why)}</li>`);
+        });
+        correct += c; total += blanks.length;
+        flashRule($('#cz-rule', area), `<b>${c} / ${blanks.length}</b> correct<ol class="cz-why">${lines.join('')}</ol>`, c >= blanks.length - 2);
+        act.innerHTML = ''; const nx = el('button', 'btn primary', pi + 1 < ps.length ? 'Next passage →' : 'Finish →'); nx.type = 'button'; nx.onclick = () => { pi++; startP(); }; act.appendChild(nx);
+      };
+      render();
+    };
+    startP();
+  };
+
   /* ================= DATA for the games ================= */
 
   G.HERD_CHANT = [
@@ -3339,6 +3483,10 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { id: 'col-memory', island: 'colloc', name: 'Collocation Pairs', icon: '🃏', engine: 'lineMatch', desc: 'Draw lines · collocation ↔ meaning', cfg: () => ({ instr: 'Match each <b>collocation</b> with its <b>meaning</b>.', pairs: GI.COLLOC.map(c => [c[0], c[1]]), n: 8, small: true }) },
     { id: 'col-rush', island: 'colloc', name: 'Café Rush', icon: '⚡', engine: 'quickFire', desc: '60 s · meaning → collocation, both ways', cfg: () => ({ instr: 'Pick the <b>collocation</b> that matches the meaning (or the meaning that matches the collocation).', pairs: GI.COLLOC.map(c => [c[1], c[0]]), bothWays: true, nOptions: 4, target: 12 }) },
     { id: 'col-det', island: 'colloc', name: 'Collocation Detective', icon: '🔍', engine: 'detective', desc: 'Tap the collocation inside the sentence', cfg: () => ({ instr: 'Tap the <b>words of the collocation</b> in the sentence (the verb and its partner word).', n: 8, sentences: GI.COLLOC.map(c => { const words = c[2].split(' '); const parts = c[0].split(' '); const forms = GI.CVERBS[c[3]]; const t = words.map(w => w.replace(/[.,!?;:"]/g, '')).filter(w => forms.includes(w.toLowerCase()) || parts.slice(1).includes(w.toLowerCase())); return { s: c[2], t: GI.uniq(t), col: c[0], mean: c[1] }; }), why: s => `Collocation: <b>${s.col}</b> = ${s.mean}.` }) },
+    // Word Lab (PSLE vocabulary Q11–20 + Grammar Cloze · new sentences)
+    { id: 'cloze-box', island: 'lab', name: 'Grammar Cloze', icon: '🧩', engine: 'wordBox', desc: 'Exam-style: 10 blanks, a box of 15 words, each word used once', cfg: () => ({ n: 1, passages: GI.CLOZE_PASSAGES }) },
+    { id: 'phrasal-lines', island: 'lab', name: 'Phrasal Verb Lines', icon: '🔗', engine: 'lineMatch', desc: 'Draw lines · fell through = failed to happen', cfg: () => ({ instr: 'Match each <b>phrasal verb</b> with its <b>meaning</b>.', pairs: GI.PHRASAL, n: 6, small: true }) },
+    { id: 'syn-rush', island: 'lab', name: 'Closest Meaning', icon: '🎯', engine: 'quickFire', desc: 'gobbled → devoured · frail → feeble (Q16–20 words)', cfg: () => ({ instr: 'Which word is <b>closest in meaning</b>?', untimed: true, n: 10, nOptions: 4, pairs: GI.SYN_SPEC.map(s => [(s[0].match(/\{(.+?)\}/) || [])[1], s[1], s]), explain: p => `<b>${esc(p[2][4])}</b><br><i>${esc(p[2][0].replace(/[{}]/g, ''))}</i>` }) },
     // Link Bridge (connectors · PSLE-style, new sentences)
     { id: 'link-rules', island: 'link', name: 'Link Rule Cards', icon: '📋', engine: 'tenseGuide', desc: 'The 2-step trick · + noun / + clause / new sentence · exam traps', cfg: () => ({ cards: GI.LINK_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 Connectors are easy once you look at what comes <b>after</b> the blank. Read each card and tap <b>Got it</b>.' }) },
     { id: 'link-sorter', island: 'link', name: 'What Comes After?', icon: '🏭', engine: 'sorter', desc: 'Drag each linking word: + noun / -ing · + clause · new sentence', cfg: () => ({ instr: 'What can follow this word? <b>Drag</b> it into the right bin.', n: 14, buckets: [{ id: 'n', label: '+ noun / -ing', emoji: '🧱', hint: 'despite the rain' }, { id: 'cl', label: '+ clause', emoji: '🔗', hint: 'although it rained' }, { id: 'sent', label: '. ___, new sentence', emoji: '🚦', hint: '. However, …' }], items: GI.LINK_SORT.map(s => ({ text: s[0], bucket: s[1], rule: `<b>${esc(s[0])}</b>` })) }) },
@@ -3495,28 +3643,29 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
 
   /* ---------- map ---------- */
   const MAP_SPOTS = {
-    pron:    { x: 12, y: 9, place: 'Woodlands' },
-    punct:   { x: 23, y: 26, place: 'Kranji' },
-    prov:    { x: 56, y: 17, place: 'Seletar', above: true },
-    ing:     { x: 76, y: 9, place: 'Pulau Ubin' },
-    zoo:     { x: 22, y: 52, place: 'Mandai' },
-    count:   { x: 75, y: 63, place: 'Bishan' },
-    verbs:   { x: 91, y: 8, place: 'Changi' },
-    prep:    { x: 63, y: 23, place: 'Bukit Timah' },
-    plurals: { x: 8, y: 38, place: 'Jurong' },
-    colloc:  { x: 74, y: 38, place: 'Toa Payoh' },
-    words:   { x: 31, y: 67, place: 'Clementi' },
-    sva:     { x: 63, y: 79, place: 'Marina Bay' },
-    adj:     { x: 62, y: 54, place: 'East Coast' },
-    homo:    { x: 21, y: 83, place: 'Tuas' },
-    idiom:   { x: 11, y: 67, place: 'Jurong Island' },
-    opp:     { x: 35, y: 42, place: 'Sentosa' },
-    st:      { x: 92, y: 36, place: 'Tampines' },
-    vocab:   { x: 36, y: 7, place: 'Ang Mo Kio' },
-    tags:    { x: 91, y: 67, place: 'Pasir Ris' },
-    whatif:  { x: 46, y: 57, place: 'Southern Islands' },
-    link:    { x: 49, y: 32, place: 'Novena' },
-    edit:    { x: 46, y: 83, place: 'Orchard' },
+    pron:    { x: 8, y: 24, place: 'Woodlands' },
+    punct:   { x: 19, y: 40, place: 'Kranji' },
+    prov:    { x: 51, y: 18, place: 'Seletar', above: true },
+    ing:     { x: 81, y: 24, place: 'Pulau Ubin' },
+    zoo:     { x: 31, y: 81, place: 'Mandai' },
+    count:   { x: 94, y: 63, place: 'Bishan' },
+    verbs:   { x: 92, y: 8, place: 'Changi' },
+    prep:    { x: 68, y: 40, place: 'Bukit Timah' },
+    plurals: { x: 18, y: 9, place: 'Jurong' },
+    colloc:  { x: 70, y: 9, place: 'Toa Payoh' },
+    words:   { x: 21, y: 65, place: 'Clementi' },
+    sva:     { x: 68, y: 79, place: 'Marina Bay' },
+    adj:     { x: 57, y: 56, place: 'East Coast' },
+    homo:    { x: 12, y: 82, place: 'Tuas' },
+    idiom:   { x: 8, y: 57, place: 'Jurong Island' },
+    opp:     { x: 35, y: 40, place: 'Sentosa' },
+    st:      { x: 91, y: 35, place: 'Tampines' },
+    vocab:   { x: 35, y: 8, place: 'Ang Mo Kio' },
+    tags:    { x: 82, y: 78, place: 'Pasir Ris' },
+    whatif:  { x: 41, y: 66, place: 'Southern Islands' },
+    link:    { x: 57, y: 25, place: 'Novena' },
+    edit:    { x: 51, y: 82, place: 'Orchard' },
+    lab:     { x: 48, y: 40, place: 'Kent Ridge' },
   };
   const COMING = [];
   const RECOMMEND = { P6: ['sva', 'tags', 'ing'], P4: ['st', 'sva', 'vocab'] };
