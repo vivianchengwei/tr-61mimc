@@ -331,6 +331,10 @@ u.ed-wrong{text-decoration:underline;text-decoration-thickness:3px;text-decorati
 .cz-b{background:var(--card);border:none;border-bottom:3px solid var(--sea);border-radius:6px;padding:0 6px;min-width:4.2em;font:inherit;font-weight:800;color:var(--sea);line-height:1.6} .cz-b sup{color:var(--muted);font-size:11px;margin-right:2px} .cz-b.sel{background:var(--sun);color:var(--onacc)} .cz-b.ok{background:var(--grass);color:#fff;border-color:var(--grass)} .cz-b.bad{background:var(--berry);color:#fff;border-color:var(--berry)} .cz-b.bad s{opacity:.75}
 .cz-why{margin:6px 0 0;padding-left:22px;font-size:14px;line-height:1.5} .cz-why li.cz-wrong{font-weight:800}
 u.syn{text-decoration-color:var(--sea)}
+.cz-types{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0} .cz-type{background:rgba(255,255,255,.85);color:var(--grass);border-radius:999px;padding:1px 9px;font-size:12px;font-weight:800} .cz-type.miss{color:var(--berry)} .g-rule.bad .cz-type{background:var(--card)}
+.cz-tag{font-size:11px;font-weight:800;opacity:.8;border:1.5px solid currentColor;border-radius:999px;padding:0 6px}
+.oc-b{white-space:nowrap} .oc-b sup{font-size:11px;color:var(--muted);margin-right:2px}
+.oc-in{font:inherit;font-weight:800;width:6.2em;padding:1px 6px;border:none;border-bottom:3px solid var(--sea);border-radius:6px;background:var(--card);color:var(--ink)} .oc-in:focus{outline:2px solid var(--sun)} .oc-in.ok{background:var(--grass);color:#fff;border-color:var(--grass)} .oc-in.bad{background:var(--berry);color:#fff;border-color:var(--berry);width:auto;min-width:6.2em}
 /* builder */
 .b-rule-tag{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--sun);color:var(--onacc);margin-bottom:10px}
 .b-given{font-size:clamp(17px,2.6vw,21px);font-weight:800;line-height:1.5;background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:10px 14px}
@@ -2808,6 +2812,114 @@ GI.CLOZE_PASSAGES = [
 
 GI.ISLANDS.push({ id: 'lab', en: 'Word Lab', name: 'PSLE vocabulary & Grammar Cloze · 词汇与选词填空', emoji: '🧪', ref: '📝 PSLE-style (new sentences)', blurb: 'fell through · complement / compliment · closest meaning · word-box cloze', stickers: ['🧪', '🔬', '🧫', '📚', '🔭', '🧲'] });
 
+/* ===== PSLE-style top-up (all NEW sentences) =====
+   1) 50 grammar MCQs added to the older islands (tenses, prepositions, quantifiers, pronouns & relatives, -ing / verb patterns, SVA)
+   2) 6 more Grammar Cloze passages with the real mix of word types (verb forms ≈ 28%, connectors ≈ 25%, prepositions ≈ 19%,
+      articles / pronouns / determiners ≈ 13%, relative words ≈ 8% — counted from the word boxes of 21 PSLE / Prelim papers)
+   3) Comprehension Cloze (open blanks, type your own word)
+   spec: [sentence, answer, [cross ×2], last wrong, island, clue → rule, why the last is wrong] */
+GI.PSLE_SPEC = [
+  // ---- tenses → Time Machine ----
+  ['By the time we reached the cinema, the movie ___.', 'had started', ['starts', 'has started'], 'started', 'verbs', '[[By the time]] + a past event → the other action happened EARLIER → [[had + past participle]]', '“started” does not show that it happened FIRST'],
+  ['Mia ___ the piano since she was five.', 'has been learning', ['learns', 'learnt'], 'is learning', 'verbs', '[[since]] + a starting point, and it is still going on → [[has been + -ing]]', 'present continuous cannot go with “since”'],
+  ['By the end of next year, Leo ___ in Singapore for ten years.', 'will have lived', ['lives', 'has lived'], 'will live', 'verbs', '[[By]] + a FUTURE time → finished by then → [[will have + past participle]]', '“will live” does not show “by then”'],
+  ['The flight to Tokyo ___ at 9 p.m. every Friday.', 'departs', ['departed', 'has departed'], 'is departing', 'verbs', 'a fixed timetable ([[every Friday]]) → [[simple present]]', 'present continuous is for one plan, not a regular timetable'],
+  ['I will call you as soon as I ___ home.', 'reach', ['reached', 'had reached'], 'will reach', 'verbs', '[[as soon as / when]] + a future time → use the [[present tense]]', 'never “will” right after as soon as / when'],
+  ['The children ___ for over an hour when the bus finally arrived.', 'had been waiting', ['are waiting', 'have been waiting'], 'were waiting', 'verbs', '[[for over an hour]] up to a past moment ([[arrived]]) → [[had been + -ing]]', '“were waiting” does not show how long, up to that moment'],
+  ['The new library ___ by the minister last Saturday.', 'was opened', ['opened', 'has opened'], 'is opened', 'verbs', 'the library did not open anything → [[passive]] (by the minister) → ~~active forms~~', '[[last Saturday]] → past → was opened, not “is opened”'],
+  ['The old bridge ___ at the moment, so we have to take a detour.', 'is being repaired', ['repairs', 'has repaired'], 'is repairing', 'verbs', 'the bridge does not repair anything → [[passive]]; [[at the moment]] → [[is being + past participle]]', '“is repairing” means the bridge is doing the repairing'],
+  ['Leo ___ his homework yet, so he cannot go out.', 'has not finished', ['did not finish', 'does not finish'], 'had not finished', 'verbs', '[[yet]] + a result NOW (cannot go out) → [[present perfect]]', '“had not finished” is for before another past event'],
+  ['Mum ___ dinner when the lights went out.', 'was cooking', ['cooks', 'has cooked'], 'cooked', 'verbs', 'a longer action in progress, interrupted by [[went out]] → [[past continuous]]', '“cooked” means she finished — not interrupted'],
+  // ---- prepositions → Preposition Park ----
+  ['The principal congratulated the team ___ their victory.', 'on', ['at', 'in'], 'for', 'prep', 'congratulate someone [[ON]] something', '“congratulate … for” is a very common mistake'],
+  ['All pupils must adhere ___ the school rules.', 'to', ['on', 'with'], 'by', 'prep', 'adhere [[TO]] rules', '“by” goes with ABIDE: abide by the rules'],
+  ['Leo has a good grasp ___ fractions.', 'of', ['on', 'in'], 'with', 'prep', 'a grasp [[OF]] something (= understanding)', '“with” does not go with grasp'],
+  ['Mia was praised ___ her honesty.', 'for', ['of', 'on'], 'with', 'prep', 'praised [[FOR]] a good quality or action', '“praised with” is wrong'],
+  ['The boy apologised ___ his teacher for being rude.', 'to', ['at', 'with'], 'for', 'prep', 'apologise [[TO]] a person, [[FOR]] a thing', 'the “for” is already used for the thing (for being rude)'],
+  ['I mistook the stranger ___ my uncle.', 'for', ['as', 'with'], 'to', 'prep', 'mistake A [[FOR]] B', '“mistook … to” is wrong'],
+  ['Leo is very good ___ solving puzzles.', 'at', ['in', 'on'], 'with', 'prep', 'good [[AT]] doing something', '“good with” is for people or tools (good with children)'],
+  ['Raju insisted ___ paying for the meal.', 'on', ['in', 'for'], 'to', 'prep', 'insist [[ON]] + -ing', '“insisted to pay” is wrong'],
+  ['The parents were worried ___ their son\'s safety.', 'about', ['on', 'at'], 'of', 'prep', 'worried [[ABOUT]] something', '“worried of” is wrong (afraid OF, worried ABOUT)'],
+  ['We are looking forward ___ the school holidays.', 'to', ['for', 'at'], 'on', 'prep', 'look forward [[TO]] something', 'only “to” goes with look forward'],
+  // ---- quantifiers → Count It ----
+  ['There is ___ milk left, so please buy some more.', 'little', ['few', 'many'], 'a little', 'count', 'milk = uncountable → ~~few~~ ~~many~~; [[so please buy more]] → almost none → [[little]]', '“a little” = some (good news) — then we would not need to buy more'],
+  ['Leo has ___ friends in his new school, so he feels lonely.', 'few', ['little', 'much'], 'a few', 'count', 'friends = countable → ~~little~~ ~~much~~; [[so he feels lonely]] → almost none → [[few]]', '“a few” = some (good news) — he would not feel lonely'],
+  ['Mia spent ___ time on her project, and it shows.', 'a great deal of', ['a large number of', 'many'], 'few', 'count', 'time = uncountable → ~~a large number of~~ ~~many~~', '“few” is for countable nouns'],
+  ['There were ___ people at the concert than we had expected.', 'fewer', ['less', 'little'], 'lesser', 'count', 'people = countable → [[fewer]] (less is for uncountable)', '“lesser” means less important, not a smaller number'],
+  ['Leo drank ___ water than his sister.', 'less', ['fewer', 'few'], 'lesser', 'count', 'water = uncountable → [[less]]', '“lesser” means less important'],
+  // ---- pronouns & relatives → Pronoun Station ----
+  ['It was Mia, not her brothers, who painted the mural all by ___.', 'herself', ['himself', 'themselves'], 'ourselves', 'pron', 'the person is [[Mia]] (not her brothers) → [[herself]]', '“ourselves” = we'],
+  ['The teacher gave the prizes to Ali and ___.', 'me', ['I', 'myself'], 'mine', 'pron', 'after [[to]] → object → cover “Ali and”: gave the prizes to [[me]]', '“mine” = belonging to me'],
+  ['The cat licked ___ paws after eating.', 'its', ['it\'s', 'their'], 'his', 'pron', 'belonging to the cat → [[its]] (it\'s = it is)', 'we use “its” for an animal when we do not know if it is male or female'],
+  ['Mr Tan is the coach ___ team won the championship.', 'whose', ['who', 'whom'], 'which', 'pron', 'the coach + HIS team → belonging → [[whose]]', '“which” is for things'],
+  ['The girl ___ you met yesterday is my cousin.', 'whom', ['whose', 'which'], 'what', 'pron', 'you met HER → she receives the action → [[whom]] (WW Warriors: whom = receiver)', '“what” cannot follow a noun like this'],
+  ['This is the park ___ we used to play every evening.', 'where', ['which', 'who'], 'when', 'pron', 'a PLACE + we played THERE → [[where]]', '“when” is for a time'],
+  ['___ he said at the meeting surprised everyone.', 'What', ['Which', 'That'], 'Who', 'pron', '“The thing that he said” → [[What]]', '“Who” is for a person'],
+  ['Please pass me ___ book on the top shelf over there.', 'that', ['this', 'these'], 'those', 'pron', 'one book, far away ([[over there]]) → [[that]]', '“those” is plural'],
+  // ---- verb patterns → -ing Trap ----
+  ['Leo objected ___ to bed so early.', 'to going', ['to go', 'go'], 'going', 'ing', 'object [[TO]] + -ing (to is a preposition here)', 'we need the “to”: objected TO going'],
+  ['I could not help ___ when the clown slipped.', 'laughing', ['laugh', 'to laugh'], 'laughed', 'ing', '[[can\'t help]] + -ing', '“laughed” is past tense, not the -ing form'],
+  ['The teacher insisted that every pupil ___ the form by Friday.', 'submit', ['submits', 'submitted'], 'submitting', 'ing', '[[insist that]] + someone + [[base verb]] (no -s, no -ed)', '“submitting” cannot be the main verb'],
+  ['We watched the magician ___ a rabbit out of his hat.', 'pull', ['to pull', 'pulled'], 'pulls', 'ing', '[[watch + person + base verb]] (V-N-V)', 'no -s after watch + person'],
+  ['Mia is used to ___ up early.', 'waking', ['wake', 'woke'], 'have woken', 'ing', '[[be used to]] (= be familiar with) + -ing', '“used to wake” (no “is”) talks about the past — different meaning'],
+  ['All Leo did was ___ TV the whole afternoon.', 'watch', ['watching', 'watched'], 'to watched', 'ing', '[[All he did was]] + [[base verb]]', '“to watched” is never correct'],
+  ['She is devoted to ___ the elderly.', 'helping', ['help', 'helped'], 'helps', 'ing', 'devoted [[TO]] + -ing (to is a preposition)', '“helps” is not the -ing form'],
+  // ---- subject–verb agreement → Who Decides? ----
+  ['A pair of shoes ___ been left at the door.', 'has', ['have', 'are'], 'were', 'sva', 'the subject is [[a pair]] (one pair) → [[singular]]', '“were” is plural and the wrong tense'],
+  ['The number of visitors ___ risen this year.', 'has', ['have', 'are'], 'were', 'sva', '[[The number of]] = one number → [[singular]]', '“were” is plural'],
+  ['A number of pupils ___ absent today.', 'are', ['is', 'has'], 'was', 'sva', '[[A number of]] = many → [[plural]]; today → present', '“was” is singular and past'],
+  ['All my luggage ___ lost at the airport.', 'was', ['were', 'are'], 'have', 'sva', '[[luggage]] is uncountable → [[singular]]', '“have” is plural'],
+  ['Ten dollars ___ too much to pay for a sandwich.', 'is', ['are', 'were'], 'have', 'sva', 'an AMOUNT of money counts as one → [[singular]]', '“have” is plural'],
+  ['Using mobile phones in class ___ not allowed.', 'is', ['are', 'were'], 'have', 'sva', 'the subject is the activity [[Using]] (-ing) → [[singular]]', '“have” is plural'],
+  ['Leo is one of the boys who ___ in the choir.', 'sing', ['sings', 'is singing'], 'has sung', 'sva', '[[who]] refers to [[the boys]] (plural) → sing', '“has sung” is singular'],
+  ['Bread and butter ___ my favourite breakfast.', 'is', ['are', 'were'], 'have', 'sva', '[[bread and butter]] is ONE dish → [[singular]]', '“have” is plural'],
+  ['Each of the girls ___ a different costume.', 'wears', ['wear', 'are wearing'], 'have worn', 'sva', '[[Each of]] → one at a time → [[singular]]', '“have worn” is plural'],
+];
+(() => {
+  const byIsl = {};
+  GI.PSLE_SPEC.forEach((s, i) => { (byIsl[s[4]] = byIsl[s[4]] || []).push([s, i]); });
+  Object.keys(byIsl).forEach(isl => {
+    const base = GI.catalogue[isl];
+    GI.catalogue[isl] = () => base().concat(byIsl[isl].map(([s, i]) => {
+      const [sent, ans, first, last, , clue, lastWhy] = s;
+      const rule = `${clue} → ${first.map(x => `~~${x}~~`).join(' ')} || ${lastWhy} → ~~${last}~~ → **${ans}**`;
+      return { id: `ps:${i}`, level: 2, make: () => ({ prompt: sent, answer: ans, options: [ans, ...first, last], rule, ref: '📝 PSLE-style (new sentences)', mode: 'mcq' }) };
+    }));
+  });
+})();
+
+/* word type of a cloze answer (for the per-type score) */
+GI.CLOZE_TYPE = w => {
+  w = w.toLowerCase();
+  const T = [
+    ['Verb form', 'is are was were be been being has have had having can could will would must should might may do does did go goes'],
+    ['Connector', 'but and or so yet although though while since until unless if because as however moreover therefore nevertheless instead when before'],
+    ['Preposition', 'about by in on at of off from for to with within without into onto under over among between through during despite like unlike towards around across after up out'],
+    ['Relative word', 'which who whom whose what where that how why'],
+    ['Article / pronoun / determiner', 'a an the it its them their his her my us some any all both each few little more less much many another'],
+  ];
+  const f = T.find(t => t[1].split(' ').includes(w)); return f ? f[0] : 'Other (adverb)';
+};
+
+/* 6 more Grammar Cloze passages — mixed word types like the real papers */
+GI.CLOZE_PASSAGES.push(
+  { title: 'The Night Market', extra: ['are', 'has', 'who', 'a', 'despite'], text: 'Every Friday night, there {is|There ___ + a night market (one) → is} a lively night market in the car park near my block. By seven o\'clock, dozens of stalls {have|dozens of stalls (plural) + been set up → have} been set up. My favourite stall is the one {which|the stall (a thing) + sells → which} sells grilled corn. The owner, {whose|the owner + HIS name → whose} name is Uncle Lim, has been running it for {over|for ___ twenty years = more than → over} twenty years. Last week, the queue was so long that we waited for almost {an|“hour” starts with a vowel SOUND → an} hour. {However|long wait, but worth it → contrast at the start of a sentence with a comma → However}, the corn was worth the wait. My little brother ate two cobs {by|all on his own → by himself} himself, {so|ate two cobs → result: no room → so} he had no room for dessert. Next week, we {will|next week → future → will} try the satay stall instead.' },
+  { title: 'The Kitten in the Rain', extra: ['has', 'were', 'a', 'it\'s', 'which'], text: 'It {had|had been raining … when I heard (past) → had} been raining all morning when I heard a faint meow. A tiny kitten {was|one kitten + hiding → was} hiding {under|hiding ___ a parked car → under} a parked car. {Although|I hate getting wet, but still ran down → contrast + clause → Although} I hate getting wet, I grabbed {an|“umbrella” starts with a vowel sound → an} umbrella and ran downstairs. The kitten was shivering, so I wrapped it {in|wrap something IN a jacket} my jacket. My mother, {who|my mother (a person) + is a nurse → who} is a nurse, checked {its|the kitten\'s paws → its (it\'s = it is)} paws for cuts. We fed it some warm milk, and it soon fell asleep {on|asleep ON my lap} my lap. We {have|we + kept it ever since (until now) → have} kept it as a pet ever since.' },
+  { title: 'Sports Day', extra: ['are', 'were', 'has', 'a', 'which'], text: 'Sports Day {is|Sports Day (one event), every year → is} the event I look forward to most every year. This year, I {was|I + chosen (passive, past) → was} chosen to run the last leg of the relay. My teammates and I {had|practised BEFORE the big day → had} practised {for|for + a length of time (weeks)} weeks. On the big day, the stadium was packed {with|packed WITH people} cheering parents. When the baton reached me, our team was in third place. I ran {as|as fast as (comparison)} fast as I could and overtook {both|the two runners → both of} of the runners in front of me. We won the race {by|won BY a few metres (the difference)} a few metres. My coach, {who|my coach (a person) → who} had trained us every morning, gave me a big hug. It was {the|the + superlative (proudest)} proudest moment of my life.' },
+  { title: 'The Recycling Drive', extra: ['is', 'has', 'any', 'who', 'although'], text: 'Our school held a recycling drive last month. Each class {was|Each class → one → was} given a large bin. Pupils brought old newspapers, plastic bottles and cans {from|brought things FROM home} home. {Some|___ of them even collected → Some (any is for questions/negatives)} of them even collected items from their neighbours. In {the|the first week (a particular one)} first week alone, we gathered more than five hundred kilograms {of|kilograms OF waste} waste. {However|a sentence start with a comma, showing a problem → However}, a few pupils threw food into the bins, {which|refers to the whole idea before it → , which} made the recyclables dirty. Our teacher reminded us that recyclables must {be|must + base verb → be} clean. By the end of the month, our class {had|by the end of … (past) → had collected} collected the most items, and we {were|we (plural) + given → were} each given a certificate.' },
+  { title: 'Grandma\'s Garden', extra: ['have', 'was', 'them', 'which', 'until'], text: 'My grandmother {has|Grandma (she) → has} a small garden on her balcony. She grows chillies, mint and pandan, {all|___ of which = every one of them → all} of which she uses in her cooking. Every morning, she waters the plants {before|first water, then breakfast → before} breakfast. She says that plants, {like|plants are similar to people → like} people, need care and attention. Last month, some of her chilli plants {were|some plants (plural) + attacked → were} attacked by aphids. She sprayed them with soapy water, and {within|in less than a week → within} a week, the pests were gone. Her plants are healthy {because|the reason they are healthy → because} she never uses chemicals. The mint, {whose|the mint + ITS leaves → whose} leaves smell wonderful, is my favourite. Grandma says I {can|permission → can + base verb} have a pot of my own if I promise to look after {it|a pot (one thing) → it} properly.' },
+  { title: 'Our New Library', extra: ['is', 'were', 'a', 'who', 'unless'], text: 'Our school library {was|the library + renovated (passive), during the June holidays → was} renovated during the June holidays. It now has bean bags, a reading corner and {an|“interactive” starts with a vowel sound → an} interactive screen. The best part is the Quiet Room, {where|a place + pupils read THERE → where} pupils can read without being disturbed. Books {are|books (plural) + now → are} now arranged by colour, {which|refers to the whole idea → , which} makes the shelves look like a rainbow. The librarian told us that more than three hundred new books {had|had been bought (before she told us)} been bought. Pupils may borrow up {to|up TO a limit} four books at a time. {If|a condition: if it is late, a fine must be paid (unless means the opposite)} a book is returned late, a small fine must be paid. Since the library reopened, it has {never|it has ___ been so crowded = not ever → never} been so crowded. Everyone loves {its|the library\'s new look → its} new look.' },
+);
+
+/* Comprehension Cloze (open): {accepted|answers::type::why} */
+GI.OPEN_CLOZE = [
+  { title: 'A Helping Hand', text: 'Last Saturday, our class visited an old folks\' home {as::Fixed phrase::the fixed phrase is AS part of} part of a community project. Before the visit, our teacher reminded us to be patient {with::Preposition::be patient WITH someone} the elderly residents. When we arrived, a cheerful nurse showed us {around::Preposition::show someone AROUND a place = give a tour}. I was assigned to Madam Siti, {who::Relative word::Madam Siti (a person) + is ninety → who} is ninety years old. As her eyesight was poor, I read the newspaper {to::Preposition::read something TO someone} her. She told me stories {about|of::Preposition::stories ABOUT / OF something} her childhood in a kampung. Time flew, and before {long::Fixed phrase::before long = soon}, it was time to leave. Madam Siti held my hand and thanked me {for::Preposition::thank someone FOR doing something} spending time with her. I promised to visit her {again|soon::Adverb::visit her again / soon}. The visit made me realise that we should never take our loved ones {for::Fixed phrase::take someone FOR granted} granted.' },
+  { title: 'Music for Plants', text: 'Our group decided to find {out::Phrasal verb::find OUT = discover} whether plants grow better with music. We set {up::Phrasal verb::set UP an experiment} two identical pots of beans. One pot was placed {in::Preposition::IN a room} a quiet room, {while|whereas::Connector::comparing the two pots → while / whereas} the other was placed next to a radio. We made sure that {both::Determiner::the two pots → both} pots received the same amount of water and sunlight. {After::Preposition::AFTER two weeks (at the end of)} two weeks, the beans exposed to music were slightly taller. However, our teacher pointed {out::Phrasal verb::point OUT = draw attention to} that the difference was too small to prove anything. She suggested that we repeat the experiment {with|using::Preposition::WITH / USING more pots} more pots. Although we were disappointed, we learnt that a good experiment must be carried {out::Phrasal verb::carry OUT = do} carefully. We are now planning {to::Verb form::plan TO + base verb} test the plants with different kinds of music.' },
+  { title: 'Owning Up', text: 'When I was eight, I broke my mother\'s favourite vase {by::Fixed phrase::BY accident} accident. I was {so::Connector::SO afraid THAT …} afraid that I hid the pieces under my bed. That night, my mother asked {whether|if::Connector::asked WHETHER / IF (a yes-no question)} anyone had seen the vase. I shook my head and pretended that I knew nothing {about::Preposition::know nothing ABOUT something} it. However, I could not sleep {because|as|since::Connector::the reason → because / as / since} I felt so guilty. The next morning, I told her {the::Article::tell THE truth (fixed)} truth. To my surprise, she was not angry {with|at::Preposition::angry WITH / AT a person} me. She said that she was proud of me {for::Preposition::proud of someone FOR doing something} owning up. From {then::Fixed phrase::from THEN on = since that time} on, I have always tried to tell the truth, {no::Fixed phrase::NO matter how …} matter how difficult it is.' },
+  { title: 'Every Drop Counts', text: 'Singapore does not have many natural sources of water, so every drop {is::Verb form::every drop (singular) → is} precious. To make sure that we have enough, the government {has::Verb form::the government (it) + built (up to now) → has} built reservoirs and desalination plants. However, we {must|should::Verb form::a duty → must / should} also play our part. There are many simple ways to save water {at::Preposition::AT home} home. For example, we can turn {off::Phrasal verb::turn OFF the tap} the tap while brushing our teeth. We can reduce the amount of water {that|which::Relative word::the amount of water + we waste → that / which} we waste by taking shorter showers {instead::Connector::INSTEAD of long baths} of long baths. {If::Connector::a condition → If} everyone does a little, we can save {a::Article::A lot of} lot of water. Let us never take water {for::Fixed phrase::take something FOR granted} granted.' },
+  { title: 'The Talent Show', text: 'Mia had been practising {for::Preposition::practise FOR an event} the school talent show for weeks. On the day {of::Preposition::the day OF the show} the show, she had butterflies in her stomach. {When|As::Connector::at the moment her name was called → When / As} her name was called, she walked slowly {onto|to|across::Preposition::walk ONTO / TO the stage} the stage. As soon {as::Fixed phrase::as soon AS} she began to sing, her nervousness disappeared. The audience listened {in::Fixed phrase::IN silence} silence. When she finished, the hall burst {into::Fixed phrase::burst INTO applause / tears / laughter} applause. Mia could {hardly|not|barely|scarcely::Adverb::could HARDLY / NOT believe it} believe it when she was announced as {the::Article::THE winner (only one)} winner. “Practice really does make perfect,” she thought {to::Fixed phrase::think TO yourself} herself.' },
+];
+
 /* Real animal recordings, embedded as data URIs.
    Sources: ESC-50 dataset (K. J. Piczak, 2015; CC BY-NC 3.0; clips originate from freesound.org contributors) for dog, rooster, pig, cow, cat, hen, insects, sheep, chirping birds;
    CC0 clips from the AgentSynth Animals pack: crow (Mish7913), owl (felix.blume), frog (kvgarlic), wolf (betchkal) via Freesound. Trimmed, normalised and compressed. */
@@ -3303,13 +3415,49 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
           const ok = (fill[i] || '') === b.a.toLowerCase(); if (ok) { c++; api.good(); } else { api.bad(true); api.miss && api.miss(`${P.title} (${i + 1})`, fill[i] || '', b.a); }
           const bt = area.querySelector(`.cz-b[data-i="${i}"]`); bt.classList.remove('sel'); bt.classList.add(ok ? 'ok' : 'bad');
           bt.querySelector('.cz-w').innerHTML = ok ? esc(b.a) : `<s>${esc(fill[i] || '—')}</s> ${esc(b.a)}`;
-          lines.push(`<li class="${ok ? '' : 'cz-wrong'}"><b>${esc(b.a)}</b>${ok ? ' ✓' : ` <small>(you: ${esc(fill[i] || '—')})</small>`} — ${esc(b.why)}</li>`);
+          lines.push(`<li class="${ok ? '' : 'cz-wrong'}"><b>${esc(b.a)}</b>${ok ? ' ✓' : ` <small>(you: ${esc(fill[i] || '—')})</small>`} <small class="cz-tag">${esc(GI.CLOZE_TYPE ? GI.CLOZE_TYPE(b.a) : '')}</small> — ${esc(b.why)}</li>`);
         });
         correct += c; total += blanks.length;
-        flashRule($('#cz-rule', area), `<b>${c} / ${blanks.length}</b> correct<ol class="cz-why">${lines.join('')}</ol>`, c >= blanks.length - 2);
+        const byType = {}; blanks.forEach((b, i) => { const t = GI.CLOZE_TYPE ? GI.CLOZE_TYPE(b.a) : 'Word'; byType[t] = byType[t] || [0, 0]; byType[t][1]++; if ((fill[i] || '') === b.a.toLowerCase()) byType[t][0]++; });
+        const sum = Object.keys(byType).map(t => `<span class="cz-type${byType[t][0] < byType[t][1] ? ' miss' : ''}">${esc(t)} ${byType[t][0]}/${byType[t][1]}</span>`).join(' ');
+        flashRule($('#cz-rule', area), `<b>${c} / ${blanks.length}</b> correct<div class="cz-types">${sum}</div><ol class="cz-why">${lines.join('')}</ol>`, c >= blanks.length - 2);
         act.innerHTML = ''; const nx = el('button', 'btn primary', pi + 1 < ps.length ? 'Next passage →' : 'Finish →'); nx.type = 'button'; nx.onclick = () => { pi++; startP(); }; act.appendChild(nx);
       };
       render();
+    };
+    startP();
+  };
+
+
+  /* ================= 15. COMPREHENSION CLOZE (open blanks: type your own word) ================= */
+  G.openCloze = (area, cfg, api) => {
+    const ps = shuffle(cfg.passages).slice(0, cfg.n || 1); let pi = 0, correct = 0, total = 0;
+    const RE = /\{([^}]+?)::([^:}]+)::([^}]*)\}/g;
+    const startP = () => {
+      if (pi >= ps.length) return api.finish({ correct, total });
+      const P = ps[pi]; const blanks = [];
+      let html = esc(P.text.replace(RE, (m, a, t, why) => { blanks.push({ ok: a.split('|').map(x => x.trim().toLowerCase()), a: a.split('|')[0], t, why }); return `@@${blanks.length - 1}@@`; }));
+      html = html.replace(/@@(\d+)@@/g, (m, k) => `<span class="oc-b"><sup>${+k + 1}</sup><input class="oc-in" data-i="${k}" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></span>`);
+      area.innerHTML = `<div class="g-instr">✏️ <b>${esc(P.title)}</b> — fill in each blank with <b>one suitable word</b>. Think: does it need a preposition, a verb form, a pronoun, an article, a joining word — or is it part of a fixed phrase?</div><div class="ed-passage oc-passage">${html}</div><div id="oc-rule"></div><div class="g-actions" id="oc-actions"></div>`;
+      const ins = [...area.querySelectorAll('.oc-in')]; let done = false;
+      const act = $('#oc-actions', area); const chk = el('button', 'btn primary', 'Check all'); chk.type = 'button'; act.appendChild(chk);
+      const upd = () => { const n = ins.filter(x => x.value.trim()).length; chk.disabled = n < blanks.length; api.progress(n, blanks.length); };
+      ins.forEach((x, k) => { x.addEventListener('input', upd); x.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); const nx = ins[k + 1]; if (nx) nx.focus(); else if (!chk.disabled) chk.click(); } }); });
+      chk.onclick = () => {
+        if (done) return; done = true; let c = 0; const lines = []; const byType = {};
+        blanks.forEach((b, i) => {
+          const v = ins[i].value.trim().toLowerCase().replace(/[.,!?]$/, ''); const ok = b.ok.includes(v);
+          byType[b.t] = byType[b.t] || [0, 0]; byType[b.t][1]++;
+          if (ok) { c++; byType[b.t][0]++; api.good(); } else { api.bad(true); api.miss && api.miss(`${P.title} (${i + 1})`, v || '—', b.ok.join(' / ')); }
+          ins[i].disabled = true; ins[i].classList.add(ok ? 'ok' : 'bad'); if (!ok) ins[i].value = `${v || '—'} → ${b.a}`;
+          lines.push(`<li class="${ok ? '' : 'cz-wrong'}"><b>${esc(b.ok.join(' / '))}</b>${ok ? ' ✓' : ''} <small class="cz-tag">${esc(b.t)}</small> — ${esc(b.why)}</li>`);
+        });
+        correct += c; total += blanks.length;
+        const sum = Object.keys(byType).map(t => `<span class="cz-type${byType[t][0] < byType[t][1] ? ' miss' : ''}">${esc(t)} ${byType[t][0]}/${byType[t][1]}</span>`).join(' ');
+        flashRule($('#oc-rule', area), `<b>${c} / ${blanks.length}</b> correct<div class="cz-types">${sum}</div><ol class="cz-why">${lines.join('')}</ol>`, c >= blanks.length - 2);
+        act.innerHTML = ''; const nx = el('button', 'btn primary', pi + 1 < ps.length ? 'Next passage →' : 'Finish →'); nx.type = 'button'; nx.onclick = () => { pi++; startP(); }; act.appendChild(nx);
+      };
+      upd(); setTimeout(() => { try { ins[0].focus(); } catch (x) {} }, 50);
     };
     startP();
   };
@@ -3484,7 +3632,8 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { id: 'col-rush', island: 'colloc', name: 'Café Rush', icon: '⚡', engine: 'quickFire', desc: '60 s · meaning → collocation, both ways', cfg: () => ({ instr: 'Pick the <b>collocation</b> that matches the meaning (or the meaning that matches the collocation).', pairs: GI.COLLOC.map(c => [c[1], c[0]]), bothWays: true, nOptions: 4, target: 12 }) },
     { id: 'col-det', island: 'colloc', name: 'Collocation Detective', icon: '🔍', engine: 'detective', desc: 'Tap the collocation inside the sentence', cfg: () => ({ instr: 'Tap the <b>words of the collocation</b> in the sentence (the verb and its partner word).', n: 8, sentences: GI.COLLOC.map(c => { const words = c[2].split(' '); const parts = c[0].split(' '); const forms = GI.CVERBS[c[3]]; const t = words.map(w => w.replace(/[.,!?;:"]/g, '')).filter(w => forms.includes(w.toLowerCase()) || parts.slice(1).includes(w.toLowerCase())); return { s: c[2], t: GI.uniq(t), col: c[0], mean: c[1] }; }), why: s => `Collocation: <b>${s.col}</b> = ${s.mean}.` }) },
     // Word Lab (PSLE vocabulary Q11–20 + Grammar Cloze · new sentences)
-    { id: 'cloze-box', island: 'lab', name: 'Grammar Cloze', icon: '🧩', engine: 'wordBox', desc: 'Exam-style: 10 blanks, a box of 15 words, each word used once', cfg: () => ({ n: 1, passages: GI.CLOZE_PASSAGES }) },
+    { id: 'cloze-box', island: 'lab', name: 'Grammar Cloze', icon: '🧩', engine: 'wordBox', desc: 'Exam-style: 10 blanks, a box of 15 words (verbs, connectors, prepositions, pronouns, relatives), each word used once', cfg: () => ({ n: 1, passages: GI.CLOZE_PASSAGES }) },
+    { id: 'open-cloze', island: 'lab', name: 'Comprehension Cloze', icon: '🖊️', engine: 'openCloze', desc: 'Exam-style: type one suitable word in each blank (fixed phrases, prepositions, verb forms…)', cfg: () => ({ n: 1, passages: GI.OPEN_CLOZE }) },
     { id: 'phrasal-lines', island: 'lab', name: 'Phrasal Verb Lines', icon: '🔗', engine: 'lineMatch', desc: 'Draw lines · fell through = failed to happen', cfg: () => ({ instr: 'Match each <b>phrasal verb</b> with its <b>meaning</b>.', pairs: GI.PHRASAL, n: 6, small: true }) },
     { id: 'syn-rush', island: 'lab', name: 'Closest Meaning', icon: '🎯', engine: 'quickFire', desc: 'gobbled → devoured · frail → feeble (Q16–20 words)', cfg: () => ({ instr: 'Which word is <b>closest in meaning</b>?', untimed: true, n: 10, nOptions: 4, pairs: GI.SYN_SPEC.map(s => [(s[0].match(/\{(.+?)\}/) || [])[1], s[1], s]), explain: p => `<b>${esc(p[2][4])}</b><br><i>${esc(p[2][0].replace(/[{}]/g, ''))}</i>` }) },
     // Link Bridge (connectors · PSLE-style, new sentences)
