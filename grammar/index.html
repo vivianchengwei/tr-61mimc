@@ -2283,6 +2283,166 @@ GI.TAG_SORT = [
   ["Mum's baked a cake.", 'has'], ["It's too hot today.", 'is'], ["He's never been on a plane.", 'has'], ["She's my best friend.", 'is'],
 ];
 
+/* ===== What-If Cove · If-sentences, wish / if only, should have, inversion =====
+   Exam points from the 2012–2019 subjunctive MCQ sets (shared by another parent) + PSLE / Prelim papers.
+   All sentences are NEW (same traps, different sentences) — originals are not used.
+   spec: [sentence, answer, [cross first ×2], last wrong, type, which part is blank, clue, why the last one is wrong, level] */
+GI.IF_TYPES = {
+  t1: { tag: 'Type 1 · real future', need: { if: '[[present tense]] (never “will” after if)', main: '[[will + base verb]]' } },
+  t2: { tag: 'Type 2 · imaginary NOW', need: { if: '[[past tense]] ([[were]] for everyone)', main: '[[would / could + base verb]]' } },
+  t3: { tag: 'Type 3 · past that did NOT happen', need: { if: '[[had + past participle]]', main: '[[would / could have + past participle]]' } },
+  mix: { tag: 'Mixed · past cause → result NOW', need: { if: '[[had + past participle]]', main: '[[would + base verb]] (the result is about now)' } },
+  hid: { tag: 'Hidden “if”', need: { had: '[[Had + subject + past participle]] = If … had …', should: '[[Should + subject + base verb]] = If …', were: '[[Were + subject]] = If … were', main: '[[would have + past participle]] (it is still Type 3)' } },
+  wish: { tag: 'Wish / If only', need: { now: 'about NOW → one step back: [[past tense]] ([[were]])', past: 'about the PAST → [[had + past participle]]' } },
+  modal: { tag: 'Past regret / past guess', need: { main: '[[should / must / could + have + past participle]]' } },
+  inv: { tag: 'Inversion', need: { order: '[[helper + subject]] (question order)', pair: '[[Hardly … when]] · [[No sooner … than]]', word: 'the negative word must match the second half' } },
+  so: { tag: 'So / Neither', need: { main: '[[so / neither + helper + subject]] — copy the helper; no helper → do / does / did' } },
+};
+GI.IF_SPEC = [
+  // ---------- Type 3, if-part blank ----------
+  ['If Mei ___ the instructions carefully, she would not have made so many mistakes.', 'had followed', ['follows', 'has followed'], 'followed', 't3', 'if', 'would not have made', '“followed” (simple past) is the Type 2 form; the result says would not HAVE made → Type 3', 2],
+  ['If the boys ___ their helmets, they would have been safer.', 'had worn', ['wear', 'have worn'], 'wore', 't3', 'if', 'would have been', '“wore” is Type 2; “would have been” needs [[had worn]]', 2],
+  ['If Grandpa ___ his glasses, he would have seen the step.', 'had brought', ['brings', 'has brought'], 'brought', 't3', 'if', 'would have seen', '“brought” is Type 2; Type 3 needs [[had brought]]', 2],
+  ['If we ___ the earlier bus, we would not have been late for the concert.', 'had caught', ['catch', 'have caught'], 'caught', 't3', 'if', 'would not have been late', '“caught” is Type 2; Type 3 needs [[had caught]]', 2],
+  ['If Siti ___ about the spelling test, she would have studied for it.', 'had known', ['knows', 'has known'], 'knew', 't3', 'if', 'would have studied', '“knew” is Type 2; Type 3 needs [[had known]]', 2],
+  ['Raju would have won the race if he ___ over the last hurdle.', 'had not tripped', ['does not trip', 'has not tripped'], 'did not trip', 't3', 'if', 'would have won', '“did not trip” is Type 2; Type 3 needs [[had not tripped]]', 2],
+  ['If the twins ___ their room, Mum would not have scolded them.', 'had tidied', ['tidy', 'have tidied'], 'tidied', 't3', 'if', 'would not have scolded', '“tidied” is Type 2; Type 3 needs [[had tidied]]', 2],
+  ['The cake would not have burnt if Aunty ___ the timer.', 'had switched on', ['switches on', 'has switched on'], 'switched on', 't3', 'if', 'would not have burnt', '“switched on” is Type 2; Type 3 needs [[had switched on]]', 2],
+  ['If you ___ more careful, you would not have spilt the paint.', 'had been', ['are', 'have been'], 'were', 't3', 'if', 'would not have spilt', '“were” is for Type 2 (imaginary now); this is about the past → [[had been]]', 2],
+  ['If the bakery ___ open, we would have bought some bread.', 'had been', ['is', 'has been'], 'was', 't3', 'if', 'would have bought', '“was” is past but not Type 3; Type 3 needs [[had been]]', 2],
+  ['If Leo ___ to his coach, he would have scored the goal.', 'had listened', ['listens', 'has listened'], 'listened', 't3', 'if', 'would have scored', '“listened” is Type 2; Type 3 needs [[had listened]]', 2],
+  ['The match would not have been cancelled if it ___ so heavily.', 'had not rained', ['does not rain', 'has not rained'], 'did not rain', 't3', 'if', 'would not have been cancelled', '“did not rain” is Type 2; Type 3 needs [[had not rained]]', 2],
+  ['If Mum ___ the doctor sooner, her cough would not have become so bad.', 'had seen', ['sees', 'has seen'], 'saw', 't3', 'if', 'would not have become', '“saw” is Type 2; Type 3 needs [[had seen]]', 2],
+  // ---------- Type 3, result blank ----------
+  ['If Mia had woken up on time, she ___ the school bus.', 'would not have missed', ['will not miss', 'does not miss'], 'would not miss', 't3', 'main', 'had woken up', '“would not miss” is Type 2 (now); the if-part has [[had]] → [[would not have missed]]', 2],
+  ['If the fire alarm had rung, everyone ___ the building at once.', 'would have left', ['will leave', 'leaves'], 'would leave', 't3', 'main', 'had rung', '“would leave” is Type 2; with [[had rung]] use [[would have left]]', 2],
+  ['If you had asked me, I ___ you with your project.', 'would have helped', ['will help', 'have helped'], 'would help', 't3', 'main', 'had asked', '“would help” is Type 2; with [[had asked]] use [[would have helped]]', 2],
+  ['If the pupils had paid attention, they ___ those careless mistakes.', 'would not have made', ['will not make', 'did not make'], 'would not make', 't3', 'main', 'had paid', '“would not make” is Type 2; Type 3 → [[would not have made]]', 2],
+  ['If Dad had checked the map, we ___ lost.', 'would not have got', ['will not get', 'did not get'], 'would not have had got', 't3', 'main', 'had checked', 'never put “had” after “would have”: would have + [[past participle]] only', 2],
+  ['If she had practised more, she ___ the piano exam.', 'could have passed', ['can pass', 'passes'], 'could pass', 't3', 'main', 'had practised', '“could pass” is Type 2; Type 3 → [[could have passed]]', 2],
+  ['If we had known you were coming, we ___ a bigger cake.', 'would have baked', ['will bake', 'baked'], 'would have had baked', 't3', 'main', 'had known', 'never “would have had + past participle” → [[would have baked]]', 2],
+  ['The vase ___ if the cat had not jumped onto the shelf.', 'would not have broken', ['will not break', 'does not break'], 'would not break', 't3', 'main', 'had not jumped', '“would not break” is Type 2; Type 3 → [[would not have broken]]', 2],
+  ['If the goalkeeper had been faster, our team ___ the match.', 'might have won', ['may win', 'wins'], 'might win', 't3', 'main', 'had been', '“might win” is Type 2; Type 3 → [[might have won]]', 2],
+  // ---------- Type 2 ----------
+  ['If I ___ a bird, I would fly over the whole of Singapore.', 'were', ['am', 'will be'], 'had been', 't2', 'if', 'would fly (I am not a bird!)', '“had been” is for the past (Type 3); imaginary NOW → [[were]]', 1],
+  ['If Leo ___ taller, he could reach the top shelf.', 'were', ['is', 'will be'], 'had been', 't2', 'if', 'could reach (now)', '“had been” is Type 3; imaginary NOW → [[were]] (were for he/she/I too)', 2],
+  ['If we had a bigger flat now, we ___ a dog.', 'would keep', ['will keep', 'keep'], 'would have kept', 't2', 'main', 'had … now', '“would have kept” is Type 3 (past); this is about NOW → [[would keep]]', 2],
+  ['“If I ___ you, I would say sorry to her,” Mum advised.', 'were', ['am', 'will be'], 'had been', 't2', 'if', 'If I were you (advice)', '“If I were you” is a fixed way to give advice → [[were]]', 1],
+  ['If Grandma lived nearer to us, I ___ her every day.', 'would visit', ['will visit', 'visit'], 'would have visited', 't2', 'main', 'lived nearer (she does not live near now)', '“would have visited” is about the past; “every day” now → [[would visit]]', 2],
+  ['If my brother ___ more, he would not be so tired all the time.', 'slept', ['sleeps', 'will sleep'], 'had slept', 't2', 'if', 'would not be (now, all the time)', '“had slept” is Type 3; a habit NOW → [[slept]]', 2],
+  // ---------- Type 1 ----------
+  ['If it ___ tomorrow, the sports day will be postponed.', 'rains', ['rained', 'had rained'], 'will rain', 't1', 'if', 'tomorrow · will be postponed', 'never “will” right after if → [[rains]]', 1],
+  ['We ___ the zoo if the weather is fine on Saturday.', 'will visit', ['would visit', 'would have visited'], 'visited', 't1', 'main', 'is fine on Saturday', 'Saturday has not come yet → [[will visit]]', 1],
+  ['If you ___ hard, you will pass the test.', 'study', ['studied', 'had studied'], 'will study', 't1', 'if', 'will pass', 'never “will” right after if → [[study]]', 1],
+  ['Unless you hurry, you ___ the train.', 'will miss', ['would miss', 'would have missed'], 'missed', 't1', 'main', 'Unless (= if not) you hurry', '“missed” is past; the train has not left yet → [[will miss]]', 1],
+  ['If Leo finishes his homework early, he ___ football with us.', 'will play', ['would play', 'would have played'], 'played', 't1', 'main', 'finishes (present)', 'a real plan → [[will play]]', 1],
+  ['Your plants ___ if you do not water them.', 'will die', ['would die', 'would have died'], 'died', 't1', 'main', 'if you do not water them', 'a real future result → [[will die]]', 1],
+  // ---------- Mixed ----------
+  ['If I had eaten breakfast, I ___ so hungry now.', 'would not be', ['will not be', 'am not'], 'would not have been', 'mix', 'main', 'had eaten … now', '“now” → the result is about NOW → [[would not be]]', 2],
+  ['If Mia had taken her umbrella this morning, she ___ wet now.', 'would not be', ['will not be', 'is not'], 'would not have been', 'mix', 'main', 'had taken … now', '“now” → [[would not be]]', 2],
+  ['If you had saved your pocket money, you ___ enough to buy the game now.', 'would have', ['will have', 'have'], 'would have had', 'mix', 'main', 'had saved … now', '“now” → would + base verb → [[would have]] (have = own)', 2],
+  // ---------- Hidden if ----------
+  ['___ I known about the sale, I would have bought two pairs.', 'Had', ['Have', 'Did'], 'Should', 'hid', 'had', 'I known … would have bought', '“Should” takes a base verb (Should I know); “known” needs [[Had]]', 2],
+  ['Had the driver ___ the red light, the accident would not have happened.', 'noticed', ['notice', 'notices'], 'noticing', 'hid', 'had', 'Had the driver …', 'Had + subject + [[past participle]] → noticed', 2],
+  ['Had we left any later, we ___ the opening act.', 'would have missed', ['will miss', 'miss'], 'would miss', 'hid', 'main', 'Had we left (= If we had left)', 'still Type 3 → [[would have missed]]', 2],
+  ['Had it not been for her quick thinking, the fire ___.', 'would have spread', ['will spread', 'spreads'], 'would spread', 'hid', 'main', 'Had it not been for (= If it had not been for)', 'still Type 3 → [[would have spread]]', 2],
+  ['___ you need any help, just give me a call.', 'Should', ['Would', 'Had'], 'Did', 'hid', 'should', 'you need … give me a call (a real future)', '“Did you need” is a question; [[Should you need]] = If you need', 2],
+  ['___ I in your shoes, I would tell the teacher.', 'Were', ['Am', 'Had'], 'Was', 'hid', 'were', 'I … in your shoes, I would tell', 'the hidden-if form is always [[Were I]] (not Was I)', 2],
+  ['___ she trained harder, she could have won the gold medal.', 'Had', ['Has', 'Did'], 'Should', 'hid', 'had', 'she trained … could have won', '“Should” needs a base verb; “trained” + could have won → [[Had]]', 2],
+  ['Had Leo ___ to bed earlier, he would not be so sleepy now.', 'gone', ['go', 'went'], 'going', 'hid', 'had', 'Had Leo … (mixed: sleepy now)', 'Had + subject + [[past participle]] → gone', 2],
+  // ---------- Wish / If only ----------
+  ['I wish I ___ a younger brother.', 'had', ['have', 'will have'], 'had had', 'wish', 'now', 'I wish … (now — I do not have one)', '“had had” is for the past; a wish about NOW → [[had]]', 2],
+  ['Mia wishes she ___ taller.', 'were', ['is', 'will be'], 'had been', 'wish', 'now', 'wishes (now)', '“had been” is for the past; NOW → [[were]]', 2],
+  ['If only I ___ to Mum. Now I have lost my wallet.', 'had listened', ['listen', 'have listened'], 'listened', 'wish', 'past', 'If only … Now I have lost (it already happened)', 'a regret about the PAST → [[had listened]]', 2],
+  ['Leo wished he ___ the last bus.', 'had not missed', ['does not miss', 'has not missed'], 'would not miss', 'wish', 'past', 'wished … the last bus (it already left)', 'a regret about the PAST → [[had not missed]]', 2],
+  ['She wished she ___ her teacher\'s advice before the exam.', 'had followed', ['follows', 'has followed'], 'followed', 'wish', 'past', 'wished … before the exam (over)', 'a regret about the PAST → [[had followed]]', 2],
+  ['If only we ___ more time! We could finish the game now.', 'had', ['have', 'will have'], 'had had', 'wish', 'now', 'If only … now', 'about NOW → [[had]]', 2],
+  ['If only you ___ with us to the beach yesterday. It was so much fun!', 'had come', ['come', 'have come'], 'came', 'wish', 'past', 'yesterday', 'about the PAST → [[had come]]', 2],
+  ['I wish I ___ how to fix my bicycle — it is broken again.', 'knew', ['know', 'will know'], 'had known', 'wish', 'now', 'it is broken (now)', 'about NOW → [[knew]]', 2],
+  // ---------- should / must / could have ----------
+  ['You ___ me earlier. Now it is too late to help.', 'should have told', ['should tell', 'must tell'], 'should had told', 'modal', 'main', 'Now it is too late (the past is over)', 'never “should had”: should + [[have]] + past participle', 2],
+  ['The ground is wet. It ___ rained last night.', 'must have', ['must', 'should'], 'must had', 'modal', 'main', 'The ground is wet → a guess about last night', 'never “must had”: [[must have]] + past participle', 2],
+  ['Leo ___ badly hurt when he fell, but luckily he landed on the grass.', 'could have been', ['can be', 'could be'], 'could had been', 'modal', 'main', 'when he fell … but luckily (it did not happen)', 'never “could had”: [[could have]] + past participle', 2],
+  ['Mia is not at the bus stop any more. She ___ the bus.', 'must have caught', ['must catch', 'should catch'], 'must had caught', 'modal', 'main', 'not there any more → a guess about the past', '[[must have caught]] (never “must had”)', 2],
+  ['You ___ left earlier; then you would not have missed the show.', 'should have', ['will have', 'must'], 'should had', 'modal', 'main', 'would not have missed', '[[should have]] + past participle (never “should had”)', 2],
+  // ---------- Inversion ----------
+  ['Never ___ such a beautiful sunset!', 'have I seen', ['I have seen', 'I saw'], 'did I saw', 'inv', 'order', 'Never at the front', '“did I saw” is wrong (did + base verb: did I see); with the options given → [[have I seen]]', 2],
+  ['Hardly had we sat down ___ the lights went out.', 'when', ['than', 'then'], 'that', 'inv', 'pair', 'Hardly had …', '“than” belongs to No sooner; [[Hardly … when]]', 2],
+  ['No sooner had the bell rung ___ the pupils rushed out.', 'than', ['when', 'then'], 'that', 'inv', 'pair', 'No sooner had …', '“when” belongs to Hardly; [[No sooner … than]]', 2],
+  ['___ had Mia reached home when it started to pour.', 'Hardly', ['No sooner', 'Not only'], 'Never', 'inv', 'pair', '… when it started to pour', 'No sooner needs than, Not only needs but also; “when” → [[Hardly]]', 2],
+  ['Rarely ___ such heavy rain in December.', 'do we get', ['we get', 'we got'], 'did we got', 'inv', 'order', 'Rarely at the front', 'after “did” use the base verb; present habit → [[do we get]]', 2],
+  ['Little ___ that his friends were planning a surprise party.', 'did Leo know', ['Leo knew', 'Leo knows'], 'did Leo knew', 'inv', 'order', 'Little at the front', 'after “did” use the base verb → [[did Leo know]]', 2],
+  ['Not only ___ the race, but she also broke the record.', 'did Mia win', ['Mia won', 'Mia wins'], 'did Mia won', 'inv', 'order', 'Not only at the front', 'after “did” use the base verb → [[did Mia win]]', 2],
+  ['Seldom ___ late for school.', 'is Raju', ['Raju is', 'Raju was'], 'does Raju', 'inv', 'order', 'Seldom at the front', 'the helper here is [[is]] (Raju is late) → is Raju', 2],
+  ['Only after the storm ___ the damage to the roof.', 'did we notice', ['we noticed', 'we notice'], 'did we noticed', 'inv', 'order', 'Only after … at the front', 'after “did” use the base verb → [[did we notice]]', 2],
+  ['Never before ___ so nervous on stage.', 'had the singer felt', ['the singer had felt', 'the singer felt'], 'did the singer felt', 'inv', 'order', 'Never before at the front', 'after “did” use the base verb; past perfect → [[had the singer felt]]', 2],
+  ['Under no circumstances ___ leave the room during the test.', 'should you', ['you should', 'you can'], 'did you', 'inv', 'order', 'Under no circumstances at the front', 'a rule for the future, not the past → [[should you]]', 2],
+  ['Hardly ___ the house when the phone rang.', 'had I left', ['I had left', 'I left'], 'did I left', 'inv', 'order', 'Hardly … when', 'Hardly … when goes with [[had + subject + past participle]]', 2],
+  ['No sooner ___ the cake out of the oven than the twins grabbed a slice.', 'had Mum taken', ['Mum had taken', 'Mum took'], 'did Mum took', 'inv', 'order', 'No sooner … than', 'No sooner … than goes with [[had + subject + past participle]]', 2],
+  ['Not once ___ a single day of school this year.', 'has Leo missed', ['Leo has missed', 'Leo missed'], 'did Leo missed', 'inv', 'order', 'Not once at the front · this year', 'after “did” use the base verb; this year → [[has Leo missed]]', 2],
+  ['Try as she ___, Mia could not open the jar.', 'might', ['can', 'will'], 'tried', 'inv', 'word', 'Try as she …', 'the fixed phrase is [[Try as she might]] (= however hard she tried)', 2],
+  // ---------- So / Neither ----------
+  ['Mia enjoys durians and so ___ her brother.', 'does', ['is', 'has'], 'do', 'so', 'main', 'enjoys (no helper, present)', 'her brother = he → [[does]] (not do)', 1],
+  ['Leo did not finish the test, and neither ___ his friend.', 'did', ['does', 'was'], "didn't", 'so', 'main', 'did not finish', 'neither is already negative → no n\'t → [[did]]', 2],
+  ['“I have never been to Japan.” “Neither ___ I.”', 'have', ['did', 'am'], "haven't", 'so', 'main', 'have never been', 'neither is already negative → [[have]]', 2],
+  ['The twins were late, and so ___ their cousin.', 'was', ['did', 'is'], 'were', 'so', 'main', 'were late · their cousin (one person)', 'the helper matches the NEW subject: cousin → [[was]]', 2],
+];
+
+GI.IF_ITEMS = GI.IF_SPEC.map((s, i) => {
+  const [sent, ans, first, last, type, half, clue, lastWhy, level] = s;
+  const T = GI.IF_TYPES[type]; const need = T.need[half] || '';
+  const rule = `Clue: [[${clue}]] → [[${T.tag}]] || The blank needs ${need} → ${first.map(x => `~~${x}~~`).join(' ')} || ${lastWhy} → ~~${last}~~ → **${ans}**`;
+  return { id: `if:${i}`, sentence: sent, ans, opts: [ans, ...first, last], rule, level, type };
+});
+GI.catalogue.whatif = () => GI.IF_ITEMS.map(t => ({ id: t.id, level: t.level, make: () => ({ prompt: t.sentence, answer: t.ans, options: t.opts, rule: t.rule, ref: '📝 PSLE-style (new sentences)', mode: 'mcq' }) }));
+
+/* rule cards */
+GI.IF_CARDS = [
+  { emoji: '🌤️', name: 'Type 1 · It can really happen', form: 'If + present, … will + base verb', use: ['Something that may [[really happen]] in the future.', 'NEVER put “will” right after “if”.', '[[Unless]] = if … not.'], signals: ['tomorrow', 'next week', 'on Saturday', 'unless'], ex: ['If it **rains** tomorrow, we **will stay** at home.', 'Unless you hurry, you **will miss** the bus.'] },
+  { emoji: '💭', name: 'Type 2 · Imaginary NOW', form: 'If + past tense, … would / could + base verb', use: ['Something that is [[not true now]] — we are only imagining.', 'Go one step back: present → [[past]].', 'Use [[were]] for everyone: If I were, if he were.'], signals: ['If I were you', 'now', 'every day', 'imagine'], ex: ['If I **were** a bird, I **would fly** to school.', 'If Leo **were** taller, he **could reach** the shelf.'] },
+  { emoji: '⏪', name: 'Type 3 · The past that did NOT happen  ★ most tested', form: 'If + had + past participle, … would / could / might have + past participle', use: ['The past is over. We imagine it [[going differently]].', 'Look for the other half: [[had …]] ↔ [[would have …]] always go together.', 'Never “would have had gone”, never “if I would have”.'], signals: ['would have', 'could have', 'had known', 'yesterday', 'last week'], ex: ['If I **had known**, I **would have helped** you.', 'She **would not have fallen** if she **had been** careful.'] },
+  { emoji: '🔀', name: 'Mixed · Past cause → result NOW', form: 'If + had + past participle, … would + base verb + now', use: ['Something in the past changes how things are [[now]].', 'Look for [[now]] in the result.'], signals: ['now', 'so tired now', 'still'], ex: ['If I **had eaten** breakfast, I **would not be** hungry **now**.'] },
+  { emoji: '🫥', name: 'Hidden “if”', form: 'Had I known… · Should you need… · Were I…', use: ['Drop “if” and put the helper first.', '[[Had I known]] = If I had known (Type 3 → would have).', '[[Should you need]] = If you need (real future).', '[[Were I]] = If I were (Type 2).'], signals: ['Had + subject', 'Should + subject', 'Were + subject'], ex: ['**Had** we left later, we **would have missed** the bus.', '**Should** you need help, call me.'] },
+  { emoji: '🌠', name: 'Wish / If only', form: 'wish / if only + one step back in time', use: ['About NOW → [[past tense]]: I wish I had a dog; I wish I were taller.', 'About the PAST → [[had + past participle]]: If only I had listened.'], signals: ['wish', 'wished', 'If only'], ex: ['I wish I **knew** the answer.', 'She wished she **had studied** harder.'] },
+  { emoji: '😔', name: 'should have / must have / could have', form: 'should / must / could / might + have + past participle', use: ['[[should have]] = it was a good idea but you did not do it.', '[[must have]] = I am almost sure it happened.', '[[could have]] = it was possible but did not happen.', 'Never “should had”.'], signals: ['too late', 'luckily', 'the ground is wet'], ex: ['You **should have told** me.', 'It **must have rained**.'] },
+  { emoji: '🔄', name: 'Inversion · negative word first', form: 'Never / Hardly / Rarely / Little / Not only … + helper + subject', use: ['A negative word at the FRONT → [[question order]] (helper before subject).', 'No helper? Use [[do / does / did]] + base verb.', '[[Hardly had … when]] · [[No sooner had … than]].', 'Try as she [[might]] · so / neither + helper + subject.'], signals: ['Never', 'Hardly … when', 'No sooner … than', 'Rarely', 'Seldom', 'Little', 'Not only', 'Only after'], ex: ['**Never have I seen** such rain!', '**Hardly had** I sat down **when** the bell rang.', '**Little did he know** the truth.'] },
+];
+
+/* sorter: which kind of if-sentence? */
+GI.IF_SORT = [
+  ['If it is sunny tomorrow, we will go cycling.', 't1'], ['You will feel better if you drink some water.', 't1'], ['If Leo wins, he will get a medal.', 't1'], ['Unless you study, you will not pass.', 't1'], ['If you press this button, the door will open.', 't1'],
+  ['If I were a fish, I would live in the sea.', 't2'], ['If Mia had wings, she would fly to school.', 't2'], ['If I were you, I would apologise.', 't2'], ['If we lived near the beach, we would swim every day.', 't2'], ['If my dog could talk, it would tell me its secrets.', 't2'],
+  ['If I had known, I would have come.', 't3'], ['If she had run faster, she would have won.', 't3'], ['Had we left earlier, we would have caught the train.', 't3'], ['The plant would not have died if you had watered it.', 't3'], ['If Leo had studied, he could have passed.', 't3'],
+  ['I wish I were taller.', 'wish'], ['If only I had listened to Mum!', 'wish'], ['She wishes she had a puppy.', 'wish'], ['Leo wished he had not shouted.', 'wish'], ['If only it would stop raining!', 'wish'],
+];
+
+/* sentence builder: rewrite with Hardly / No sooner / Never / Had / Should / If / wish */
+Object.assign(GI.ST_CAT, {
+  inv: { emoji: '🔄', name: 'Inversion', rule: 'Negative word at the front → [[helper + subject]] (question order). || [[Hardly had … when]] · [[No sooner had … than]] · no helper → do / does / did + base verb.' },
+  hif: { emoji: '🫥', name: 'Hidden if', rule: 'Drop “if”, put the helper first: [[Had I known]] = If I had known · [[Should you need]] = If you need · [[Were I]] = If I were.' },
+  cond: { emoji: '🔮', name: 'If-sentences', rule: 'Did it happen? Past that did NOT happen → [[If + had + past participle, would have + past participle]]. Not true now → [[If + past, would + base verb]].' },
+});
+GI.IF_BUILD = [
+  ['I had just sat down when the doorbell rang.', 'Hardly', 'Hardly had I sat down when the doorbell rang.', ['Hardly I had sat down than the doorbell rang.'], 'inv'],
+  ['As soon as the bell rang, the pupils ran out.', 'No sooner', 'No sooner had the bell rung than the pupils ran out.', ['No sooner the bell rang when the pupils ran out.'], 'inv'],
+  ['I have never tasted such sweet mangoes.', 'Never', 'Never have I tasted such sweet mangoes.', ['Never did I tasted such sweet mangoes.'], 'inv'],
+  ['Leo did not know that it was a trick.', 'Little', 'Little did Leo know that it was a trick.', ['Little Leo knew that it was a trick.'], 'inv'],
+  ['We rarely see snow in Singapore.', 'Rarely', 'Rarely do we see snow in Singapore.', ['Rarely does we sees snow in Singapore.'], 'inv'],
+  ['Mia sings well and she dances well too.', 'Not only', 'Not only does Mia sing well, but she also dances well.', ['Not only Mia sings well, but she also dance well.'], 'inv'],
+  ['If I had known about the party, I would have gone.', 'Had', 'Had I known about the party, I would have gone.', ['Had I knew about the party, I would have went.'], 'hif'],
+  ['If you need help, ask the librarian.', 'Should', 'Should you need help, ask the librarian.', ['Should you needs help, ask the librarian.'], 'hif'],
+  ['If I were the captain, I would change the plan.', 'Were', 'Were I the captain, I would change the plan.', ['Was I the captain, I would change the plan.'], 'hif'],
+  ['If we had not taken a taxi, we would have been late.', 'Had', 'Had we not taken a taxi, we would have been late.', ['Had we not took a taxi, we would have be late.'], 'hif'],
+  ['Mia did not practise, so she did not win.', 'If', 'If Mia had practised, she would have won.', ['If Mia practised, she will win.'], 'cond'],
+  ['I do not have a bicycle, so I cannot cycle to school.', 'If', 'If I had a bicycle, I could cycle to school.', ['If I have a bicycle, I can cycle to school.'], 'cond'],
+  ['Leo forgot his umbrella. He regrets it now.', 'wishes', 'Leo wishes he had not forgotten his umbrella.', ['Leo wishes he did not forget his umbrella.'], 'cond'],
+  ['I am sorry that I did not study harder.', 'If only', 'If only I had studied harder.', ['If only I study harder.'], 'cond'],
+  ['Without your help, I would have failed.', 'If', 'If you had not helped me, I would have failed.', ['If you did not help me, I will have failed.'], 'cond'],
+  ['The road was icy, so the car skidded.', 'If', 'If the road had not been icy, the car would not have skidded.', ['If the road was not icy, the car will not skid.'], 'cond'],
+];
+
+GI.ISLANDS.push({ id: 'whatif', en: 'What-If Cove', name: 'If · Wish · Inversion · 虚拟语气与倒装', emoji: '🔮', ref: '📝 PSLE-style (new sentences)', blurb: 'If I had known… would have · I wish I were · Hardly had… when', stickers: ['🔮', '🌠', '🕰️', '🪄', '🌀', '🦉'] });
+
 /* Real animal recordings, embedded as data URIs.
    Sources: ESC-50 dataset (K. J. Piczak, 2015; CC BY-NC 3.0; clips originate from freesound.org contributors) for dog, rooster, pig, cow, cat, hen, insects, sheep, chirping birds;
    CC0 clips from the AgentSynth Animals pack: crow (Mish7913), owl (felix.blume), frog (kvgarlic), wolf (betchkal) via Freesound. Trimmed, normalised and compressed. */
@@ -2874,6 +3034,11 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { id: 'col-memory', island: 'colloc', name: 'Collocation Pairs', icon: '🃏', engine: 'lineMatch', desc: 'Draw lines · collocation ↔ meaning', cfg: () => ({ instr: 'Match each <b>collocation</b> with its <b>meaning</b>.', pairs: GI.COLLOC.map(c => [c[0], c[1]]), n: 8, small: true }) },
     { id: 'col-rush', island: 'colloc', name: 'Café Rush', icon: '⚡', engine: 'quickFire', desc: '60 s · meaning → collocation, both ways', cfg: () => ({ instr: 'Pick the <b>collocation</b> that matches the meaning (or the meaning that matches the collocation).', pairs: GI.COLLOC.map(c => [c[1], c[0]]), bothWays: true, nOptions: 4, target: 12 }) },
     { id: 'col-det', island: 'colloc', name: 'Collocation Detective', icon: '🔍', engine: 'detective', desc: 'Tap the collocation inside the sentence', cfg: () => ({ instr: 'Tap the <b>words of the collocation</b> in the sentence (the verb and its partner word).', n: 8, sentences: GI.COLLOC.map(c => { const words = c[2].split(' '); const parts = c[0].split(' '); const forms = GI.CVERBS[c[3]]; const t = words.map(w => w.replace(/[.,!?;:"]/g, '')).filter(w => forms.includes(w.toLowerCase()) || parts.slice(1).includes(w.toLowerCase())); return { s: c[2], t: GI.uniq(t), col: c[0], mean: c[1] }; }), why: s => `Collocation: <b>${s.col}</b> = ${s.mean}.` }) },
+    // What-If Cove (if-sentences, wish, inversion · PSLE-style, new sentences)
+    { id: 'if-rules', island: 'whatif', name: 'What-If Rule Cards', icon: '📋', engine: 'tenseGuide', desc: 'Type 1 · 2 · 3, mixed, hidden if, wish, should have, inversion', cfg: () => ({ cards: GI.IF_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 Every if-sentence asks one question: <b>did it / can it really happen?</b> Read each card and tap <b>Got it</b>.' }) },
+    { id: 'if-sorter', island: 'whatif', name: 'Real or Imaginary?', icon: '🏭', engine: 'sorter', desc: 'Drag each sentence: real future · imaginary now · past that did not happen · wish', cfg: () => ({ instr: 'Which kind of sentence is it? Look at the verbs in <b>both halves</b>, then <b>drag</b> it into the right bin.', n: 12, buckets: [{ id: 't1', label: 'Real future', emoji: '🌤️', hint: 'if + present, will' }, { id: 't2', label: 'Imaginary now', emoji: '💭', hint: 'if + past / were, would' }, { id: 't3', label: 'Past that did not happen', emoji: '⏪', hint: 'had …, would have …' }, { id: 'wish', label: 'Wish / If only', emoji: '🌠', hint: 'wish, if only' }], items: GI.IF_SORT.map(s => ({ text: s[0], bucket: s[1], rule: `<b>${esc(s[0])}</b>` })) }) },
+    { id: 'if-flip', island: 'whatif', name: 'Flip It! · Inversion', icon: '🔄', engine: 'builder', desc: 'Rewrite with Hardly / No sooner / Never / Little / Had / Should / Were', cfg: () => ({ n: 6, items: GI.IF_BUILD.filter(x => x[4] !== 'cond').map(x => ({ given: x[0], use: x[1], answer: x[2], wrongs: x[3], cat: x[4] })) }) },
+    { id: 'if-build', island: 'whatif', name: 'If Builder', icon: '🔮', engine: 'builder', desc: 'Turn real events into If… would have / If only / wish sentences', cfg: () => ({ n: 6, items: GI.IF_BUILD.filter(x => x[4] === 'cond').map(x => ({ given: x[0], use: x[1], answer: x[2], wrongs: x[3], cat: x[4] })) }) },
     // Tag Bay (question tags · PSLE-style, new sentences)
     { id: 'tag-rules', island: 'tags', name: 'Tag Rule Cards', icon: '📋', engine: 'tenseGuide', desc: '7 rules: copy & flip, do/does/did, hidden negatives, \'d & \'s, special tags…', cfg: () => ({ cards: GI.TAG_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 Question tags in 7 rules. Read each card and tap <b>Got it</b>.' }) },
     { id: 'tag-builder', island: 'tags', name: 'Tag Builder', icon: '🏗️', engine: 'tagBuilder', desc: 'Build the tag in 3 steps: helper → flip → pronoun', cfg: () => ({ n: 8, items: GI.TAG_ITEMS.filter(t => t.level === 1).sort(() => Math.random() - .5).slice(0, 3).concat(GI.TAG_ITEMS.filter(t => t.level === 2).sort(() => Math.random() - .5).slice(0, 5)) }) },
@@ -3017,25 +3182,26 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
 
   /* ---------- map ---------- */
   const MAP_SPOTS = {
-    pron:    { x: 13, y: 21, place: 'Woodlands' },
-    punct:   { x: 26, y: 7, place: 'Kranji' },
-    prov:    { x: 59, y: 20, place: 'Seletar', above: true },
-    ing:     { x: 72, y: 16, place: 'Pulau Ubin' },
-    zoo:     { x: 46, y: 44, place: 'Mandai' },
-    count:   { x: 57, y: 36, place: 'Bishan' },
-    verbs:   { x: 90, y: 8, place: 'Changi' },
-    prep:    { x: 31, y: 33, place: 'Bukit Timah' },
-    plurals: { x: 11, y: 51, place: 'Jurong' },
-    colloc:  { x: 72, y: 53, place: 'Toa Payoh' },
-    words:   { x: 29, y: 89, place: 'Clementi' },
-    sva:     { x: 59, y: 76, place: 'Marina Bay' },
-    adj:     { x: 77, y: 85, place: 'East Coast' },
-    homo:    { x: 11, y: 80, place: 'Tuas' },
-    idiom:   { x: 26, y: 61, place: 'Jurong Island' },
-    opp:     { x: 42, y: 72, place: 'Sentosa' },
-    st:      { x: 86, y: 36, place: 'Tampines' },
-    vocab:   { x: 45, y: 16, place: 'Ang Mo Kio' },
+    pron:    { x: 13, y: 9, place: 'Woodlands' },
+    punct:   { x: 26, y: 25, place: 'Kranji' },
+    prov:    { x: 57, y: 21, place: 'Seletar', above: true },
+    ing:     { x: 74, y: 9, place: 'Pulau Ubin' },
+    zoo:     { x: 37, y: 54, place: 'Mandai' },
+    count:   { x: 61, y: 37, place: 'Bishan' },
+    verbs:   { x: 91, y: 8, place: 'Changi' },
+    prep:    { x: 47, y: 25, place: 'Bukit Timah' },
+    plurals: { x: 9, y: 38, place: 'Jurong' },
+    colloc:  { x: 75, y: 41, place: 'Toa Payoh' },
+    words:   { x: 24, y: 55, place: 'Clementi' },
+    sva:     { x: 59, y: 86, place: 'Marina Bay' },
+    adj:     { x: 72, y: 70, place: 'East Coast' },
+    homo:    { x: 21, y: 83, place: 'Tuas' },
+    idiom:   { x: 11, y: 67, place: 'Jurong Island' },
+    opp:     { x: 51, y: 54, place: 'Sentosa' },
+    st:      { x: 91, y: 36, place: 'Tampines' },
+    vocab:   { x: 36, y: 9, place: 'Ang Mo Kio' },
     tags:    { x: 91, y: 67, place: 'Pasir Ris' },
+    whatif:  { x: 42, y: 82, place: 'Southern Islands' },
   };
   const COMING = [];
   const RECOMMEND = { P6: ['sva', 'tags', 'ing'], P4: ['st', 'sva', 'vocab'] };
