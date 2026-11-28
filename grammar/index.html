@@ -314,6 +314,17 @@ s{text-decoration:line-through;text-decoration-thickness:2.5px;text-decoration-c
 .tb-sent{font-size:clamp(18px,2.8vw,23px);font-weight:800;line-height:1.5;background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:10px 14px;margin-bottom:4px}
 .tb-tag{display:inline-block;min-width:4.5em;text-align:center;border-bottom:3px solid var(--sea);color:var(--sea);padding:0 6px} .tb-tag.done{background:var(--grass);color:#fff;border-radius:8px;border-bottom:none}
 .tb-neg{background:var(--berry);color:#fff}
+/* faded lower-level islands (P6 player) */
+.marker.low{opacity:.38;filter:grayscale(.6);z-index:0} .marker.low:hover{opacity:.8} .marker.low .tag{display:none}
+.marker .pin{width:42px;height:42px;font-size:21px} .marker .tag b{font-size:12px} .marker .tag small{font-size:9px} .marker .tag{padding:2px 6px;padding-top:7px}
+.isl-row.low{opacity:.45;filter:grayscale(.5)}
+.low-div{margin:18px 0 4px;font-family:var(--display);font-size:18px;color:var(--muted)} .low-div small{display:block;font-family:var(--body);font-size:12px}
+/* editing */
+u.ed-wrong{text-decoration:underline;text-decoration-thickness:3px;text-decoration-color:var(--berry);text-underline-offset:4px}
+.ed-passage{background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:12px 16px;font-size:clamp(16px,2.4vw,20px);font-weight:700;line-height:2.1}
+.ed-u{border-bottom:3px solid var(--sea);padding:0 2px;border-radius:4px} .ed-u sup{font-size:11px;color:var(--muted);margin-right:2px} .ed-u.now{background:var(--sun);color:var(--onacc)} .ed-u.ok{background:var(--grass);color:#fff;border-color:var(--grass)} .ed-u.bad{background:var(--berry);color:#fff;border-color:var(--berry)} .ed-u.bad s{opacity:.75}
+.ed-q{margin-top:12px;font-size:18px;font-weight:800;display:flex;gap:8px;align-items:center;flex-wrap:wrap} .ed-wrong-chip{text-decoration:underline;text-decoration-color:var(--berry);text-decoration-thickness:3px}
+.ed-q input{font:inherit;font-size:20px;font-weight:800;padding:8px 12px;border:2.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);min-width:0;flex:1;max-width:280px}
 /* builder */
 .b-rule-tag{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--sun);color:var(--onacc);margin-bottom:10px}
 .b-given{font-size:clamp(17px,2.6vw,21px);font-weight:800;line-height:1.5;background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:10px 14px}
@@ -869,7 +880,7 @@ GI.buildRound = (islandId, level, grade, boxes) => {
     idx = Math.min(idx, cands.length - 1);
     picked.push(cands[idx]); cands.splice(idx, 1);
   }
-  const typable = islandId === 'verbs' || islandId === 'plurals' || islandId === 'adj';
+  const typable = islandId === 'verbs' || islandId === 'plurals' || islandId === 'adj' || islandId === 'edit';
   return picked.map((it, k) => {
     let mode = 'mcq';
     if (typable && !/^(vt|po|aa):/.test(it.id)) { if (level === 2) mode = 'type'; else if (level === 3) mode = k % 2 ? 'type' : 'mcq'; }
@@ -880,7 +891,7 @@ GI.buildRound = (islandId, level, grade, boxes) => {
 /* Daily drill: 20 mixed questions — weak items first, then recommended islands, then anything */
 GI.buildDaily = (grade, boxes, rec) => {
   const upper = grade === 'P6'; const all = [];
-  for (const isl of GI.ISLANDS) for (const it of GI.catalogue[isl.id]()) if (upper || it.level === 1) all.push(Object.assign({ island: isl.id }, it));
+  for (const isl of GI.ISLANDS) { if (upper && (GI.LOW_P6 || []).includes(isl.id)) continue; for (const it of GI.catalogue[isl.id]()) if (upper || it.level === 1) all.push(Object.assign({ island: isl.id }, it)); }
   const weak = GI.shuffle(all.filter(it => boxes[it.id] && boxes[it.id].w > 0 && boxes[it.id].b < 2));
   const recd = GI.shuffle(all.filter(it => rec.includes(it.island) && !boxes[it.id]));
   const rest = GI.shuffle(all.filter(it => !boxes[it.id] || boxes[it.id].b < 2));
@@ -2443,6 +2454,259 @@ GI.IF_BUILD = [
 
 GI.ISLANDS.push({ id: 'whatif', en: 'What-If Cove', name: 'If · Wish · Inversion · 虚拟语气与倒装', emoji: '🔮', ref: '📝 PSLE-style (new sentences)', blurb: 'If I had known… would have · I wish I were · Hardly had… when', stickers: ['🔮', '🌠', '🕰️', '🪄', '🌀', '🦉'] });
 
+/* ===== Link Bridge · Connectors (despite / although / however / owing to / unless …) =====
+   Exam points from PSLE + Prelim grammar MCQs (a connector question in ~16 of 20 papers) and S&T.
+   All sentences are NEW. Two-step method: 1) what comes AFTER the blank → cross out two, 2) meaning → pick.
+   spec: [sentence, answer, [cross by grammar ×2], last wrong, what follows the blank, kind, meaning, why the last is wrong, level] */
+GI.LINK_KIND = {
+  n: 'a [[noun / -ing]] (no verb of its own) → only [[despite · in spite of · owing to · because of · due to · instead of · apart from · regardless of]] can go here',
+  cl: 'a [[clause]] (subject + verb) → only [[although · though · while · because · as · since · unless · until · so that]] can go here',
+  sent: 'a [[new sentence]] after a full stop or semicolon, with a comma → only [[however · nevertheless · moreover · therefore · otherwise · hence]] can go here',
+  mean: 'all four can join two clauses → decide by [[meaning]]',
+};
+GI.LINK_SPEC = [
+  // ---- contrast ----
+  ['___ the heavy rain, the sports day went on as planned.', 'Despite', ['Although', 'However'], 'Owing to', 'the heavy rain', 'n', 'rain, but it still went on → [[contrast]]', '“Owing to” gives a REASON, not a contrast', 2],
+  ['___ it was raining heavily, the sports day went on as planned.', 'Although', ['Despite', 'In spite of'], 'Because', 'it was raining', 'cl', 'raining, but it still went on → [[contrast]]', '“Because” gives a REASON', 2],
+  ['The sports day went on as planned. ___, all the runners were soaked.', 'However', ['Although', 'Despite'], 'Therefore', '. ___, all the runners …', 'sent', 'went on, but soaked → [[contrast]]', '“Therefore” shows a RESULT', 2],
+  ['Leo finished the race ___ having a sprained ankle.', 'in spite of', ['although', 'however'], 'because of', 'having a sprained ankle', 'n', 'hurt, but still finished → [[contrast]]', '“because of” gives a REASON', 2],
+  ['The test was very difficult. ___, most of the class passed.', 'Nevertheless', ['Although', 'Despite'], 'Moreover', '. ___, most of the class …', 'sent', 'difficult, but passed → [[contrast]]', '“Moreover” ADDS a point', 2],
+  ['___ being the youngest player, Raju scored the most goals.', 'Despite', ['Although', 'Nevertheless'], 'Because of', 'being the youngest player', 'n', 'youngest, but scored most → [[contrast]]', '“Because of” gives a REASON', 2],
+  ['Leo loves Mathematics, ___ his sister prefers Art.', 'whereas', ['despite', 'in spite of'], 'because', 'his sister prefers Art', 'cl', 'two people, two different likes → [[contrast]]', '“because” gives a REASON', 2],
+  ['___ she was exhausted, Mum stayed up to help me with my project.', 'Even though', ['Despite', 'In spite of'], 'Since', 'she was exhausted', 'cl', 'exhausted, but still helped → [[contrast]]', '“Since” gives a REASON', 2],
+  ['___ his fear of heights, Raju climbed to the top of the tower.', 'In spite of', ['Although', 'However'], 'Owing to', 'his fear of heights', 'n', 'afraid, but still climbed → [[contrast]]', '“Owing to” gives a REASON', 2],
+  ['___ Raju was afraid of heights, he climbed to the top of the tower.', 'Though', ['In spite of', 'Despite'], 'As', 'Raju was afraid', 'cl', 'afraid, but still climbed → [[contrast]]', '“As” gives a REASON here', 2],
+  ['Leo was very nervous; ___, he gave an excellent speech.', 'nonetheless', ['although', 'despite'], 'moreover', '; ___, he gave …', 'sent', 'nervous, but excellent → [[contrast]]', '“moreover” ADDS a point', 2],
+  ['Mia stayed calm ___ everyone around her was panicking.', 'while', ['despite', 'in spite of'], 'until', 'everyone around her was panicking', 'cl', 'calm vs panicking → [[contrast]]', '“until” is about TIME (up to a moment)', 2],
+  // ---- reason ----
+  ['The flight was delayed ___ the thunderstorm.', 'owing to', ['although', 'because'], 'in spite of', 'the thunderstorm', 'n', 'the storm CAUSED the delay → [[reason]]', '“in spite of” shows CONTRAST · note: because + clause, because OF + noun', 2],
+  ['The flight was delayed ___ there was a thunderstorm.', 'because', ['owing to', 'due to'], 'although', 'there was a thunderstorm', 'cl', 'the storm CAUSED the delay → [[reason]]', '“although” shows CONTRAST', 2],
+  ['___ the long queue, we decided to eat somewhere else.', 'Because of', ['Because', 'Since'], 'Despite', 'the long queue', 'n', 'the queue made us leave → [[reason]]', '“Despite” shows CONTRAST', 2],
+  ['There was a very long queue. ___, we decided to eat somewhere else.', 'Therefore', ['Because', 'Owing to'], 'However', '. ___, we decided …', 'sent', 'queue → so we left → [[result]]', '“However” shows CONTRAST', 2],
+  ['___ Leo was feeling unwell, he stayed home from school.', 'As', ['Due to', 'Owing to'], 'Unless', 'Leo was feeling unwell', 'cl', 'unwell → stayed home → [[reason]]', '“Unless” = if … not (a condition)', 2],
+  ['The match was called off ___ the bad weather.', 'due to', ['as', 'since'], 'regardless of', 'the bad weather', 'n', 'the weather caused it → [[reason]]', '“regardless of” = it does not matter', 2],
+  ['Mia did not eat the cake ___ she is allergic to nuts.', 'since', ['because of', 'owing to'], 'unless', 'she is allergic', 'cl', 'allergy → did not eat → [[reason]]', '“unless” = if … not', 2],
+  ['The concert was cancelled ___ poor ticket sales.', 'because of', ['because', 'although'], 'apart from', 'poor ticket sales', 'n', 'poor sales caused it → [[reason]]', '“apart from” = besides / except', 2],
+  // ---- condition ----
+  ['You will not get better ___ you take your medicine.', 'unless', ['despite', 'owing to'], 'because', 'you take your medicine', 'cl', 'if you do NOT take it, you will not get better → [[condition]]', '“because” gives a reason — it does not fit', 2],
+  ['___ you hurry, you will miss the school bus.', 'Unless', ['Despite', 'However'], 'Since', 'you hurry', 'cl', 'if you do NOT hurry → miss the bus → [[condition]]', '“Since you hurry, you will miss” makes no sense', 2],
+  ['You may play outside ___ you finish your homework first.', 'as long as', ['in spite of', 'regardless of'], 'unless', 'you finish your homework', 'cl', 'only IF you finish → [[condition]]', '“unless” means the opposite (if you do NOT finish)', 2],
+  ['The picnic will go ahead ___ the weather.', 'regardless of', ['although', 'unless'], 'because of', 'the weather', 'n', 'rain or shine, it does not matter → [[no matter]]', '“because of” would make the weather the reason', 2],
+  ['Bring an umbrella ___ it rains later.', 'in case', ['despite', 'owing to'], 'unless', 'it rains later', 'cl', 'be ready if it happens → [[just in case]]', '“unless it rains” means the opposite', 2],
+  ['You cannot enter the hall ___ a ticket.', 'without', ['unless', 'although'], 'despite', 'a ticket', 'n', 'no ticket → no entry → [[condition]]', '“despite a ticket” makes no sense', 2],
+  ['You cannot enter the hall ___ you have a ticket.', 'unless', ['without', 'despite'], 'although', 'you have a ticket', 'cl', 'if you do NOT have one → [[condition]]', '“although” shows CONTRAST', 2],
+  // ---- time ----
+  ['Please wait here ___ your name is called.', 'until', ['despite', 'owing to'], 'unless', 'your name is called', 'cl', 'wait up to that moment → [[time]]', '“unless” = if … not', 2],
+  ['The baby fell asleep ___ we were driving home.', 'while', ['during', 'despite'], 'until', 'we were driving home', 'cl', 'at the same time → [[time]] · note: during + noun (during the drive)', '“until” = up to the moment — it does not fit', 2],
+  ['The baby fell asleep ___ the drive home.', 'during', ['while', 'although'], 'despite', 'the drive home', 'n', 'at that time → [[time]] · while + clause, during + noun', '“despite” shows CONTRAST', 2],
+  ['___ finishing his homework, Leo went out to play.', 'After', ['Although', 'Unless'], 'Despite', 'finishing his homework', 'n', 'first homework, then play → [[time]]', '“Despite” shows CONTRAST', 2],
+  ['The shop will remain closed ___ further notice.', 'until', ['although', 'unless'], 'despite', 'further notice', 'n', 'closed up to that time → [[time]]', '“despite further notice” makes no sense', 2],
+  // ---- addition / replacement ----
+  ['The hotel was spotless. ___, the staff were very friendly.', 'Moreover', ['Although', 'In addition to'], 'However', '. ___, the staff were …', 'sent', 'two good points → [[addition]] · In addition TO needs a noun', '“However” shows CONTRAST', 2],
+  ['___ cooking dinner, Mum also baked a cake.', 'Apart from', ['Although', 'Moreover'], 'Instead of', 'cooking dinner', 'n', 'she did BOTH → [[addition]]', '“Instead of” means she did NOT cook dinner', 2],
+  ['___ playing the piano, Mia can also play the violin.', 'Besides', ['Although', 'Furthermore'], 'Instead of', 'playing the piano', 'n', 'she plays BOTH → [[addition]]', '“Instead of” means she does NOT play the piano', 2],
+  ['Leo plays football. ___, he swims twice a week.', 'In addition', ['In addition to', 'Although'], 'Instead', '. ___, he swims …', 'sent', 'two activities → [[addition]] · In addition, + sentence; In addition TO + noun', '“Instead” means he swims and does NOT play football', 2],
+  ['___ going to the cinema, we stayed home and played board games.', 'Instead of', ['Although', 'However'], 'Apart from', 'going to the cinema', 'n', 'we did NOT go → [[replacement]]', '“Apart from” would mean we did both', 2],
+  ['___ the cheers of the crowd, the runner crossed the finish line.', 'Amid', ['Although', 'Unless'], 'Instead of', 'the cheers of the crowd', 'n', 'in the middle of the cheering → [[amid]] = surrounded by', '“Instead of” makes no sense here', 2],
+  // ---- purpose / result ----
+  ['Leo saved his pocket money ___ he could buy a new game.', 'so that', ['owing to', 'despite'], 'unless', 'he could buy a new game', 'cl', 'why he saved = his aim → [[purpose]]', '“unless” = if … not', 2],
+  ['Mia revised every day. ___, she topped the class.', 'As a result', ['Because of', 'Although'], 'However', '. ___, she topped …', 'sent', 'revised → topped → [[result]]', '“However” shows CONTRAST', 2],
+  ['You must wear a helmet; ___, you may get hurt.', 'otherwise', ['unless', 'despite'], 'therefore', '; ___, you may get hurt', 'sent', 'if you do not → you may get hurt → [[otherwise]] = or else', '“therefore” would mean the helmet hurts you', 2],
+  ['The road was slippery; ___, the driver slowed down.', 'hence', ['although', 'despite'], 'nevertheless', '; ___, the driver slowed down', 'sent', 'slippery → slowed down → [[result]]', '“nevertheless” shows CONTRAST', 2],
+  // ---- level 1: meaning only ----
+  ['I was hungry, ___ I ate a sandwich.', 'so', ['although', 'unless'], 'because', 'I ate a sandwich', 'mean', 'hungry → ate → [[result]]', '“because I ate” would mean eating made me hungry', 1],
+  ['Mia stayed at home ___ she was sick.', 'because', ['although', 'unless'], 'so', 'she was sick', 'mean', 'sick → stayed home → [[reason]]', '“so she was sick” would mean staying home made her sick', 1],
+  ['Leo is small, ___ he can run very fast.', 'but', ['because', 'so'], 'or', 'he can run very fast', 'mean', 'small, yet fast → [[contrast]]', '“or” gives a choice', 1],
+  ['Wash your hands ___ you eat.', 'before', ['although', 'because'], 'unless', 'you eat', 'mean', 'wash first, then eat → [[time]]', '“unless you eat” makes no sense', 1],
+  ['We will go to the beach ___ it does not rain.', 'if', ['although', 'because'], 'unless', 'it does not rain', 'mean', 'only when there is no rain → [[condition]]', '“unless it does not rain” = only if it rains — the opposite', 1],
+  ['___ it was late, the children were still awake.', 'Although', ['Because', 'If'], 'Since', 'it was late', 'mean', 'late, yet awake → [[contrast]]', '“Since” gives a reason', 1],
+  ['I will wait for you ___ you come back.', 'until', ['although', 'because'], 'unless', 'you come back', 'mean', 'wait up to that moment → [[time]]', '“unless you come back” makes no sense', 1],
+  ['Leo finished his homework ___ he watched TV.', 'before', ['although', 'unless'], 'because', 'he watched TV', 'mean', 'homework first, then TV → [[time]]', '“because he watched TV” makes no sense', 1],
+  ['Mia likes apples, ___ she does not like pears.', 'but', ['so', 'because'], 'and', 'she does not like pears', 'mean', 'likes … does not like → [[contrast]]', '“and” joins two similar ideas', 1],
+];
+
+GI.LINK_ITEMS = GI.LINK_SPEC.map((s, i) => {
+  const [sent, ans, first, last, after, kind, meaning, lastWhy, level] = s;
+  const rule = `After the blank: [[${after}]] = ${GI.LINK_KIND[kind]} → ${first.map(x => `~~${x}~~`).join(' ')} || Meaning: ${meaning} || ${lastWhy} → ~~${last}~~ → **${ans}**`;
+  return { id: `ln:${i}`, sentence: sent, ans, opts: [ans, ...first, last], rule, level };
+});
+GI.catalogue.link = () => GI.LINK_ITEMS.map(t => ({ id: t.id, level: t.level, make: () => ({ prompt: t.sentence, answer: t.ans, options: t.opts, rule: t.rule, ref: '📝 PSLE-style (new sentences)', mode: 'mcq' }) }));
+
+GI.LINK_CARDS = [
+  { emoji: '🪜', name: 'The 2-step trick', form: 'Step 1: what comes AFTER? → cross out 2 · Step 2: meaning → pick 1', use: ['Look at the words right after the blank.', 'Noun / -ing? Clause? New sentence? → [[cross out the two that cannot fit]].', 'Then ask: contrast, reason, condition, time or addition?'], signals: ['+ noun', '+ clause', '. ___,'], ex: ['___ the rain → noun → **Despite** (not Although)', '___ it rained → clause → **Although** (not Despite)'] },
+  { emoji: '🧱', name: 'Group A · + noun / -ing', form: 'despite · in spite of · owing to · due to · because of · instead of · apart from · besides · regardless of · amid · without · during', use: ['These are followed by a [[noun]] or an [[-ing]] word — never a full clause.', 'Never “despite of” — it is [[despite]] or [[in spite of]].'], signals: ['the rain', 'his illness', 'being tired'], ex: ['**Despite** the rain, we went out.', '**Owing to** his illness, he stayed home.', '**Instead of** taking the bus, I walked.'] },
+  { emoji: '🔗', name: 'Group B · + clause', form: 'although · though · even though · while · whereas · because · as · since · unless · until · so that · as long as · in case', use: ['These are followed by a [[clause]]: subject + verb.', '[[Although]] never goes with “but” in the same sentence.', '[[Unless]] = if … not — do not add another “not”.'], signals: ['it rained', 'she was tired', 'you hurry'], ex: ['**Although** it rained, we went out.', '**Unless** you hurry, you will be late.'] },
+  { emoji: '🚦', name: 'Group C · new sentence', form: '. However, · . Nevertheless, · . Moreover, · . Therefore, · ; otherwise,', use: ['These start a [[new sentence]] (after a full stop or semicolon) and take a [[comma]].', 'They cannot join two clauses with just a comma.'], signals: ['. ___,', '; ___,'], ex: ['It rained. **However,** we went out.', 'He trained hard. **Therefore,** he won.'] },
+  { emoji: '🧭', name: 'Meaning groups', form: 'contrast · reason · condition · time · addition', use: ['Contrast: although, despite, however, nevertheless, whereas, while.', 'Reason / result: because (of), owing to, due to, since, as, therefore, hence, as a result.', 'Condition: if, unless, as long as, in case, otherwise.', 'Time: until, while, during, before, after.', 'Addition / replacement: moreover, besides, apart from, in addition (to) · instead of.'], signals: ['but → contrast', 'so → result', 'if not → unless'], ex: ['**Owing to** the rain (reason) ≠ **despite** the rain (contrast)'] },
+  { emoji: '🪤', name: 'Exam traps', form: 'the mistakes markers look for', use: ['✗ Although …, but … → use only one.', '✗ despite of → despite / in spite of.', '✗ Despite it was raining → Despite the rain / Although it was raining.', '✗ because the rain → because OF the rain.', '✗ In addition to, he swims → In addition, he swims.'], signals: ['although + but', 'despite of', 'because + noun'], ex: ['**Although** it was late, we stayed.', '**Because of** the rain, we stayed.'] },
+];
+
+GI.LINK_SORT = ['despite', 'in spite of', 'owing to', 'due to', 'because of', 'instead of', 'regardless of', 'amid', 'without', 'during'].map(w => [w, 'n'])
+  .concat(['although', 'even though', 'whereas', 'unless', 'because', 'so that', 'as long as', 'in case'].map(w => [w, 'cl']))
+  .concat(['however', 'nevertheless', 'moreover', 'furthermore', 'therefore', 'hence', 'otherwise', 'as a result'].map(w => [w, 'sent']));
+
+Object.assign(GI.ST_CAT, { link: { emoji: '🌉', name: 'Linking words', rule: 'despite / in spite of / owing to / because of / instead of / apart from + [[noun or -ing]] · although / because / unless + [[clause]] · never “Although … but”.' } });
+GI.LINK_BUILD = [
+  ['Although it was raining, we went cycling.', 'Despite', 'Despite the rain, we went cycling.', ['Despite it was raining, we went cycling.']],
+  ['Although Leo was tired, he finished the race.', 'Despite', 'Despite being tired, Leo finished the race.', ['Despite he was tired, Leo finished the race.']],
+  ['The match was postponed because it rained heavily.', 'Owing to', 'Owing to the heavy rain, the match was postponed.', ['Owing to it rained heavily, the match was postponed.']],
+  ['Mia was ill, so she did not go to school.', 'Because of', 'Because of her illness, Mia did not go to school.', ['Because of she was ill, Mia did not go to school.']],
+  ['If you do not practise, you will not improve.', 'Unless', 'Unless you practise, you will not improve.', ['Unless you do not practise, you will not improve.']],
+  ['The food was delicious. However, it was too expensive.', 'Although', 'Although the food was delicious, it was too expensive.', ['Although the food was delicious, but it was too expensive.']],
+  ['Leo did not take the bus. He walked to school.', 'Instead of', 'Instead of taking the bus, Leo walked to school.', ['Instead of took the bus, Leo walked to school.']],
+  ['Mia can sing. She can also dance.', 'Apart from', 'Apart from singing, Mia can also dance.', ['Apart from she can sing, Mia can also dance.']],
+  ['In spite of the traffic jam, we arrived on time.', 'Although', 'Although there was a traffic jam, we arrived on time.', ['Although the traffic jam, we still arrived on time.']],
+  ['The hall was noisy. Nevertheless, Raju fell asleep.', 'Despite', 'Despite the noise in the hall, Raju fell asleep.', ['Despite the hall was noisy, Raju fell asleep.']],
+];
+
+GI.ISLANDS.push({ id: 'link', en: 'Link Bridge', name: 'Connectors · 连接词', emoji: '🌉', ref: '📝 PSLE-style (new sentences)', blurb: 'despite vs although vs however · owing to · unless · instead of', stickers: ['🌉', '🔗', '🧶', '🪢', '🛤️', '⛓️'] });
+
+/* ===== Fix-It Workshop · Editing (spelling + grammar) =====
+   PSLE Paper 2 "Editing for Spelling and Grammar": each underlined word has a spelling OR a grammatical error.
+   Spelling errors are written the way the word SOUNDS (deckaide → decade); grammar errors are mostly the WRONG WORD FORM
+   (fond → fondness, curious → curiosity, joking → jokingly). All sentences and passages are NEW. */
+
+/* spelling: [sentence with {shown misspelling}, correct, [two more misspellings], how to remember] */
+GI.SPELL_SPEC = [
+  ['Grandpa has worn the same watch for over a {deckade}.', 'decade', ['decaid', 'deccade'], 'dec·ade'],
+  ['The artist drew every {feecher} of her face carefully.', 'feature', ['featur', 'feetcher'], 'fea·ture — “ea” sounds like ee'],
+  ['Despite her {reluctence}, Mia agreed to sing on stage.', 'reluctance', ['reluctants', 'relucktance'], 're·luc·tance — ends in -ance'],
+  ['Raju was {vizibly} shaken after the fall.', 'visibly', ['visably', 'visibily'], 'vis·i·bly — “vis” = see'],
+  ['We stopped to admire the {seenery} along the coast.', 'scenery', ['scenary', 'senery'], 'scen·er·y — a silent c after s'],
+  ['There was an {orkward} silence after the joke.', 'awkward', ['awkard', 'awkwerd'], 'awk·ward'],
+  ['Mia is an {acomplished} pianist.', 'accomplished', ['accomplised', 'acomplised'], 'ac·com·plished — double c'],
+  ["The children's {enthoosiasm} filled the hall.", 'enthusiasm', ['enthusiam', 'entusiasm'], 'en·thu·si·asm'],
+  ['Leo blushed at the {complimants} from his teacher.', 'compliments', ['complimints', 'complimens'], 'com·pli·ments — compliment = praise'],
+  ['The coach showed us a new swimming {tecknique}.', 'technique', ['technic', 'tecnique'], 'tech·nique — ends in -que'],
+  ['The secret ink stayed {invizible} until we shone a torch on it.', 'invisible', ['invisable', 'invisibel'], 'in·vis·i·ble — ends in -ible'],
+  ['Your kind help is greatly {apreshiated}.', 'appreciated', ['appriciated', 'apreciated'], 'ap·pre·ci·at·ed — double p'],
+  ['Hikers may {ankounter} wild boars on this trail.', 'encounter', ['incounter', 'encunter'], 'en·coun·ter'],
+  ['Camp gives us many {oportunities} to make new friends.', 'opportunities', ['oppertunities', 'opportunites'], 'op·por·tu·ni·ties — double p'],
+  ['The medicine helped to {aleviate} the pain.', 'alleviate', ['alleviat', 'allieviate'], 'al·le·vi·ate — double l'],
+  ["Aunty May's small {bissness} sells handmade bags.", 'business', ['buisness', 'busness'], 'bus·i·ness — bus + i + ness'],
+  ['That was the most {intresting} book I have read.', 'interesting', ['intristing', 'interresting'], 'in·ter·est·ing — keep the e'],
+  ['To my {suprize}, the box was empty.', 'surprise', ['surprize', 'suprise'], 'sur·prise — r after u, ends in -ise'],
+  ['The creature in the film looked very {bizzare}.', 'bizarre', ['bizare', 'bizzar'], 'bi·zarre — one z, double r'],
+  ['Is there a {paticuler} reason you are late?', 'particular', ['particuliar', 'perticular'], 'par·tic·u·lar — ends in -ar'],
+  ['It is {neccessary} to wear a mask in the clinic.', 'necessary', ['necesary', 'neccesary'], 'ne·ces·sa·ry — one c, double s'],
+  ['Leo was {embarassed} when his phone rang in class.', 'embarrassed', ['embarrased', 'embarased'], 'em·bar·rassed — double r, double s'],
+  ['I will {definately} be there on time.', 'definitely', ['definitly', 'defenitely'], 'def·i·nite·ly — it has “finite” inside'],
+  ['Please keep plastic and paper {seperate}.', 'separate', ['separete', 'seperete'], 'sep·a·rate — there is “a rat” in separate'],
+  ['The ambulance arrived {imediately}.', 'immediately', ['immediatly', 'imediatly'], 'im·me·di·ate·ly — double m, keep the e'],
+  ['Mia was {dissapointed} with her score.', 'disappointed', ['disapointed', 'dissappointed'], 'dis·ap·point·ed — one s, double p'],
+  ['We had dinner at a seafood {resturant}.', 'restaurant', ['restaraunt', 'restorant'], 'res·tau·rant — “tau” in the middle'],
+  ['The puppy was a {nuisence}, chewing every shoe in sight.', 'nuisance', ['nusance', 'nuisanse'], 'nui·sance — ends in -ance'],
+  ['Leo crossed the old wooden bridge {cawshusly}.', 'cautiously', ['causiously', 'cautiosly'], 'cau·tious·ly'],
+  ['Mum was {ankshus} when I came home late.', 'anxious', ['anxous', 'anxius'], 'anx·ious — x, then -ious'],
+  ['The blue whale is {enormus}.', 'enormous', ['enormouse', 'enourmous'], 'e·nor·mous'],
+  ['We visited an {ainshent} temple in Cambodia.', 'ancient', ['anceint', 'anciant'], 'an·cient — c·i·e·n·t'],
+  ["The {mischeevious} boy hid his sister's doll.", 'mischievous', ['mischievious', 'mischevous'], 'mis·chie·vous — NO i before -ous'],
+  ['Grandpa {ocasionally} visits us on weekends.', 'occasionally', ['occassionally', 'ocassionally'], 'oc·ca·sion·al·ly — double c, one s'],
+  ['The dancers moved to the {rithm} of the drums.', 'rhythm', ['rythym', 'rhythem'], 'r·h·y·t·h·m — “rhythm helps your two hips move”'],
+  ['Please check the {skedule} for the bus timings.', 'schedule', ['shedule', 'scedule'], 'sched·ule — starts with sch'],
+  ['The {temprature} dropped sharply at night.', 'temperature', ['tempreture', 'temperture'], 'tem·per·a·ture'],
+  ['We must all protect the {enviroment}.', 'environment', ['enviornment', 'envirement'], 'en·vi·ron·ment — “iron” is inside'],
+  ['I {recieved} a postcard from my pen pal.', 'received', ['receeved', 'recived'], 'i before e, except after c → re·ceived'],
+  ['Mia felt {exillerated} after the roller-coaster ride.', 'exhilarated', ['exilarated', 'exhilerated'], 'ex·hil·a·rat·ed — a silent h'],
+  ['His {curiousity} got him into trouble.', 'curiosity', ['curiousty', 'curiosty'], 'cu·ri·os·i·ty — curious drops its u'],
+  ['Leo had a guilty {consience} after telling the lie.', 'conscience', ['consience', 'conscence'], 'con·science — “science” is inside'],
+  ['The {acident} happened at a busy junction.', 'accident', ['accidant', 'acsident'], 'ac·ci·dent — double c'],
+  ['The singer received a {tremendus} round of applause.', 'tremendous', ['tremendious', 'tremendouse'], 'tre·men·dous — no i before -ous'],
+];
+
+/* word form + other grammar: [sentence with {wrong word}, correct, [two more wrong forms], why] */
+GI.FORM_SPEC = [
+  ['I remember with great {fond} the trips to my grandmother\'s kampung.', 'fondness', ['fondly', 'fonder'], 'after “great” we need a [[noun]] → fond (adj) → fondness'],
+  ['Her {curious} about the locked box grew every day.', 'curiosity', ['curiously', 'curiouser'], '“Her ___” needs a [[noun]] → curious (adj) → curiosity'],
+  ['Dad said {joking} that the car was older than him.', 'jokingly', ['joked', 'joker'], 'it tells us HOW Dad said it → [[adverb]] (-ly) → jokingly'],
+  ['Mia was {delight} with her new bicycle.', 'delighted', ['delightful', 'delighting'], 'how she FELT → [[-ed adjective]] → delighted'],
+  ['The nurse gave the boy her {reassured} that the injection would not hurt.', 'reassurance', ['reassuring', 'reassure'], '“her ___” needs a [[noun]] → reassurance'],
+  ['With every {describe}, the story became more exciting.', 'description', ['described', 'descriptive'], '“every ___” needs a [[noun]] → describe → description'],
+  ['People say that his paintings are very {artist}.', 'artistic', ['artistically', 'artistry'], '“are very ___” needs an [[adjective]] → artistic'],
+  ['The photos were out of focus and looked {blur}.', 'blurry', ['blurred', 'blurring'], '“looked ___” needs an [[adjective]] → blur → blurry'],
+  ['I ended up {delete} most of the files.', 'deleting', ['deleted', 'deletion'], 'after “ended up” use [[-ing]] → deleting'],
+  ['If {give} the chance, I would love to visit Japan.', 'given', ['gave', 'giving'], '“If (I am) ___ the chance” → [[past participle]] → given'],
+  ['Singapore has an {age} population.', 'ageing', ['aged', 'ages'], 'a population that is getting older → [[-ing adjective]] → ageing'],
+  ['The small island {rely} on tourism.', 'relies', ['relied', 'relying'], 'the island (it) + present → [[relies]] (y → ies)'],
+  ['Back then, I did not find the prank {humour} at all.', 'humorous', ['humourless', 'humours'], '“find it ___” needs an [[adjective]] → humorous'],
+  ['She has the {able} to speak four languages.', 'ability', ['ably', 'enable'], '“the ___ to …” needs a [[noun]] → ability'],
+  ['The {silent} in the hall was broken by a loud sneeze.', 'silence', ['silently', 'silenced'], '“The ___” needs a [[noun]] → silence'],
+  ['Leo answered the question {confident}.', 'confidently', ['confidence', 'confided'], 'HOW he answered → [[adverb]] → confidently'],
+  ['We were amazed by the {beautiful} of the sunset.', 'beauty', ['beautifully', 'beautify'], '“the ___ of” needs a [[noun]] → beauty'],
+  ['Leo felt {embarrass} when he tripped on stage.', 'embarrassed', ['embarrassing', 'embarrassment'], 'how he FELT → [[-ed]] → embarrassed'],
+  ['The talk was so {bore} that some of us fell asleep.', 'boring', ['bored', 'boredom'], 'the talk CAUSED the feeling → [[-ing]] → boring'],
+  ['Mia showed great {brave} when she rescued the kitten.', 'bravery', ['bravely', 'braver'], '“great ___” needs a [[noun]] → bravery'],
+  ['The {decide} to cancel the trip upset everyone.', 'decision', ['decisive', 'decided'], '“The ___ to” needs a [[noun]] → decision'],
+  ['The children waited {patient} for their turn.', 'patiently', ['patience', 'patients'], 'HOW they waited → [[adverb]] → patiently'],
+  ['The doctor\'s {advise} was to rest for a week.', 'advice', ['advised', 'adviser'], 'the doctor\'s ___ needs a [[noun]] → advice (advise is the verb)'],
+  ['Our team celebrated its {succeed} with a party.', 'success', ['successful', 'successfully'], '“its ___” needs a [[noun]] → success'],
+  ['The firefighters were praised for their {courageous}.', 'courage', ['courageously', 'encourage'], '“their ___” needs a [[noun]] → courage'],
+  ['The teacher\'s {explain} was very clear.', 'explanation', ['explained', 'explaining'], '“The teacher\'s ___” needs a [[noun]] → explanation'],
+  ['Grandpa climbed the stairs {slow}.', 'slowly', ['slowness', 'slower'], 'HOW he climbed → [[adverb]] → slowly'],
+  ['The {arrive} of the new baby made everyone happy.', 'arrival', ['arriving', 'arrived'], '“The ___ of” needs a [[noun]] → arrival'],
+  ['Leo was full of {excite} before the trip.', 'excitement', ['excited', 'exciting'], '“full of ___” needs a [[noun]] → excitement'],
+  ['The {strong} of the wind knocked down a tree.', 'strength', ['strongly', 'strengthen'], '“The ___ of” needs a [[noun]] → strength'],
+  ['Swimming in the river can be very {danger}.', 'dangerous', ['dangerously', 'endanger'], '“be very ___” needs an [[adjective]] → dangerous'],
+  ['Mia was {disappoint} with the result.', 'disappointed', ['disappointing', 'disappointment'], 'how she FELT → [[-ed]] → disappointed'],
+  ['It is {possibly} that it will rain later.', 'possible', ['possibility', 'possibilities'], '“It is ___ that” needs an [[adjective]] → possible'],
+  ['The children were {terrify} of the thunder.', 'terrified', ['terrifying', 'terror'], 'how they FELT → [[-ed]] → terrified'],
+  ['We must not waste {electric}.', 'electricity', ['electrical', 'electrically'], '“waste ___” needs a [[noun]] → electricity'],
+  // other grammar errors that appear in Editing
+  ['Durian is one of my favourite {fruit}.', 'fruits', ['fruity', 'fruiting'], '“one of my favourite ___” → [[plural]] noun'],
+  ['The lives of the workers {was} not easy.', 'were', ['is', 'has'], 'the subject is [[lives]] (plural) → were'],
+  ['After a long illness, the old dog passed {over} peacefully.', 'away', ['out', 'off'], 'the phrasal verb is [[pass away]] (= die)'],
+  ['Leo took a big bite {on} the cookie.', 'of', ['in', 'at'], 'a bite [[of]] something'],
+  ['It is compulsory {to} pupils to wear their name tags.', 'for', ['by', 'with'], 'compulsory [[for]] someone (to do something)'],
+  ['Yesterday I found a stone that {looks} exactly like an egg.', 'looked', ['looking', 'look'], 'a story in the past → [[past tense]] → looked'],
+  ['Every one of the pupils {have} handed in the form.', 'has', ['having', 'had been'], 'every one = [[one]] → singular → has'],
+];
+
+GI.EDIT_ITEMS = [];
+GI.SPELL_SPEC.forEach((s, i) => {
+  const [sent, right, more, tip] = s; const shown = (sent.match(/\{(.+?)\}/) || [])[1];
+  const prompt = sent.replace(/\{(.+?)\}/, '<u class="ed-wrong">$1</u>');
+  const opts = GI.uniq([right, shown, ...more]).slice(0, 4);
+  GI.EDIT_ITEMS.push({ id: `sp:${right}`, level: 1, kind: 'spell', prompt, plain: sent.replace(/[{}]/g, ''), shown, right, opts, rule: `Spelling error — sound it out: [[${tip}]] → ${opts.filter(o => o !== right).map(o => `~~${o}~~`).join(' ')} → **${right}**` });
+});
+GI.FORM_SPEC.forEach((s, i) => {
+  const [sent, right, more, why] = s; const shown = (sent.match(/\{(.+?)\}/) || [])[1];
+  const prompt = sent.replace(/\{(.+?)\}/, '<u class="ed-wrong">$1</u>');
+  const opts = GI.uniq([right, shown, ...more]).slice(0, 4);
+  GI.EDIT_ITEMS.push({ id: `wf:${i}`, level: 2, kind: 'form', prompt, plain: sent.replace(/[{}]/g, ''), shown, right, opts, rule: `Grammar error — look at the words around it: ${why} || ${opts.filter(o => o !== right).map(o => `~~${o}~~`).join(' ')} → **${right}**` });
+});
+GI.catalogue.edit = () => GI.EDIT_ITEMS.map(t => ({ id: t.id, level: t.level, make: mode => ({ prompt: t.prompt, sub: mode === 'type' ? `${t.kind === 'spell' ? 'Spelling' : 'Grammar'} · type the correct word` : `${t.kind === 'spell' ? 'Spelling' : 'Grammar'} · which word should replace the underlined one?`, answer: t.right, options: t.opts, rule: t.rule, ref: '📝 PSLE-style Editing (new sentences)', mode }) }));
+
+/* PSLE-style passages: {wrong|right|s or g|why} */
+GI.EDIT_PASSAGES = [
+  { title: 'A Trip to Penang', text: 'Last June, my family went on a {vaicaition|vacation|s|va·ca·tion} to Penang. I was full of {excite|excitement|g|“full of ___” needs a noun → excitement} because it was my first time on a plane. The view from the window was {incredibel|incredible|s|in·cred·i·ble — ends in -ible}. My little brother, however, was so {bore|bored|g|how he FELT → -ed → bored} that he fell asleep. When we landed, Dad said {joking|jokingly|g|HOW Dad said it → adverb → jokingly} that my brother had slept through the best part.' },
+  { title: 'Curry Puff Day', text: 'Mum is famous among our neighbours for her {dellicious|delicious|s|de·li·cious — one l, ends in -cious} curry puffs. Last Sunday, she let me help her in the kitchen. I watched {careful|carefully|g|HOW I watched → adverb → carefully} as she folded the pastry. My first few puffs looked rather {orkward|awkward|s|awk·ward}, but Mum praised my {patient|patience|g|“my ___” needs a noun → patience}. By evening, we had made fifty puffs, and one of them {were|was|g|one of them → the subject is one → was} shaped like a heart.' },
+  { title: 'The Final', text: 'Our school team had trained for months for the {anual|annual|s|an·nu·al — double n} football tournament. In the final, we were losing by one goal. Despite his {tired|tiredness|g|“his ___” after despite needs a noun → tiredness}, our captain refused to give up. With only a minute left, he scored a {spectaculer|spectacular|s|spec·tac·u·lar — ends in -ar} goal. The crowd cheered so {loud|loudly|g|HOW they cheered → adverb → loudly} that I could not hear myself think.' },
+  { title: 'At the Science Centre', text: 'During the holidays, I visited the Science Centre with my cousins. We were {fasinated|fascinated|s|fas·ci·nat·ed — sc} by an exhibit on the human body. I learnt that the heart {pump|pumps|g|the heart (it) → pumps} blood to every part of the body. My cousin, who is very {curiosity|curious|g|“is very ___” needs an adjective → curious}, asked the guide many questions. The guide answered each one {pashently|patiently|s|pa·tient·ly}.' },
+  { title: 'Grandma the Volunteer', text: 'Every Saturday, my grandmother volunteers at a {comunity|community|s|com·mu·ni·ty — double m} centre. She cooks for elderly residents who {lives|live|g|residents (they) → live} alone. She says that the {happy|happiness|g|“the ___ on their faces” needs a noun → happiness} on their faces makes her day. I hope to follow her {exampel|example|s|ex·am·ple — ends in -le} when I grow up, as she has taught me the {important|importance|g|“the ___ of kindness” needs a noun → importance} of kindness.' },
+  { title: 'The Storm', text: 'As the thunder rumbled, Leo hid under his blanket. He had always been {terrify|terrified|g|how he FELT → -ed → terrified} of storms. Suddenly, the lights went out and the room became {compleetly|completely|s|com·plete·ly — keep the e} dark. He heard a {mysteryous|mysterious|s|mys·te·ri·ous} knock at the door. {Nervous|Nervously|g|HOW he opened it → adverb → Nervously}, he opened it. It was only his sister, who had come to {comfert|comfort|s|com·fort — ends in -fort} him.' },
+];
+
+/* word family sorter: noun / adjective / adverb / verb */
+GI.FORM_SORT = [
+  ['curiosity', 'n'], ['curious', 'adj'], ['curiously', 'adv'], ['decision', 'n'], ['decide', 'v'], ['decisive', 'adj'],
+  ['excitement', 'n'], ['excite', 'v'], ['patience', 'n'], ['patiently', 'adv'], ['reassurance', 'n'], ['reassure', 'v'],
+  ['artistic', 'adj'], ['description', 'n'], ['describe', 'v'], ['jokingly', 'adv'], ['dangerous', 'adj'], ['strength', 'n'],
+  ['strengthen', 'v'], ['bravery', 'n'], ['bravely', 'adv'], ['humorous', 'adj'], ['ability', 'n'], ['enable', 'v'],
+  ['confidently', 'adv'], ['confident', 'adj'], ['explanation', 'n'], ['explain', 'v'], ['silence', 'n'], ['silently', 'adv'],
+];
+GI.FORM_CARDS = [
+  { emoji: '🔎', name: 'How Editing works', form: 'each underlined word = ONE spelling OR ONE grammar error', use: ['First ask: is the word spelt the way it SOUNDS? (deckaide, feecher) → a [[spelling]] error — write the real spelling.', 'If the spelling is fine, it is a [[grammar]] error — usually the wrong [[word form]], tense or plural.', 'Read the words just before and after the underlined word.'], signals: ['sounds right, looks wrong → spelling', 'real word, wrong job → grammar'], ex: ['a <u>deckaide</u> → **decade** (spelling)', 'great <u>fond</u> → **fondness** (grammar)'] },
+  { emoji: '🏷️', name: 'Which job does the word do?', form: 'noun · adjective · adverb · verb', use: ['After a / the / his / great / full of → [[noun]].', 'After is / was / very / looked / felt → [[adjective]].', 'Tells HOW something is done → [[adverb]] (-ly).', 'After ended up / enjoy / despite → [[-ing]].'], signals: ['the ___ of', 'very ___', 'said ___', 'ended up ___'], ex: ['the **beauty** of', 'very **dangerous**', 'said **jokingly**', 'ended up **deleting**'] },
+  { emoji: '🧩', name: 'Noun endings', form: '-ness · -ity · -tion · -sion · -ment · -ance · -ence · -ty · -al', use: ['fond → fondness · curious → curiosity · describe → description', 'decide → decision · excite → excitement · reassure → reassurance', 'patient → patience · brave → bravery · arrive → arrival · strong → strength'], signals: ['-ness', '-ity', '-tion', '-ment', '-ance'], ex: ['full of **excitement**', 'her **curiosity**'] },
+  { emoji: '🎨', name: 'Adjective & adverb endings', form: 'adj: -ful · -ous · -ic · -y · -ive · -able  ·  adv: -ly', use: ['artist → artistic · humour → humorous · blur → blurry · danger → dangerous', 'joking → jokingly · patient → patiently · slow → slowly', 'Feelings: [[-ed]] = how I feel (bored); [[-ing]] = what causes it (boring).'], signals: ['-ic', '-ous', '-y', '-ly', '-ed / -ing'], ex: ['I was **bored**; the talk was **boring**.'] },
+  { emoji: '🔤', name: 'Spelling traps', form: 'sound it out, syllable by syllable', use: ['Double letters: a·cc·omplished, a·pp·reciated, e·mba·rr·a·ss·ed, ne·c·e·ss·ary.', 'Silent letters: s(c)enery, ex(h)ilarated, r(h)ythm, (w)rist.', 'Word inside a word: con·SCIENCE, sep·A RAT·e, envIRONment, deFINITEly.', 'i before e except after c: receive, ceiling.'], signals: ['double letter?', 'silent letter?', 'word inside?'], ex: ['**separate**', '**conscience**', '**received**'] },
+];
+
+GI.ISLANDS.push({ id: 'edit', en: 'Fix-It Workshop', name: 'Editing · 改错（拼写 + 词形）', emoji: '🛠️', ref: '📝 PSLE-style Editing (new sentences)', blurb: 'deckaide → decade · great fond → fondness · said joking → jokingly', stickers: ['🛠️', '🔧', '🪛', '✏️', '🧰', '📐'] });
+
+/* For the P6 player: lower-level (P3–P4) islands are shown faded, listed last and left out of her Daily Drill */
+GI.LOW_P6 = ['st', 'vocab', 'zoo', 'words', 'opp', 'homo', 'punct', 'plurals', 'adj', 'prov', 'colloc'];
+
 /* Real animal recordings, embedded as data URIs.
    Sources: ESC-50 dataset (K. J. Piczak, 2015; CC BY-NC 3.0; clips originate from freesound.org contributors) for dog, rooster, pig, cow, cat, hen, insects, sheep, chirping birds;
    CC0 clips from the AgentSynth Animals pack: crow (Mish7913), owl (felix.blume), frog (kvgarlic), wolf (betchkal) via Freesound. Trimmed, normalised and compressed. */
@@ -2865,6 +3129,47 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     next();
   };
 
+
+  /* ================= 13. EDITING PAPER (PSLE-style passage: fix each underlined word by typing) ================= */
+  G.editPassage = (area, cfg, api) => {
+    const ps = shuffle(cfg.passages).slice(0, cfg.n || 2); let pi = 0, correct = 0, total = 0, done = 0;
+    const RE = /\{([^|}]+)\|([^|}]+)\|([sg])\|([^}]*)\}/g;
+    const grand = ps.reduce((a, P) => a + (P.text.match(RE) || []).length, 0);
+    const mk = s => esc(s).replace(/\[\[(.+?)\]\]/g, '<mark>$1</mark>');
+    const startP = () => {
+      if (pi >= ps.length) return api.finish({ correct, total });
+      const P = ps[pi]; const errs = [];
+      let html = esc(P.text.replace(RE, (m, w, r, t, why) => { errs.push({ w, r, t, why }); return `@@${errs.length - 1}@@`; }));
+      html = html.replace(/@@(\d+)@@/g, (m, k) => `<span class="ed-u" data-i="${k}"><sup>${+k + 1}</sup><span class="ed-w">${esc(errs[k].w)}</span></span>`);
+      area.innerHTML = `<div class="g-instr">✏️ <b>${esc(P.title)}</b> — each underlined word has <b>one spelling or grammar error</b>. Type the correct word.</div><div class="ed-passage">${html}</div><div class="ed-q" id="ed-q"></div><div id="ed-rule"></div><div class="g-actions" id="ed-actions"></div>`;
+      let k = 0;
+      const ask = () => {
+        api.progress(done, grand);
+        area.querySelectorAll('.ed-u').forEach(s => s.classList.toggle('now', +s.dataset.i === k));
+        const e = errs[k]; $('#ed-rule', area).innerHTML = '';
+        $('#ed-q', area).innerHTML = `<b>${k + 1}.</b> <span class="ed-wrong-chip">${esc(e.w)}</span> → <input id="ed-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="correct word">`;
+        const act = $('#ed-actions', area); act.innerHTML = '';
+        const hint = el('button', 'btn', '💡 Spelling or grammar?'); hint.type = 'button'; hint.onclick = () => { hint.textContent = e.t === 's' ? '🔤 It is a SPELLING error' : '🧩 It is a GRAMMAR error (word form / tense / plural)'; hint.disabled = true; };
+        const chk = el('button', 'btn primary', 'Check'); chk.type = 'button';
+        const inp = $('#ed-in', area); setTimeout(() => { try { inp.focus(); } catch (x) {} }, 50);
+        const check = () => {
+          const v = inp.value.trim(); if (!v) return;
+          const ok = v.toLowerCase().replace(/[.,!?]$/, '') === e.r.toLowerCase(); total++; done++;
+          if (ok) { correct++; api.good(); } else { api.bad(); api.miss && api.miss(`${P.title}: ${e.w}`, v, e.r); }
+          inp.disabled = true; const span = area.querySelector(`.ed-u[data-i="${k}"]`); span.classList.remove('now'); span.classList.add(ok ? 'ok' : 'bad');
+          span.querySelector('.ed-w').innerHTML = ok ? esc(e.r) : `<s>${esc(e.w)}</s> ${esc(e.r)}`;
+          flashRule($('#ed-rule', area), `${ok ? '✓ ' : `✗ The answer is <b>${esc(e.r)}</b>. `}<span class="fc-lab">${e.t === 's' ? 'Spelling' : 'Grammar'}</span> ${mk(e.why)}`, ok);
+          act.innerHTML = ''; const nx = el('button', 'btn primary', k + 1 < errs.length ? 'Next word →' : (pi + 1 < ps.length ? 'Next passage →' : 'Finish →')); nx.type = 'button';
+          nx.onclick = () => { if (k + 1 < errs.length) { k++; ask(); } else { pi++; startP(); } }; act.appendChild(nx);
+        };
+        chk.onclick = check; inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') check(); });
+        act.appendChild(hint); act.appendChild(chk);
+      };
+      ask();
+    };
+    startP();
+  };
+
   /* ================= DATA for the games ================= */
 
   G.HERD_CHANT = [
@@ -3034,6 +3339,14 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { id: 'col-memory', island: 'colloc', name: 'Collocation Pairs', icon: '🃏', engine: 'lineMatch', desc: 'Draw lines · collocation ↔ meaning', cfg: () => ({ instr: 'Match each <b>collocation</b> with its <b>meaning</b>.', pairs: GI.COLLOC.map(c => [c[0], c[1]]), n: 8, small: true }) },
     { id: 'col-rush', island: 'colloc', name: 'Café Rush', icon: '⚡', engine: 'quickFire', desc: '60 s · meaning → collocation, both ways', cfg: () => ({ instr: 'Pick the <b>collocation</b> that matches the meaning (or the meaning that matches the collocation).', pairs: GI.COLLOC.map(c => [c[1], c[0]]), bothWays: true, nOptions: 4, target: 12 }) },
     { id: 'col-det', island: 'colloc', name: 'Collocation Detective', icon: '🔍', engine: 'detective', desc: 'Tap the collocation inside the sentence', cfg: () => ({ instr: 'Tap the <b>words of the collocation</b> in the sentence (the verb and its partner word).', n: 8, sentences: GI.COLLOC.map(c => { const words = c[2].split(' '); const parts = c[0].split(' '); const forms = GI.CVERBS[c[3]]; const t = words.map(w => w.replace(/[.,!?;:"]/g, '')).filter(w => forms.includes(w.toLowerCase()) || parts.slice(1).includes(w.toLowerCase())); return { s: c[2], t: GI.uniq(t), col: c[0], mean: c[1] }; }), why: s => `Collocation: <b>${s.col}</b> = ${s.mean}.` }) },
+    // Link Bridge (connectors · PSLE-style, new sentences)
+    { id: 'link-rules', island: 'link', name: 'Link Rule Cards', icon: '📋', engine: 'tenseGuide', desc: 'The 2-step trick · + noun / + clause / new sentence · exam traps', cfg: () => ({ cards: GI.LINK_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 Connectors are easy once you look at what comes <b>after</b> the blank. Read each card and tap <b>Got it</b>.' }) },
+    { id: 'link-sorter', island: 'link', name: 'What Comes After?', icon: '🏭', engine: 'sorter', desc: 'Drag each linking word: + noun / -ing · + clause · new sentence', cfg: () => ({ instr: 'What can follow this word? <b>Drag</b> it into the right bin.', n: 14, buckets: [{ id: 'n', label: '+ noun / -ing', emoji: '🧱', hint: 'despite the rain' }, { id: 'cl', label: '+ clause', emoji: '🔗', hint: 'although it rained' }, { id: 'sent', label: '. ___, new sentence', emoji: '🚦', hint: '. However, …' }], items: GI.LINK_SORT.map(s => ({ text: s[0], bucket: s[1], rule: `<b>${esc(s[0])}</b>` })) }) },
+    { id: 'link-build', island: 'link', name: 'Swap It!', icon: '🔁', engine: 'builder', desc: 'Although → Despite · because → Owing to · If not → Unless (S&T)', cfg: () => ({ n: 6, items: GI.LINK_BUILD.map(x => ({ given: x[0], use: x[1], answer: x[2], wrongs: x[3], cat: 'link' })) }) },
+    // Fix-It Workshop (Editing · PSLE-style, new sentences)
+    { id: 'edit-rules', island: 'edit', name: 'Editing Rule Cards', icon: '📋', engine: 'tenseGuide', desc: 'Spelling or grammar? · which job does the word do? · word endings', cfg: () => ({ cards: GI.FORM_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 How to attack the Editing section. Read each card and tap <b>Got it</b>.' }) },
+    { id: 'edit-paper', island: 'edit', name: 'Editing Paper', icon: '📝', engine: 'editPassage', desc: 'Exam-style passages: type the correct word for each underlined one', cfg: () => ({ n: 2, passages: GI.EDIT_PASSAGES }) },
+    { id: 'form-sorter', island: 'edit', name: 'Word Job Sorter', icon: '🏭', engine: 'sorter', desc: 'Noun, adjective, adverb or verb? Spot it from the ending', cfg: () => ({ instr: 'What kind of word is it? Look at the <b>ending</b>, then <b>drag</b> it into the right bin.', n: 14, buckets: [{ id: 'n', label: 'Noun', emoji: '📦', hint: '-ness -ity -tion -ment -ance' }, { id: 'adj', label: 'Adjective', emoji: '🎨', hint: '-ous -ful -ic -ive -y' }, { id: 'adv', label: 'Adverb', emoji: '🏃', hint: '-ly' }, { id: 'v', label: 'Verb', emoji: '⚙️', hint: 'decide, explain, -en' }], items: GI.FORM_SORT.map(s => ({ text: s[0], bucket: s[1], rule: `<b>${esc(s[0])}</b>` })) }) },
     // What-If Cove (if-sentences, wish, inversion · PSLE-style, new sentences)
     { id: 'if-rules', island: 'whatif', name: 'What-If Rule Cards', icon: '📋', engine: 'tenseGuide', desc: 'Type 1 · 2 · 3, mixed, hidden if, wish, should have, inversion', cfg: () => ({ cards: GI.IF_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 Every if-sentence asks one question: <b>did it / can it really happen?</b> Read each card and tap <b>Got it</b>.' }) },
     { id: 'if-sorter', island: 'whatif', name: 'Real or Imaginary?', icon: '🏭', engine: 'sorter', desc: 'Drag each sentence: real future · imaginary now · past that did not happen · wish', cfg: () => ({ instr: 'Which kind of sentence is it? Look at the verbs in <b>both halves</b>, then <b>drag</b> it into the right bin.', n: 12, buckets: [{ id: 't1', label: 'Real future', emoji: '🌤️', hint: 'if + present, will' }, { id: 't2', label: 'Imaginary now', emoji: '💭', hint: 'if + past / were, would' }, { id: 't3', label: 'Past that did not happen', emoji: '⏪', hint: 'had …, would have …' }, { id: 'wish', label: 'Wish / If only', emoji: '🌠', hint: 'wish, if only' }], items: GI.IF_SORT.map(s => ({ text: s[0], bucket: s[1], rule: `<b>${esc(s[0])}</b>` })) }) },
@@ -3182,26 +3495,28 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
 
   /* ---------- map ---------- */
   const MAP_SPOTS = {
-    pron:    { x: 13, y: 9, place: 'Woodlands' },
-    punct:   { x: 26, y: 25, place: 'Kranji' },
-    prov:    { x: 57, y: 21, place: 'Seletar', above: true },
-    ing:     { x: 74, y: 9, place: 'Pulau Ubin' },
-    zoo:     { x: 37, y: 54, place: 'Mandai' },
-    count:   { x: 61, y: 37, place: 'Bishan' },
+    pron:    { x: 12, y: 9, place: 'Woodlands' },
+    punct:   { x: 23, y: 26, place: 'Kranji' },
+    prov:    { x: 56, y: 17, place: 'Seletar', above: true },
+    ing:     { x: 76, y: 9, place: 'Pulau Ubin' },
+    zoo:     { x: 22, y: 52, place: 'Mandai' },
+    count:   { x: 75, y: 63, place: 'Bishan' },
     verbs:   { x: 91, y: 8, place: 'Changi' },
-    prep:    { x: 47, y: 25, place: 'Bukit Timah' },
-    plurals: { x: 9, y: 38, place: 'Jurong' },
-    colloc:  { x: 75, y: 41, place: 'Toa Payoh' },
-    words:   { x: 24, y: 55, place: 'Clementi' },
-    sva:     { x: 59, y: 86, place: 'Marina Bay' },
-    adj:     { x: 72, y: 70, place: 'East Coast' },
+    prep:    { x: 63, y: 23, place: 'Bukit Timah' },
+    plurals: { x: 8, y: 38, place: 'Jurong' },
+    colloc:  { x: 74, y: 38, place: 'Toa Payoh' },
+    words:   { x: 31, y: 67, place: 'Clementi' },
+    sva:     { x: 63, y: 79, place: 'Marina Bay' },
+    adj:     { x: 62, y: 54, place: 'East Coast' },
     homo:    { x: 21, y: 83, place: 'Tuas' },
     idiom:   { x: 11, y: 67, place: 'Jurong Island' },
-    opp:     { x: 51, y: 54, place: 'Sentosa' },
-    st:      { x: 91, y: 36, place: 'Tampines' },
-    vocab:   { x: 36, y: 9, place: 'Ang Mo Kio' },
+    opp:     { x: 35, y: 42, place: 'Sentosa' },
+    st:      { x: 92, y: 36, place: 'Tampines' },
+    vocab:   { x: 36, y: 7, place: 'Ang Mo Kio' },
     tags:    { x: 91, y: 67, place: 'Pasir Ris' },
-    whatif:  { x: 42, y: 82, place: 'Southern Islands' },
+    whatif:  { x: 46, y: 57, place: 'Southern Islands' },
+    link:    { x: 49, y: 32, place: 'Novena' },
+    edit:    { x: 46, y: 83, place: 'Orchard' },
   };
   const COMING = [];
   const RECOMMEND = { P6: ['sva', 'tags', 'ing'], P4: ['st', 'sva', 'vocab'] };
@@ -3231,21 +3546,24 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     const dq = $('#daily-quest'); const r = p.daily.date === todayStr() ? p.daily.rounds : 0;
     dq.innerHTML = `<span class="dq-title">Daily quest</span> Play 2 rounds (games or drills) <span class="dq-dots">${[0, 1].map(i => `<i class="${i < r ? 'on' : ''}"></i>`).join('')}</span> ${r >= 2 ? '<b class="done">✓ +30 🪙 claimed</b>' : '<b>+30 🪙</b>'}`;
     const rec = RECOMMEND[p.grade] || [];
+    const isLow = id => p.grade === 'P6' && (GI.LOW_P6 || []).includes(id);
     const layer = $('#map-markers'); layer.innerHTML = '';
     GI.ISLANDS.forEach((isl, i) => {
       const spot = MAP_SPOTS[isl.id]; const st = p.stars[isl.id] || [false, false, false]; const m = mastery(p, isl.id);
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'marker c' + (i % 6) + (rec.includes(isl.id) ? ' rec' : '') + (spot.above ? ' above' : '');
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'marker c' + (i % 6) + (rec.includes(isl.id) ? ' rec' : '') + (spot.above ? ' above' : '') + (isLow(isl.id) ? ' low' : '');
       b.style.left = spot.x + '%'; b.style.top = spot.y + '%';
-      b.innerHTML = `<span class="pin">${isl.emoji}</span><span class="tag"><b>${isl.en}</b><small>${spot.place}</small><span class="stars">${st.map(x => x ? '⭐' : '☆').join('')}</span>${rec.includes(isl.id) ? '<em>Recommended first</em>' : ''}</span>`;
+      b.innerHTML = `<span class="pin">${isl.emoji}</span><span class="tag"><b>${isl.en}</b><small>${isLow(isl.id) ? 'P3–P4 level' : spot.place}</small><span class="stars">${st.map(x => x ? '⭐' : '☆').join('')}</span>${rec.includes(isl.id) ? '<em>Recommended first</em>' : ''}</span>`;
       b.onclick = () => { sfx.tap(); openIsland(isl.id); };
       layer.appendChild(b);
     });
     COMING.forEach(c => { const d = document.createElement('div'); d.className = 'marker soon' + (c.above ? ' above' : ''); d.style.left = c.x + '%'; d.style.top = c.y + '%'; d.innerHTML = `<span class="pin">🔒</span><span class="tag"><b>${c.en}</b><small>${c.place} · soon</small></span>`; layer.appendChild(d); });
     const list = $('#island-list'); list.innerHTML = '';
-    const order = GI.ISLANDS.slice().sort((a, b) => (rec.indexOf(a.id) === -1 ? 9 : rec.indexOf(a.id)) - (rec.indexOf(b.id) === -1 ? 9 : rec.indexOf(b.id)));
+    const order = GI.ISLANDS.slice().sort((a, b) => ((isLow(a.id) ? 50 : 0) + (rec.indexOf(a.id) === -1 ? 9 : rec.indexOf(a.id))) - ((isLow(b.id) ? 50 : 0) + (rec.indexOf(b.id) === -1 ? 9 : rec.indexOf(b.id))));
+    let lowShown = false;
     order.forEach((isl, i) => {
+      if (isLow(isl.id) && !lowShown) { lowShown = true; const h = document.createElement('div'); h.className = 'low-div'; h.innerHTML = 'Lower level · P3–P4 <small>faded for now — open any time · not in the Daily Drill</small>'; list.appendChild(h); }
       const st = p.stars[isl.id] || [false, false, false]; const m = mastery(p, isl.id); const spot = MAP_SPOTS[isl.id];
-      const row = document.createElement('button'); row.type = 'button'; row.className = 'isl-row' + (rec.includes(isl.id) ? ' rec' : '');
+      const row = document.createElement('button'); row.type = 'button'; row.className = 'isl-row' + (rec.includes(isl.id) ? ' rec' : '') + (isLow(isl.id) ? ' low' : '');
       row.innerHTML = `<span class="isl-emoji">${isl.emoji}</span><span class="isl-body"><span class="isl-name">${isl.en} ${rec.includes(isl.id) ? '<em class="rec-badge">Recommended to tackle first</em>' : ''}<small>${isl.name} · ${spot.place} · ${isl.ref}</small></span><span class="isl-blurb">${isl.blurb}</span><span class="mbar"><i style="width:${m.pct}%"></i></span><span class="mtxt">Mastered ${m.pct}% · ${m.done}/${m.total}</span></span><span class="stars">${st.map(x => x ? '⭐' : '☆').join('')}</span>`;
       row.onclick = () => { sfx.tap(); openIsland(isl.id); };
       list.appendChild(row);
