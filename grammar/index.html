@@ -310,6 +310,10 @@ s{text-decoration:line-through;text-decoration-thickness:2.5px;text-decoration-c
 .st-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px} .st-grid div{background:var(--card2);border:2px solid var(--line);border-radius:12px;padding:8px 12px} .st-grid span{display:block;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em} .st-grid b{font-size:15px}
 .bk-ta{width:100%;margin-top:10px;font:13px/1.4 ui-monospace,Menlo,monospace;border:2.5px solid var(--line);border-radius:12px;padding:8px;background:var(--card);color:var(--ink);word-break:break-all}
 @media (max-width:520px){.rec-row{grid-template-columns:44px 1fr;}.rec-row .rec-res,.rec-row .rec-d{grid-column:2}}
+/* tag builder */
+.tb-sent{font-size:clamp(18px,2.8vw,23px);font-weight:800;line-height:1.5;background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:10px 14px;margin-bottom:4px}
+.tb-tag{display:inline-block;min-width:4.5em;text-align:center;border-bottom:3px solid var(--sea);color:var(--sea);padding:0 6px} .tb-tag.done{background:var(--grass);color:#fff;border-radius:8px;border-bottom:none}
+.tb-neg{background:var(--berry);color:#fff}
 /* builder */
 .b-rule-tag{display:inline-block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--sun);color:var(--onacc);margin-bottom:10px}
 .b-given{font-size:clamp(17px,2.6vw,21px);font-weight:800;line-height:1.5;background:var(--sand);border:2.5px dashed var(--line);border-radius:14px;padding:10px 14px}
@@ -2146,6 +2150,139 @@ GI.FOCUS_DAILY = { P6: 4, P4: 2 };
 GI.SEED_WEAK = GI.SEED_WEAK || {};
 GI.SEED_WEAK.p1 = { version: 'extra-2026-11', prompts: ["Emily, together with her brothers, ___ attending their cousin's wedding tomorrow night."] };
 
+/* ===== Tag Bay · Question Tags =====
+   Exam points taken from PSLE 2021–2025 + 2021–2023 Prelim papers (question tags appear in almost every paper).
+   All sentences below are NEW — written to test the same points, not copied from any paper.
+   spec: [sentence, helper for the tag, trap helper, sentence polarity '+'/'-', pronoun, level, why-the-helper, negative word?, override {ans, opts, pronWhy, key}] */
+GI.TAG_NEG = { is: "isn't", are: "aren't", am: "aren't", was: "wasn't", were: "weren't", do: "don't", does: "doesn't", did: "didn't", has: "hasn't", have: "haven't", had: "hadn't", will: "won't", would: "wouldn't", can: "can't", could: "couldn't", shall: "shan't", should: "shouldn't", must: "mustn't", might: "mightn't" };
+GI.tagOf = (h, negative, pron) => negative ? `${GI.TAG_NEG[h]} ${pron}` : `${h} ${pron}`;
+
+GI.TAG_SPEC = [
+  // ---- 1. copy the helping verb (be / modal / have) ----
+  ['Your sister is in the school choir, ___?', 'is', 'does', '+', 'she', 1, 'The helping verb is [[is]] → copy it.'],
+  ['The twins are going to the dentist today, ___?', 'are', 'do', '+', 'they', 1, 'The helping verb is [[are]] (are going) → copy it.'],
+  ['Mr Tan was your form teacher last year, ___?', 'was', 'did', '+', 'he', 1, 'The helping verb is [[was]] → copy it.'],
+  ['You can ride a bicycle, ___?', 'can', 'do', '+', 'you', 1, 'The helping verb is [[can]] → copy it.'],
+  ['We will finish the project by Friday, ___?', 'will', 'do', '+', 'we', 1, '[[will]] → the tag uses [[won\'t]].'],
+  ['The puppies were very noisy last night, ___?', 'were', 'did', '+', 'they', 1, 'The helping verb is [[were]] → copy it.'],
+  ['You have finished your homework, ___?', 'have', 'did', '+', 'you', 1, '[[have finished]] → helping verb [[have]].'],
+  ['Grandpa could not hear the doorbell, ___?', 'could', 'did', '-', 'he', 1, 'The helping verb is [[could]] → copy it.', 'not'],
+  ['The shop isn\'t open on Sundays, ___?', 'is', 'does', '-', 'it', 1, 'The helping verb is [[is]] (isn\'t) → copy it.', "isn't"],
+  ['You should wear a helmet, ___?', 'should', 'would', '+', 'you', 1, 'The helping verb is [[should]] → copy it.'],
+  ['The children weren\'t at the playground, ___?', 'were', 'did', '-', 'they', 1, 'The helping verb is [[were]] (weren\'t) → copy it.', "weren't"],
+  ['Ali has lost his water bottle again, ___?', 'has', 'did', '+', 'he', 1, '[[has lost]] → helping verb [[has]].'],
+  // ---- 2. no helping verb → do / does / did ----
+  ['Your brother plays chess every weekend, ___?', 'does', 'is', '+', 'he', 1, 'No helping verb. [[plays]] = present, he → [[does]].'],
+  ['The girls enjoyed the camp, ___?', 'did', 'were', '+', 'they', 1, 'No helping verb. [[enjoyed]] = past → [[did]].'],
+  ['You like spicy noodles, ___?', 'do', 'are', '+', 'you', 1, 'No helping verb. [[like]] = present, you → [[do]].'],
+  ['Mum bought a new oven last week, ___?', 'did', 'has', '+', 'she', 1, 'No helping verb. [[bought]] = past → [[did]].'],
+  ['The bus stops right outside the school, ___?', 'does', 'is', '+', 'it', 1, 'No helping verb. [[stops]] = present, it → [[does]].'],
+  ['Priya didn\'t bring her umbrella, ___?', 'did', 'was', '-', 'she', 1, 'The helping verb is [[did]] (didn\'t) → copy it.', "didn't"],
+  ['Your parents own a bakery, ___?', 'do', 'are', '+', 'they', 2, 'No helping verb. [[own]] = present, they → [[do]].'],
+  ['The Lims have a big garden, ___?', 'do', 'are', '+', 'they', 2, '[[have]] here means [[own / possess]] — it is the MAIN verb, not a helper. Treat it like any action verb → [[do]].'],
+  ['Uncle Sam has a red sports car, ___?', 'does', 'is', '+', 'he', 2, '[[has]] = owns → main verb, not a helper → [[does]].'],
+  ['Jun had a bad cough last week, ___?', 'did', 'was', '+', 'he', 2, '[[had]] = was suffering from → main verb (past) → [[did]].'],
+  ['You have to wear a uniform to school, ___?', 'do', 'must', '+', 'you', 2, '[[have to]] = must → main verb → [[do]].'],
+  ['Grandma used to sell kueh at the market, ___?', 'did', 'used', '+', 'she', 2, '[[used to]] talks about the past and has no helper → [[did]].', null, { opts: ["didn't she", "did she", "wasn't she", "hasn't she"] }],
+  // ---- 3. negative words → positive tag ----
+  ['Leo hardly ever eats vegetables, ___?', 'does', 'is', '-', 'he', 2, 'No helping verb. [[eats]] = present → [[does]].', 'hardly'],
+  ['Mia rarely forgets her homework, ___?', 'does', 'did', '-', 'she', 2, 'No helping verb. [[forgets]] = present → [[does]].', 'rarely'],
+  ['The twins seldom argued when they were young, ___?', 'did', 'were', '-', 'they', 2, 'No helping verb. [[argued]] = past → [[did]].', 'seldom'],
+  ['Nobody likes being laughed at, ___?', 'do', 'does', '-', 'they', 2, 'No helping verb. Present → in the tag nobody becomes [[they]] → [[do]].', 'Nobody', { pronWhy: 'nobody / everyone / someone → [[they]] in the tag' }],
+  ['Raju has never been to Japan, ___?', 'has', 'is', '-', 'he', 2, '[[has been]] → helping verb [[has]].', 'never'],
+  ['There is hardly any milk left, ___?', 'is', 'does', '-', 'there', 2, '[[There is]] → copy [[is]] and keep [[there]].', 'hardly', { pronWhy: 'There is … → the tag keeps [[there]]' }],
+  ['Little is known about the old mansion, ___?', 'is', 'does', '-', 'it', 2, '[[is known]] → helping verb [[is]].', 'Little', { pronWhy: 'little (an amount) → [[it]]' }],
+  ['Few pupils finished the test on time, ___?', 'did', 'were', '-', 'they', 2, 'No helping verb. [[finished]] = past → [[did]].', 'Few'],
+  ['You barely touched your dinner, ___?', 'did', 'were', '-', 'you', 2, 'No helping verb. [[touched]] = past → [[did]].', 'barely'],
+  ['She is hardly the right person to ask, ___?', 'is', 'does', '-', 'she', 2, 'The helping verb is [[is]] → copy it.', 'hardly'],
+  ['Nothing can stop him now, ___?', 'can', 'does', '-', 'it', 2, 'The helping verb is [[can]] → copy it.', 'Nothing', { pronWhy: 'nothing / everything → [[it]]' }],
+  ['The boys scarcely spoke during the long drive, ___?', 'did', 'were', '-', 'they', 2, 'No helping verb. [[spoke]] = past → [[did]].', 'scarcely'],
+  ['No one has seen the missing cat, ___?', 'have', 'has', '-', 'they', 2, '[[has seen]] → helping verb has → with [[they]] it becomes [[have]].', 'No one', { pronWhy: 'no one → [[they]], so has → [[have]]' }],
+  // ---- 4. 'd = would or had? ----
+  ["You'd like some dessert, ___?", 'would', 'had', '+', 'you', 2, "'d + base verb ([[like]]) → 'd = [[would]]."],
+  ["She'd already left when we arrived, ___?", 'had', 'would', '+', 'she', 2, "'d + past participle ([[left]]) → 'd = [[had]]."],
+  ["They'd be thrilled with the surprise, ___?", 'would', 'had', '+', 'they', 2, "'d + base verb ([[be]]) → 'd = [[would]]."],
+  ["He'd never tasted durian before, ___?", 'had', 'would', '-', 'he', 2, "'d + past participle ([[tasted]]) → 'd = [[had]].", 'never'],
+  ["We'd better leave now, ___?", 'had', 'would', '+', 'we', 2, "[[had better]] → 'd = [[had]]."],
+  ["You'd rather walk than take the bus, ___?", 'would', 'had', '+', 'you', 2, "[[would rather]] → 'd = [[would]]."],
+  ["It'd be fun to go camping, ___?", 'would', 'had', '+', 'it', 2, "'d + base verb ([[be]]) → 'd = [[would]]."],
+  ["I'd seen that film twice, ___?", 'had', 'would', '+', 'I', 2, "'d + past participle ([[seen]]) → 'd = [[had]]."],
+  // ---- 5. 's = is or has? ----
+  ["She's been learning ballet for years, ___?", 'has', 'is', '+', 'she', 2, "'s + [[been]] → 's = [[has]]."],
+  ["He's taking the train home, ___?", 'is', 'has', '+', 'he', 2, "'s + -ing ([[taking]]) → 's = [[is]]."],
+  ["It's stopped raining, ___?", 'has', 'is', '+', 'it', 2, "'s + past participle ([[stopped]]) → 's = [[has]]."],
+  ["She's never been late for school, ___?", 'has', 'is', '-', 'she', 2, "'s + [[been]] → 's = [[has]].", 'never'],
+  ["He's a fast runner, ___?", 'is', 'has', '+', 'he', 2, "'s + a noun ([[a fast runner]]) → 's = [[is]]."],
+  ["Mum's already eaten, ___?", 'has', 'is', '+', 'she', 2, "'s + past participle ([[eaten]]) → 's = [[has]]."],
+  ["There's nobody at the door, ___?", 'is', 'has', '-', 'there', 2, "There's + noun → 's = [[is]].", 'nobody', { pronWhy: 'There is … → the tag keeps [[there]]' }],
+  // ---- 6. special patterns ----
+  ["I'm in the same class as you, ___?", 'am', 'do', '+', 'I', 2, "[[I am]] → the negative tag is [[aren't I]] (not 'amn't I').", null, { opts: ["aren't I", "am I", "don't I", "isn't I"] }],
+  ["I'm late again, ___?", 'am', 'do', '+', 'I', 2, "[[I am]] → the negative tag is [[aren't I]].", null, { opts: ["aren't I", "am I", "amn't I", "don't I"] }],
+  ["Let's play a board game, ___?", 'shall', 'will', '+', 'we', 2, "[[Let's]] (= let us) is a suggestion → the tag is always [[shall we]].", null, { ans: 'shall we', opts: ['shall we', "shan't we", 'will we', "don't we"] }],
+  ["Don't forget to lock the gate, ___?", 'will', 'do', '-', 'you', 2, "A negative request ([[Don't …]]) → the tag is [[will you]].", "Don't", { opts: ['will you', "won't you", 'do you', "don't you"] }],
+  ['Everyone enjoyed the concert, ___?', 'did', 'was', '+', 'they', 2, 'No helping verb. [[enjoyed]] = past → [[did]].', null, { pronWhy: 'everyone / everybody / someone → [[they]] in the tag' }],
+  ['This is your pencil case, ___?', 'is', 'does', '+', 'it', 2, 'The helping verb is [[is]] → copy it.', null, { pronWhy: 'this / that → [[it]] in the tag' }],
+  ['Those are your sneakers, ___?', 'are', 'do', '+', 'they', 2, 'The helping verb is [[are]] → copy it.', null, { pronWhy: 'these / those → [[they]] in the tag' }],
+  ['Somebody left the tap running, ___?', 'did', 'was', '+', 'they', 2, 'No helping verb. [[left]] = past → [[did]].', null, { pronWhy: 'somebody / someone → [[they]]' }],
+  // ---- 7. which clause does the tag follow? ----
+  ['Mum would be glad that we tidied our room, ___?', 'would', 'did', '+', 'she', 2, "The tag follows the [[main clause]]: [[Mum would be glad]] (not 'we tidied') → [[would]].", null, { key: 'main' }],
+  ['Mr Lee was pleased that the class had done well, ___?', 'was', 'had', '+', 'he', 2, "The tag follows the [[main clause]]: [[Mr Lee was pleased]] → [[was]].", null, { key: 'main' }],
+  ['Siti will be upset if she misses the bus, ___?', 'will', 'does', '+', 'she', 2, "The tag follows the [[main clause]]: [[Siti will be upset]] (the if-part is extra) → [[will]].", null, { key: 'main' }],
+  ['The girls went home after they had finished, ___?', 'did', 'had', '+', 'they', 2, "Main clause: [[The girls went home]] — no helper, past → [[did]].", null, { key: 'main' }],
+  ['You said you would call me, ___?', 'did', 'would', '+', 'you', 2, "Main clause: [[You said]] — no helper, past → [[did]] (not 'would', which is in the reported part).", null, { key: 'main' }],
+  // ---- 8. modals and others ----
+  ['We must not run in the corridor, ___?', 'must', 'do', '-', 'we', 2, 'The helping verb is [[must]] → copy it.', 'not'],
+  ['The thieves had escaped before the police came, ___?', 'had', 'did', '+', 'they', 2, '[[had escaped]] → helping verb [[had]].'],
+  ['Your cousins will have arrived by noon, ___?', 'will', 'have', '+', 'they', 2, '[[will have arrived]] → the FIRST helping verb is [[will]].'],
+  ['The hall is being cleaned, ___?', 'is', 'does', '+', 'it', 2, '[[is being cleaned]] → the FIRST helping verb is [[is]].'],
+  ['These cakes were baked by Aunty May, ___?', 'were', 'did', '+', 'they', 2, '[[were baked]] (passive) → helping verb [[were]].'],
+  ['She would be happy that you helped with the chores, ___?', 'would', 'did', '+', 'she', 2, "The tag follows the [[main clause]]: [[She would be happy]] → [[would]].", null, { key: 'main', ref: 'Real mistake · online' }],
+];
+
+GI.TAG_NEG_WORDS = 'not / n\'t · never · hardly · rarely · seldom · barely · scarcely · little · few · nobody · no one · nothing';
+GI.TAG_ITEMS = GI.TAG_SPEC.map((s, i) => {
+  const [sent, h, trap, pol, pron, level, why, neg, o = {}] = s;
+  const tagNeg = pol === '+';                       // positive sentence → negative tag
+  const ans = o.ans || GI.tagOf(h, tagNeg, pron);
+  const opts = o.opts || GI.uniq([ans, GI.tagOf(h, !tagNeg, pron), GI.tagOf(trap, tagNeg, pron), GI.tagOf(trap, !tagNeg, pron)]);
+  const verbOf = t => { const w = t.split(' ')[0]; const k = Object.keys(GI.TAG_NEG).find(x => GI.TAG_NEG[x] === w); return k === 'am' ? 'are' : (k || w); };
+  const ansVerb = verbOf(ans);
+  const step1X = opts.filter(x => x !== ans && verbOf(x) !== ansVerb);
+  const step2X = opts.filter(x => x !== ans && !step1X.includes(x));
+  const polTxt = pol === '+' ? `The sentence is [[positive]] → the tag is [[negative]]` : `[[${neg || 'not'}]] makes the sentence [[negative]] → the tag is [[positive]]`;
+  let rule = `${why}${step1X.length ? ' → ' + step1X.map(x => `~~${x}~~`).join(' ') : ''} || ${polTxt}${o.pronWhy ? '; ' + o.pronWhy : ''}${step2X.length ? ' → ' + step2X.map(x => `~~${x}~~`).join(' ') : ''} → **${ans}**`;
+  if (o.ans) rule = `${why} || So the answer is fixed: ${step1X.concat(step2X).map(x => `~~${x}~~`).join(' ')} → **${ans}**`;
+  const key = o.key || (o.ans ? 'special' : /'d /.test(sent) ? 'd' : /'s /.test(sent) && !/^Let/.test(sent) ? 's' : neg && pol === '-' && !/n't|not/.test(neg) ? 'negword' : o.opts ? 'special' : /\[\[(have|has|had)\]\] = |own|used to|have to/.test(why) ? 'havemain' : level === 1 ? 'basic' : 'other');
+  return { id: `tag:${i}`, sentence: sent, ans, opts, rule, level, helper: h, trap, pol, pron, neg, why, pronWhy: o.pronWhy, key, ref: o.ref || 'PSLE-style · question tags' };
+});
+
+/* rule cards (shown with the tense-guide card engine) */
+GI.TAG_CARDS = [
+  { emoji: '🔁', name: '1 · Copy & flip', form: 'statement + , + helping verb + pronoun + ?', use: ['Copy the [[helping verb]] (is, are, was, can, will, have, has, had, should…).', 'Flip it: positive sentence → [[negative]] tag; negative sentence → [[positive]] tag.', 'Use a [[pronoun]], never a name: Mrs Tan → she.'], signals: ['is → isn\'t', 'can → can\'t', 'will → won\'t', "isn't → is"], ex: ['Mrs Tan is kind, **isn\'t she**?', 'You can swim, **can\'t you**?', "They weren't late, **were they**?"] },
+  { emoji: '🛠️', name: '2 · No helper? do / does / did', form: 'only one verb → do / does / did', use: ['Present, he/she/it → [[does]]; I/you/we/they → [[do]].', 'Past → [[did]].', '[[have / has / had]] meaning OWN, EAT, SUFFER is a main verb → do/does/did. [[have to]] and [[used to]] too.'], signals: ['plays → does', 'like → do', 'went → did', 'has a car → does', 'used to → did'], ex: ['He plays chess, **doesn\'t he**?', 'She has a cat, **doesn\'t she**?', 'You used to live here, **didn\'t you**?'] },
+  { emoji: '🚫', name: '3 · Hidden negative words', form: 'negative word in the sentence → POSITIVE tag', use: ['These words make the sentence negative even without "not".', 'So the tag is [[positive]].'], signals: ['never', 'hardly', 'rarely', 'seldom', 'barely', 'scarcely', 'little', 'few', 'nobody', 'nothing', 'no one'], ex: ['He hardly eats, **does he**?', 'You never cry, **do you**?', 'Few came, **did they**?'] },
+  { emoji: "🔍", name: "4 · 'd and 's detectives", form: "'d = would / had · 's = is / has", use: ["[[ 'd + base verb]] (be, like, go) → would.", "[[ 'd + past participle]] (gone, left, seen) or 'd better → had.", "[[ 's + -ing / adjective / noun]] → is.", "[[ 's + been / past participle]] → has."], signals: ["'d be → would", "'d left → had", "'s going → is", "'s been → has"], ex: ["She'd be glad, **wouldn't she**?", "He'd gone, **hadn't he**?", "It's raining, **isn't it**?", "She's eaten, **hasn't she**?"] },
+  { emoji: '⭐', name: '5 · Special tags', form: 'learn these by heart', use: ["I am → [[aren't I]].", "Let's … → [[shall we]].", "Don't … (request) → [[will you]].", 'There is / are → [[isn\'t there / aren\'t there]].'], signals: ["aren't I", 'shall we', 'will you', "isn't there"], ex: ["I'm right, **aren't I**?", "Let's go, **shall we**?", "Don't shout, **will you**?", "There's a test, **isn't there**?"] },
+  { emoji: '👥', name: '6 · Which pronoun?', form: 'the pronoun matches the subject', use: ['everyone / nobody / someone → [[they]].', 'nothing / everything / this / that → [[it]].', 'these / those → [[they]].', 'There is … → keep [[there]].'], signals: ['everyone → they', 'nothing → it', 'this → it', 'those → they'], ex: ['Everyone came, **didn\'t they**?', 'Nothing happened, **did it**?', 'This is yours, **isn\'t it**?'] },
+  { emoji: '🧭', name: '7 · Which clause?', form: 'the tag follows the MAIN clause', use: ['Long sentence? Find the [[main clause]] and use its helper.', 'Clauses after that / if / when / after are extra.', 'You said you would… → the main verb is said → did.'], signals: ['that …', 'if …', 'when …', 'and …'], ex: ['She would be happy that you helped, **wouldn\'t she**?', 'He will cry if he loses, **won\'t he**?'] },
+];
+
+GI.catalogue.tags = () => GI.TAG_ITEMS.map(t => ({ id: t.id, level: t.level, make: () => ({ prompt: t.sentence, answer: t.ans, options: t.opts, rule: t.rule, ref: `📝 ${t.ref}`, mode: 'mcq' }) }));
+
+GI.ISLANDS.push({ id: 'tags', en: 'Tag Bay', name: 'Question Tags · 反意疑问句', emoji: '🏷️', ref: '📝 PSLE-style (new sentences)', blurb: "…, isn't it? · hardly → does she? · 'd = would / had", stickers: ['🏷️', '⚓', '🐚', '🦀', '🛟', '🚤'] });
+
+/* the P6 player's tag mistake goes into her review box (once; new version re-runs the seed, which only adds) */
+GI.SEED_WEAK = GI.SEED_WEAK || {};
+GI.SEED_WEAK.p1 = { version: 'tags-2026-11', prompts: ((GI.SEED_WEAK.p1 || {}).prompts || []).concat(['She would be happy that you helped with the chores, ___?']) };
+
+/* 'd and 's detective (sorter game) */
+GI.TAG_SORT = [
+  ["She'd love a puppy for her birthday.", 'would'], ["He'd finished his lunch before the bell rang.", 'had'], ["We'd better hurry.", 'had'], ["They'd enjoy the night safari.", 'would'],
+  ["I'd never seen snow before the trip.", 'had'], ["You'd rather stay home.", 'would'], ["She'd already gone home.", 'had'], ["It'd be a pity to miss the show.", 'would'],
+  ["It's getting dark outside.", 'is'], ["She's won the spelling bee.", 'has'], ["He's been coughing all day.", 'has'], ["The cat's sleeping on the sofa.", 'is'],
+  ["Mum's baked a cake.", 'has'], ["It's too hot today.", 'is'], ["He's never been on a plane.", 'has'], ["She's my best friend.", 'is'],
+];
+
 /* Real animal recordings, embedded as data URIs.
    Sources: ESC-50 dataset (K. J. Piczak, 2015; CC BY-NC 3.0; clips originate from freesound.org contributors) for dog, rooster, pig, cow, cat, hen, insects, sheep, chirping birds;
    CC0 clips from the AgentSynth Animals pack: crow (Mish7913), owl (felix.blume), frog (kvgarlic), wolf (betchkal) via Freesound. Trimmed, normalised and compressed. */
@@ -2509,6 +2646,65 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     next();
   };
 
+
+  /* ================= 12. TAG BUILDER (question tags in 3 steps: helper → flip → pronoun) ================= */
+  G.tagBuilder = (area, cfg, api) => {
+    const rounds = shuffle(cfg.items).slice(0, cfg.n || 8); let i = 0, correct = 0;
+    const mk = s => esc(s).replace(/\[\[(.+?)\]\]/g, '<mark>$1</mark>');
+    const HELPERS = ['is', 'are', 'am', 'was', 'were', 'do', 'does', 'did', 'has', 'have', 'had', 'will', 'would', 'can', 'could', 'shall', 'should', 'must'];
+    const PRONS = ['he', 'she', 'it', 'they', 'we', 'you', 'I', 'there'];
+    const next = () => {
+      if (i >= rounds.length) return api.finish({ correct, total: rounds.length });
+      api.progress(i, rounds.length);
+      const t = rounds[i]; let step = 1, slipped = false;
+      const parts = t.sentence.split('___');
+      area.innerHTML = `<div class="g-steps3"><span data-s="1">1 · Helper</span><span data-s="2">2 · Flip</span><span data-s="3">3 · Pronoun</span></div><div class="g-instr" id="tb-instr"></div><div class="tb-sent">${esc(parts[0])}<span class="tb-tag" id="tb-tag">___</span>${esc(parts[1] || '')}</div><div id="tb-rules"></div><div class="g-actions" id="tb-actions"></div>`;
+      const instr = $('#tb-instr', area), actions = $('#tb-actions', area), rules = $('#tb-rules', area);
+      const setSteps = () => area.querySelectorAll('.g-steps3 span').forEach(s => { const n = +s.dataset.s; s.className = n < step ? 'done' : n === step ? 'on' : ''; });
+      const box = (n, html, ok) => { const d = el('div', 'fc-step-rule'); rules.appendChild(d); flashRule(d, `<span class="fc-lab">${n}</span> ` + html, ok); };
+      const nextBtn = to => { actions.innerHTML = ''; const b = el('button', 'btn primary', to ? 'Next step →' : (i + 1 >= rounds.length ? 'Finish →' : 'Next →')); b.type = 'button'; b.onclick = () => { if (to) { step = to; run(); } else { i++; next(); } }; actions.appendChild(b); };
+      const ask = (opts, right, onDone) => {
+        actions.innerHTML = ''; let tries = 0;
+        opts.forEach(o => { const b = el('button', 'btn opt-mini', esc(o)); b.type = 'button'; b.onclick = () => {
+          const ok = o === right; tries++;
+          if (!ok) { slipped = true; b.classList.add('is-wrong'); b.disabled = true; api.bad(true); if (tries < 2) return; }
+          else { b.classList.add('is-right'); api.good(); }
+          actions.querySelectorAll('button').forEach(x => { x.disabled = true; if (x.textContent === right) x.classList.add('is-right'); });
+          onDone(ok && tries === 1);
+        }; actions.appendChild(b); });
+      };
+      const tagNeg = /n't/.test(t.ans);
+      const run = () => {
+        setSteps();
+        if (step === 1) {
+          instr.innerHTML = 'Step 1 · Which <b>helping verb</b> will the tag use? <small>(No helping verb in the sentence? Then it is do / does / did.)</small>';
+          const helperShown = t.helper;
+          const pool = shuffle(HELPERS.filter(h => h !== helperShown && h !== t.trap)).slice(0, 2);
+          ask(shuffle([helperShown, t.trap, ...pool]), helperShown, ok => { box('1 · Helper', `${ok ? '✓ ' : ''}${mk(t.why)}`, ok); nextBtn(2); });
+        } else if (step === 2) {
+          instr.innerHTML = 'Step 2 · Is the sentence <b>positive</b> or <b>negative</b>? <small>(Watch for hidden negative words: never, hardly, rarely, seldom, few, little, nobody…)</small>';
+          const right = t.pol === '+' ? '➕ Positive' : '➖ Negative';
+          ask(['➕ Positive', '➖ Negative'], right, ok => {
+            const sent = area.querySelector('.tb-sent'); if (t.neg) sent.innerHTML = sent.innerHTML.replace(new RegExp('\\b(' + t.neg.replace(/'/g, "(?:'|’)") + ')\\b'), '<mark class="tb-neg">$1</mark>');
+            const special = /^Let's/.test(t.sentence) ? " — but <mark>Let's</mark> is special: the tag stays <b>shall we</b>." : /^Don't/.test(t.sentence) ? ' → the tag is <b>positive</b>: will you.' : '';
+            box('2 · Flip', `${ok ? '✓ ' : ''}${t.pol === '+' ? 'Positive sentence → the tag is <b>negative</b> (add n\'t)' : `<mark>${esc(t.neg || 'not')}</mark> makes it negative → the tag is <b>positive</b> (no n't)`}${special}.`, ok); nextBtn(3);
+          });
+        } else {
+          instr.innerHTML = 'Step 3 · Which <b>pronoun</b>? <small>(Never a name: Mrs Tan → she.)</small>';
+          const pool = shuffle(PRONS.filter(p => p !== t.pron)).slice(0, 3);
+          ask(shuffle([t.pron, ...pool]), t.pron, ok => {
+            box('3 · Pronoun', `${ok ? '✓ ' : ''}${t.pronWhy ? mk(t.pronWhy) : `The subject → <b>${esc(t.pron)}</b>`}. The tag is <b>${esc(t.ans)}</b>.`, ok);
+            const tg = $('#tb-tag', area); tg.textContent = t.ans; tg.classList.add('done');
+            if (!slipped) correct++; else api.miss && api.miss(t.sentence, '(slipped on a step)', t.ans);
+            nextBtn(0);
+          });
+        }
+      };
+      run();
+    };
+    next();
+  };
+
   /* ================= DATA for the games ================= */
 
   G.HERD_CHANT = [
@@ -2678,6 +2874,11 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     { id: 'col-memory', island: 'colloc', name: 'Collocation Pairs', icon: '🃏', engine: 'lineMatch', desc: 'Draw lines · collocation ↔ meaning', cfg: () => ({ instr: 'Match each <b>collocation</b> with its <b>meaning</b>.', pairs: GI.COLLOC.map(c => [c[0], c[1]]), n: 8, small: true }) },
     { id: 'col-rush', island: 'colloc', name: 'Café Rush', icon: '⚡', engine: 'quickFire', desc: '60 s · meaning → collocation, both ways', cfg: () => ({ instr: 'Pick the <b>collocation</b> that matches the meaning (or the meaning that matches the collocation).', pairs: GI.COLLOC.map(c => [c[1], c[0]]), bothWays: true, nOptions: 4, target: 12 }) },
     { id: 'col-det', island: 'colloc', name: 'Collocation Detective', icon: '🔍', engine: 'detective', desc: 'Tap the collocation inside the sentence', cfg: () => ({ instr: 'Tap the <b>words of the collocation</b> in the sentence (the verb and its partner word).', n: 8, sentences: GI.COLLOC.map(c => { const words = c[2].split(' '); const parts = c[0].split(' '); const forms = GI.CVERBS[c[3]]; const t = words.map(w => w.replace(/[.,!?;:"]/g, '')).filter(w => forms.includes(w.toLowerCase()) || parts.slice(1).includes(w.toLowerCase())); return { s: c[2], t: GI.uniq(t), col: c[0], mean: c[1] }; }), why: s => `Collocation: <b>${s.col}</b> = ${s.mean}.` }) },
+    // Tag Bay (question tags · PSLE-style, new sentences)
+    { id: 'tag-rules', island: 'tags', name: 'Tag Rule Cards', icon: '📋', engine: 'tenseGuide', desc: '7 rules: copy & flip, do/does/did, hidden negatives, \'d & \'s, special tags…', cfg: () => ({ cards: GI.TAG_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 Question tags in 7 rules. Read each card and tap <b>Got it</b>.' }) },
+    { id: 'tag-builder', island: 'tags', name: 'Tag Builder', icon: '🏗️', engine: 'tagBuilder', desc: 'Build the tag in 3 steps: helper → flip → pronoun', cfg: () => ({ n: 8, items: GI.TAG_ITEMS.filter(t => t.level === 1).sort(() => Math.random() - .5).slice(0, 3).concat(GI.TAG_ITEMS.filter(t => t.level === 2).sort(() => Math.random() - .5).slice(0, 5)) }) },
+    { id: 'tag-builder-traps', island: 'tags', name: 'Tag Builder · Traps', icon: '🪤', engine: 'tagBuilder', desc: "hardly / never, 'd = would or had, I am → aren't I, main clause", cfg: () => ({ n: 8, items: GI.TAG_ITEMS.filter(t => t.level === 2) }) },
+    { id: 'tag-ds', island: 'tags', name: "'d & 's Detective", icon: '🔍', engine: 'sorter', desc: "Is 'd would or had? Is 's is or has?", cfg: () => ({ instr: "What does the <b>'d</b> or <b>'s</b> stand for? Look at the word right after it, then <b>drag</b> the sentence into the right bin.", n: 12, buckets: [{ id: 'would', label: "'d = would", emoji: '🔮', hint: "'d + base verb (be, like)" }, { id: 'had', label: "'d = had", emoji: '⏪', hint: "'d + gone / seen · 'd better" }, { id: 'is', label: "'s = is", emoji: '🟰', hint: "'s + -ing / adjective / noun" }, { id: 'has', label: "'s = has", emoji: '✅', hint: "'s + been / past participle" }], items: GI.TAG_SORT.map(s => ({ text: s[0], bucket: s[1], rule: `<b>${esc(s[0])}</b> → ${s[1]}` })) }) },
     // S&T Station (W@W)
     { id: 'st-rules', island: 'st', name: 'S&T Rule Cards', icon: '📋', engine: 'tenseGuide', desc: 'The 5 W@W S&T rules + joining words + who/whose/which', cfg: () => ({ cards: GI.ST_CARDS, labels: ['Pattern', 'How to', 'Look for', 'Examples'], intro: '📋 These are the W@W S&T rules (Week 28). Read each card and tap <b>Got it</b>.' }) },
     { id: 'st-build-comeback', island: 'st', name: 'Comeback Builder', icon: '💪', engine: 'builder', desc: 'Tricky S&T questions from the W@W papers — build them right this time', cfg: () => ({ n: 6, items: GI.ST.filter(s => /^Real paper/.test(s[5])).map(s => ({ given: s[0], use: s[1], answer: s[2], wrongs: s[3], cat: s[4], note: s[6] })) }) },
@@ -2816,27 +3017,28 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
 
   /* ---------- map ---------- */
   const MAP_SPOTS = {
-    pron:    { x: 30, y: 7, place: 'Woodlands' },
-    punct:   { x: 13, y: 15, place: 'Kranji' },
-    prov:    { x: 62, y: 20, place: 'Seletar', above: true },
-    ing:     { x: 75, y: 20, place: 'Pulau Ubin' },
-    zoo:     { x: 44, y: 22, place: 'Mandai' },
-    count:   { x: 55, y: 31, place: 'Bishan' },
-    verbs:   { x: 89, y: 20, place: 'Changi' },
-    prep:    { x: 28, y: 32, place: 'Bukit Timah' },
-    plurals: { x: 15, y: 51, place: 'Jurong' },
-    colloc:  { x: 64, y: 48, place: 'Toa Payoh' },
-    words:   { x: 29, y: 60, place: 'Clementi' },
-    sva:     { x: 62, y: 76, place: 'Marina Bay' },
-    adj:     { x: 80, y: 80, place: 'East Coast' },
+    pron:    { x: 13, y: 21, place: 'Woodlands' },
+    punct:   { x: 26, y: 7, place: 'Kranji' },
+    prov:    { x: 59, y: 20, place: 'Seletar', above: true },
+    ing:     { x: 72, y: 16, place: 'Pulau Ubin' },
+    zoo:     { x: 46, y: 44, place: 'Mandai' },
+    count:   { x: 57, y: 36, place: 'Bishan' },
+    verbs:   { x: 90, y: 8, place: 'Changi' },
+    prep:    { x: 31, y: 33, place: 'Bukit Timah' },
+    plurals: { x: 11, y: 51, place: 'Jurong' },
+    colloc:  { x: 72, y: 53, place: 'Toa Payoh' },
+    words:   { x: 29, y: 89, place: 'Clementi' },
+    sva:     { x: 59, y: 76, place: 'Marina Bay' },
+    adj:     { x: 77, y: 85, place: 'East Coast' },
     homo:    { x: 11, y: 80, place: 'Tuas' },
-    idiom:   { x: 29, y: 88, place: 'Jurong Island' },
-    opp:     { x: 45, y: 80, place: 'Sentosa' },
-    st:      { x: 82, y: 48, place: 'Tampines' },
-    vocab:   { x: 45, y: 48, place: 'Ang Mo Kio' },
+    idiom:   { x: 26, y: 61, place: 'Jurong Island' },
+    opp:     { x: 42, y: 72, place: 'Sentosa' },
+    st:      { x: 86, y: 36, place: 'Tampines' },
+    vocab:   { x: 45, y: 16, place: 'Ang Mo Kio' },
+    tags:    { x: 91, y: 67, place: 'Pasir Ris' },
   };
   const COMING = [];
-  const RECOMMEND = { P6: ['sva', 'ing', 'verbs'], P4: ['st', 'sva', 'vocab'] };
+  const RECOMMEND = { P6: ['sva', 'tags', 'ing'], P4: ['st', 'sva', 'vocab'] };
   const mastery = (p, islandId) => {
     const cat = GI.catalogue[islandId]();
     const pool = p.grade === 'P6' ? cat : cat.filter(i => i.level === 1);
@@ -2891,7 +3093,7 @@ GI.SOUND_CLIPS = {"dog": "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF
     const isl = GI.ISLANDS.find(i => i.id === id); const p = P(); cur.island = id;
     const st = p.stars[id] || [false, false, false]; const m = mastery(p, id);
     $('#isl-title').innerHTML = `${isl.emoji} ${isl.en} <small>${isl.name}</small>`;
-    $('#isl-ref').textContent = isl.ref + ' · Stuck? Open the handbook to these pages';
+    $('#isl-ref').textContent = isl.ref + (/📖/.test(isl.ref) ? ' · Stuck? Open the handbook to these pages' : '');
     $('#isl-mastery').innerHTML = `Mastered <b>${m.pct}%</b> <small>· ${m.done}/${m.total} points cleared, ${m.seen - m.done} in training</small>`;
     // mini-games (main mode)
     const gwrap = $('#game-list'); gwrap.innerHTML = '';
